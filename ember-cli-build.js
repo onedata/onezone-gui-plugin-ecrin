@@ -4,7 +4,13 @@ const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function(defaults) {
   let app = new EmberApp(defaults, {
-    // Add options here
+    eslint: {
+      testGenerator: 'mocha',
+    },
+    sassOptions: {
+      includePaths: [ 'app/styles' ],
+      onlyIncluded: false,
+    },
   });
 
   // Use `app.import` to add additional libraries to the generated

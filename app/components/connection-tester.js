@@ -8,7 +8,6 @@ export default Component.extend({
     this._super(...arguments);
 
     const elasticsearch = this.get('elasticsearch');
-
     elasticsearch.fetch('/countries/country/1');
   },
 });

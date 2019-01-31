@@ -1,11 +1,12 @@
 module.exports = {
+  framework: 'mocha',
   test_page: 'tests/index.html?hidepassed',
   disable_watching: true,
   launch_in_ci: [
-    'Chrome'
+    'Chrome',
   ],
   launch_in_dev: [
-    'Chrome'
+    'Chrome',
   ],
   browser_args: {
     Chrome: {
@@ -18,8 +19,8 @@ module.exports = {
         '--disable-software-rasterizer',
         '--mute-audio',
         '--remote-debugging-port=0',
-        '--window-size=1440,900'
-      ].filter(Boolean)
-    }
-  }
+        '--window-size=1440,900',
+      ].filter(Boolean),
+    },
+  },
 };
