@@ -1,41 +1,67 @@
+/* eslint-env node */
+
 module.exports = {
   root: true,
   parserOptions: {
     ecmaVersion: 2017,
-    sourceType: 'module'
+    sourceType: 'module',
   },
   plugins: [
-    'ember'
+    'ember',
+    'promise',
   ],
   extends: [
     'eslint:recommended',
-    'plugin:ember/recommended'
+    'plugin:ember/recommended',
   ],
   env: {
-    browser: true
+    browser: true,
+    es6: true,
+    jquery: true,
   },
   rules: {
-  },
-  overrides: [
-    // node files
-    {
-      files: [
-        '.eslintrc.js',
-        '.template-lintrc.js',
-        'ember-cli-build.js',
-        'testem.js',
-        'blueprints/*/index.js',
-        'config/**/*.js',
-        'lib/*/index.js'
-      ],
-      parserOptions: {
-        sourceType: 'script',
-        ecmaVersion: 2015
+    'no-console': 0,
+    'dot-location': [
+      1,
+      'property',
+    ],
+    'eol-last': 1,
+    'comma-dangle': [
+      1,
+      'always-multiline',
+    ],
+    'quotes': [
+      1,
+      'single',
+    ],
+    'quote-props': [
+      1,
+      'consistent-as-needed',
+    ],
+    'no-warning-comments': [
+      1,
+      {
+        terms: ['fixme'],
       },
-      env: {
-        browser: false,
-        node: true
-      }
-    }
-  ]
+    ],
+    'semi': 2,
+    'valid-jsdoc': [
+      1,
+      {
+        requireParamDescription: false,
+        requireReturnDescription: false,
+      },
+    ],
+
+    'promise/always-return': 'off', // default: error
+    'promise/no-return-wrap': 'error',
+    'promise/param-names': 'error',
+    'promise/catch-or-return': 'off', // default: error
+    'promise/no-native': 'error',
+    'promise/no-nesting': 'off', // default: warn
+    'promise/no-promise-in-callback': 'warn',
+    'promise/no-callback-in-promise': 'off', // default: warn
+    'promise/avoid-new': 'off', // default: warn
+    'promise/no-return-in-finally': 'warn',
+  },
 };
