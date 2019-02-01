@@ -1,0 +1,5 @@
+<div class="data-start-row" style={{firstRowStyle}}></div>
+{{#each results as |result|}}
+  <div class="data-row" style="height:23px" data-row-id={{result.id}}>{{result.name}}</div>
+{{/each}}
+{{yield}}
