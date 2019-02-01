@@ -12,20 +12,16 @@
 
 import Mixin from '@ember/object/mixin';
 import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
 
 export default Mixin.create({
+  i18n: service(),
+
   /**
    * @virtual
    * @type {string}
    */
   i18nPrefix: undefined,
-
-  /**
-   * @virtual
-   * A i18n service should be injected into component that uses this mixin
-   * @type {Ember.Service}
-   */
-  i18n: undefined,
 
   /**
    * Generates ready-to-use translation prefix (adds dot if lacks, etc.)

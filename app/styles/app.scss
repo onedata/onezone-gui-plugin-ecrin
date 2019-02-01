@@ -1,6 +1,9 @@
+$root-url: './' !default;
+
 @import './fonts.scss';
 @import './colors';
 @import './utils';
+@import './images';
 
 $letter-spacing-base: 0.07em;
 $control-box-shadow: inset 1px 1px 2px $color-one-semiwhite;
@@ -9,10 +12,12 @@ $collapse-transition-time: .2s;
 $height-collapse-transition: max-height $collapse-transition-time linear;
 $collapse-transition: $height-collapse-transition, padding $collapse-transition-time linear, opacity $collapse-transition-time linear;
 
-@import './common';
 
 @import './bootstrap-config';
+@import './common';
 
-.test {
-  
-}
+// Global layout
+@import './application-layout.scss';
+
+// Component styles
+@import './components/page-header.scss';

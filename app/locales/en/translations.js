@@ -1,5 +1,9 @@
+import contentQuery from './components/content-query';
+import pageHeader from './components/page-header';
+
 export default {
-  x: {
-    a: 'xxxx',
+  components: {
+    contentQuery,
+    pageHeader,
   },
 };

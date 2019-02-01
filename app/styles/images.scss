@@ -1,0 +1,10 @@
+$logo-images-height: 40px;
+
+.ecrin-logo {
+  height: $logo-images-height;
+  width: 2.77 * $logo-images-height;
+  background-image: url($root-url + 'images/ecrin-logo.jpg');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
