@@ -1,6 +1,8 @@
 /* eslint-env node */
 'use strict';
 
+const defineSassBreakpoints = require('./app/utils/define-sass-breakpoints');
+const breakpointValues = require('./app/breakpoint-values').default;
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function(defaults) {
@@ -19,6 +21,8 @@ module.exports = function(defaults) {
       bootstrapVersion: 3,
     },
   });
+
+  defineSassBreakpoints(app, breakpointValues);
 
   // Use `app.import` to add additional libraries to the generated
   // output files.
