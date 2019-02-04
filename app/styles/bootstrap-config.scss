@@ -47,6 +47,9 @@
 @import "bootstrap/tables";
 
 @import "bootstrap/forms";
+.control-label {
+  font-family: 'Open Sans Semibold';
+}
 .form-horizontal {
   .control-label {
     padding-right: $padding-large-horizontal;

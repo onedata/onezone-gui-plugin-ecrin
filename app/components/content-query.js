@@ -12,6 +12,14 @@ export default Component.extend(I18n, {
    */
   i18nPrefix: 'components.contentQuery',
 
+  /**
+   * @type {Object}
+   */
+  queryParameters: Object.freeze({}),
+
+  /**
+   * @type {Ember.ComputedProperty<Utils.ReplacingChunksArray>}
+   */
   queryResults: computed(function queryResults() {
     return ReplacingChunksArray.create({
       fetch: (...fetchArgs) => this.fetchResults(...fetchArgs),
@@ -36,5 +44,11 @@ export default Component.extend(I18n, {
       }
       resolve(records);
     });
+  },
+
+  actions: {
+    parametersChanged(params) {
+      this.set('queryParameters', params);
+    },
   },
 });
