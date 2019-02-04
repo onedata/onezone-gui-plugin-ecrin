@@ -29,6 +29,7 @@ export default Component.extend(I18n, {
       const records = [];
       for (let i = 0; i < size; i++) {
         records.push({
+          id: String(startFromIndex + offset + i),
           index: startFromIndex + offset + i,
           name: 'record' + (startFromIndex + offset + i),
         });

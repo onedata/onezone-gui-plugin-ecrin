@@ -19,7 +19,7 @@ export default Component.extend(I18n, {
    */
   results: undefined,
 
-  rowHeight: 20,
+  rowHeight: 47,
 
   firstRowHeight: computed('rowHeight', 'results._start', function firstRowHeight() {
     const _start = this.get('results._start');
@@ -67,8 +67,8 @@ export default Component.extend(I18n, {
       startIndex = Math.floor(blankStart / rowHeight);
       endIndex = Math.floor(blankEnd / rowHeight);
     } else {
-      startIndex = resultsArrayIds.indexOf(Number(firstId));
-      endIndex = resultsArrayIds.indexOf(Number(lastId), startIndex);
+      startIndex = resultsArrayIds.indexOf(firstId);
+      endIndex = resultsArrayIds.indexOf(lastId);
     }
     resultsArray.setProperties({ startIndex, endIndex });
     safeExec(this, 'set', 'headerVisible', headerVisible);

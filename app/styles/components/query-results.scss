@@ -1,4 +1,18 @@
 .query-results {
   height: 400px;
-  overflow: scroll;
+  overflow-y: scroll;
+
+  .panel {
+    margin-bottom: $padding-small-vertical;
+  }
+
+  .data-row:nth-child(even) {
+    .panel-heading {
+      background-color: $color-one-white;
+    }
+  }
+
+  .panel-heading {
+    padding: $padding-base-vertical $padding-base-horizontal;
+  }
 }

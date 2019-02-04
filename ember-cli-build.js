@@ -1,15 +1,22 @@
+/* eslint-env node */
 'use strict';
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function(defaults) {
   let app = new EmberApp(defaults, {
-    eslint: {
+    'eslint': {
       testGenerator: 'mocha',
     },
-    sassOptions: {
+    'sassOptions': {
       includePaths: [ 'app/styles' ],
       onlyIncluded: false,
+    },
+    'ember-bootstrap': {
+      importBootstrapCSS: false,
+      importBootstrapTheme: false,
+      importBootstrapFont: true,
+      bootstrapVersion: 3,
     },
   });
 
