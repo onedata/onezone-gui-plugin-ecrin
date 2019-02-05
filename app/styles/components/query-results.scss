@@ -6,6 +6,12 @@
     margin-bottom: $padding-small-vertical;
   }
 
+  .data-row:nth-child(odd) {
+    .panel-body {
+      background-color: $panel-default-heading-bg;
+    }
+  }
+
   .data-row:nth-child(even) {
     .panel-heading {
       background-color: $color-one-white;
@@ -14,5 +20,13 @@
 
   .panel-heading {
     padding: $padding-base-vertical $padding-base-horizontal;
+  }
+
+  .panel-body {
+    padding: $padding-base-vertical $padding-base-horizontal;
+  }
+
+  .panel-group .panel-heading + .panel-collapse > .panel-body {
+    border-top: 0;
   }
 }
