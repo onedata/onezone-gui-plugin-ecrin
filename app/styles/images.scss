@@ -1,10 +1,26 @@
-$logo-images-height: 40px;
+$logo-images-height: 50px;
 
-.ecrin-logo {
+%logo {
   height: $logo-images-height;
-  width: 2.77 * $logo-images-height;
-  background-image: url($root-url + 'images/ecrin-logo.jpg');
   background-position: center center;
   background-repeat: no-repeat;
   background-size: contain;
+}
+
+.ecrin-logo {
+  @extend %logo;
+  width: 2.77 * $logo-images-height;
+  background-image: url($root-url + 'images/ecrin-logo.jpg');
+}
+
+.xdc-logo {
+  @extend %logo;
+  width: 1.65 * $logo-images-height;
+  background-image: url($root-url + 'images/xdc-logo.png');
+}
+
+.eosc-logo {
+  @extend %logo;
+  width: 2.99 * $logo-images-height;
+  background-image: url($root-url + 'images/eosc-logo.png');
 }

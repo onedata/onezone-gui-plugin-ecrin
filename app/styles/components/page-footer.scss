@@ -1,0 +1,19 @@
+.page-footer {
+  border: 1px solid $main-border-color;
+  box-shadow: none;
+  .footer-section {
+    height: $logo-images-height;
+    padding-right: $padding-base-horizontal;
+    margin-right: $padding-base-horizontal;
+    border-right: 1px solid $main-border-color;
+  }
+  .sources-section {
+    width: 230px;
+  }
+  .include-metadata-section {
+    width: 290px;
+  }
+  .eosc-logo {
+    margin-left: $padding-base-horizontal;
+  }
+}
