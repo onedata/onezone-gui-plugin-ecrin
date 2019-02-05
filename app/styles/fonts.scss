@@ -36,3 +36,7 @@
   font-weight: bold;
   font-style: normal;
 }
+
+/// Import Oneicons
+$icomoon-font-path: $root-url + 'fonts/oneicons/fonts';
+@import 'oneicons/style';

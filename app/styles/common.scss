@@ -58,6 +58,10 @@ strong {
   word-wrap: break-word;
 }
 
+@mixin oneicon-content($glyph) {
+  content: unquote("\"#{$glyph}\"");
+}
+
 .btn {
   outline: none !important;
   .oneicon {

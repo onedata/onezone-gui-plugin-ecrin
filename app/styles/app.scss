@@ -20,6 +20,7 @@ $collapse-transition: $height-collapse-transition, padding $collapse-transition-
 @import './application-layout.scss';
 
 // Component styles
+@import './components/one-checkbox.scss';
 @import './components/page-header.scss';
 @import './components/query-parameters.scss';
 @import './components/query-results.scss';
