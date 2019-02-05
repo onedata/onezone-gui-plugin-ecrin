@@ -165,6 +165,9 @@ export default ArraySlice.extend({
         sourceArray.unshift(...array);
         sourceArray.sort(sortFun);
         sourceArray.arrayContentDidChange();
+        safeExec(this, 'set', 'error', undefined);
+      }).catch(error => {
+        safeExec(this, 'set', 'error', error);
       }).finally(() => safeExec(this, 'set', '_fetchPrevLock', false));
     }
   },
@@ -194,6 +197,9 @@ export default ArraySlice.extend({
         sourceArray.push(...array);
         sourceArray.sort(sortFun);
         sourceArray.arrayContentDidChange();
+        safeExec(this, 'set', 'error', undefined);
+      }).catch(error => {
+        safeExec(this, 'set', 'error', error);
       }).finally(() => safeExec(this, 'set', '_fetchNextLock', false));
     }
   },

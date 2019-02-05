@@ -1,3 +1,4 @@
+/* eslint-env node */
 'use strict';
 
 module.exports = function(environment) {
@@ -15,14 +16,18 @@ module.exports = function(environment) {
         String: true,
         Array: true,
         // Prevent Ember Data from overriding Date.parse.
-        Date: false
-      }
+        Date: false,
+      },
+    },
+
+    i18n: {
+      defaultLocale: 'en',
     },
 
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
-    }
+    },
   };
 
   if (environment === 'development') {

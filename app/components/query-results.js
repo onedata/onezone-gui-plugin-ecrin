@@ -30,6 +30,17 @@ export default Component.extend(I18n, {
     return htmlSafe(`height: ${this.get('firstRowHeight')}px;`);
   }),
 
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  bottomLoading: computed(
+    'results.{_fetchNextLock,initialLoad.isPending}',
+    function bottomLoading() {
+      return this.get('results._fetchNextLock') ||
+        this.get('results.initialLoad.isPending');
+    }
+  ),
+
   didInsertElement() {
     this._super(...arguments);
 

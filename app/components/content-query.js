@@ -33,16 +33,20 @@ export default Component.extend(I18n, {
     if (startFromIndex === undefined) {
       startFromIndex = 0;
     }
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const records = [];
-      for (let i = 0; i < size; i++) {
+      for (let i = 1; i < size+1; i++) {
         records.push({
           id: String(startFromIndex + offset + i),
           index: startFromIndex + offset + i,
           name: 'record' + (startFromIndex + offset + i),
         });
       }
-      resolve(records);
+      if (startFromIndex < 200) {
+        resolve(records);
+      } else {
+        reject('error');
+      }
     });
   },
 
