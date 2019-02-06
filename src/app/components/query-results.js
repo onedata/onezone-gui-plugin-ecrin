@@ -1,9 +1,10 @@
 import Component from '@ember/component';
-import { get, computed } from '@ember/object';
+import { get, computed, observer } from '@ember/object';
 import { htmlSafe } from '@ember/string';
 import ListWatcher from 'onezone-gui-plugin-ecrin/utils/list-watcher';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
+import $ from 'jquery';
 
 export default Component.extend(I18n, {
   classNames: ['query-results'],
@@ -20,6 +21,11 @@ export default Component.extend(I18n, {
   results: undefined,
 
   rowHeight: 47,
+
+  /**
+   * @type {JQuery}
+   */
+  scrollContainer: undefined,
 
   firstRowHeight: computed('rowHeight', 'results._start', function firstRowHeight() {
     const _start = this.get('results._start');
@@ -41,16 +47,24 @@ export default Component.extend(I18n, {
     }
   ),
 
+  resultsObserver: observer('results', function resultsObserver() {
+    const scrollContainer = this.get('scrollContainer');
+    if (scrollContainer) {
+      scrollContainer.scrollTop(0);
+    }
+  }),
+
   didInsertElement() {
     this._super(...arguments);
 
+    this.set('scrollContainer', $('.application-container'));
     const listWatcher = this.set('listWatcher', this.createListWatcher());
     listWatcher.scrollHandler();
   },
 
   createListWatcher() {
     return new ListWatcher(
-      this.$(),
+      this.get('scrollContainer'),
       '.data-row',
       (items, onTop) => safeExec(this, 'onListScroll', items, onTop),
       '.data-start-row',

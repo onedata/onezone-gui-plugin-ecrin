@@ -7,4 +7,6 @@ export default {
   filterByAccessType: 'Filter by access type',
   filterByYear: 'Filter by publisher',
   filterByPublisher: 'Filter by publisher',
+  find: 'Find',
+  clearAll: 'Clear all',
 };

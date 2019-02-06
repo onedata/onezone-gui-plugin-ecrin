@@ -2,7 +2,7 @@ import Component from '@ember/component';
 import { computed } from '@ember/object';
 import ReplacingChunksArray from 'onezone-gui-plugin-ecrin/utils/replacing-chunks-array';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
-import { Promise } from 'rsvp';
+import { Promise, resolve } from 'rsvp';
 
 export default Component.extend(I18n, {
   classNames: ['content-query'],
@@ -22,7 +22,7 @@ export default Component.extend(I18n, {
    */
   queryResults: computed(function queryResults() {
     return ReplacingChunksArray.create({
-      fetch: (...fetchArgs) => this.fetchResults(...fetchArgs),
+      fetch: () => resolve([]),
       startIndex: 0,
       endIndex: 50,
       indexMargin: 24,
@@ -53,6 +53,22 @@ export default Component.extend(I18n, {
   actions: {
     parametersChanged(params) {
       this.set('queryParameters', params);
+    },
+    find() {
+      this.set('queryResults', ReplacingChunksArray.create({
+        fetch: (...fetchArgs) => this.fetchResults(...fetchArgs),
+        startIndex: 0,
+        endIndex: 50,
+        indexMargin: 24,
+      }));
+    },
+    clearAll() {
+      this.set('queryResults', ReplacingChunksArray.create({
+        fetch: () => resolve([]),
+        startIndex: 0,
+        endIndex: 50,
+        indexMargin: 24,
+      }));
     },
   },
 });

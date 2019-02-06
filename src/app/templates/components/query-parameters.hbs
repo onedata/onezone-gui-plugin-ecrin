@@ -68,3 +68,5 @@
       oninput={{action (mut publisherFilter) value="target.value"}}>
   </div>
 </div>
+{{#bs-button type="primary" onClick=onFind}}{{tt this "find"}}{{/bs-button}}
+{{#bs-button type="default" onClick=onClearAll}}{{tt this "clearAll"}}{{/bs-button}}
