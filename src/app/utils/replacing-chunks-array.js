@@ -153,22 +153,27 @@ export default ArraySlice.extend({
         sortFun,
       } = this.getProperties('sourceArray', 'chunkSize', 'sortFun');
 
-      return this.get('fetch')(
-        get(sourceArray[0], 'index'),
-        chunkSize,
-        -chunkSize
-      ).then(array => {
-        if (get(array, 'length') < chunkSize) {
-          safeExec(this, 'set', '_startReached', true);
-        }
-        _.pullAll(array, sourceArray.toArray());
-        sourceArray.unshift(...array);
-        sourceArray.sort(sortFun);
-        sourceArray.arrayContentDidChange();
-        safeExec(this, 'set', 'error', undefined);
-      }).catch(error => {
-        safeExec(this, 'set', 'error', error);
-      }).finally(() => safeExec(this, 'set', '_fetchPrevLock', false));
+      if (get(sourceArray, 'length') === 0) {
+        return this.reload()
+          .finally(() => safeExec(this, 'set', '_fetchPrevLock', false));
+      } else {
+        return this.get('fetch')(
+          get(sourceArray[0], 'index'),
+          chunkSize,
+          -chunkSize
+        ).then(array => {
+          if (get(array, 'length') < chunkSize) {
+            safeExec(this, 'set', '_startReached', true);
+          }
+          _.pullAll(array, sourceArray.toArray());
+          sourceArray.unshift(...array);
+          sourceArray.sort(sortFun);
+          sourceArray.arrayContentDidChange();
+          safeExec(this, 'set', 'error', undefined);
+        }).catch(error => {
+          safeExec(this, 'set', 'error', error);
+        }).finally(() => safeExec(this, 'set', '_fetchPrevLock', false));
+      }
     }
   },
 
@@ -182,25 +187,30 @@ export default ArraySlice.extend({
         sortFun,
       } = this.getProperties('sourceArray', 'chunkSize', 'sortFun');
 
-      return this.get('fetch')(
-        // TODO: something is broken, because sourceArray.get('lastObject') gets wrong element
-        // and items are converted from plain objects to EmberObjects
-        // the workaround is to use []
-        get(sourceArray[get(sourceArray, 'length') - 1], 'index'),
-        chunkSize,
-        0
-      ).then(array => {
-        if (get(array, 'length') < chunkSize) {
-          safeExec(this, 'set', '_endReached', true);
-        }
-        _.pullAll(array, sourceArray.toArray());
-        sourceArray.push(...array);
-        sourceArray.sort(sortFun);
-        sourceArray.arrayContentDidChange();
-        safeExec(this, 'set', 'error', undefined);
-      }).catch(error => {
-        safeExec(this, 'set', 'error', error);
-      }).finally(() => safeExec(this, 'set', '_fetchNextLock', false));
+      if (get(sourceArray, 'length') === 0) {
+        return this.reload()
+          .finally(() => safeExec(this, 'set', '_fetchNextLock', false));
+      } else {
+        return this.get('fetch')(
+          // TODO: something is broken, because sourceArray.get('lastObject') gets wrong element
+          // and items are converted from plain objects to EmberObjects
+          // the workaround is to use []
+          get(sourceArray[get(sourceArray, 'length') - 1], 'index'),
+          chunkSize,
+          0
+        ).then(array => {
+          if (get(array, 'length') < chunkSize) {
+            safeExec(this, 'set', '_endReached', true);
+          }
+          _.pullAll(array, sourceArray.toArray());
+          sourceArray.push(...array);
+          sourceArray.sort(sortFun);
+          sourceArray.arrayContentDidChange();
+          safeExec(this, 'set', 'error', undefined);
+        }).catch(error => {
+          safeExec(this, 'set', 'error', error);
+        }).finally(() => safeExec(this, 'set', '_fetchNextLock', false));
+      }
     }
   },
 

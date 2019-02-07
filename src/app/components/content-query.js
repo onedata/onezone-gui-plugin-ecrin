@@ -5,7 +5,7 @@ import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { Promise, resolve } from 'rsvp';
 
 export default Component.extend(I18n, {
-  classNames: ['content-query'],
+  classNames: ['content-query', 'content'],
 
   /**
    * @override

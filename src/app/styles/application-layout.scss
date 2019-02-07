@@ -4,7 +4,13 @@ html, body, body > .ember-view {
 }
 
 .application-container {
+  display: flex;
+  flex-direction: column;
   padding: $padding-base-vertical;
   height: 100%;
   overflow: auto;
+
+  & > .content {
+    flex-grow: 1;
+  }
 }

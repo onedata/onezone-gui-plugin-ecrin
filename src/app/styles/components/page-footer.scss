@@ -1,6 +1,8 @@
 .page-footer {
+  margin-bottom: 0;
   border: 1px solid $main-border-color;
   box-shadow: none;
+
   .footer-section {
     height: $logo-images-height;
     padding-right: $padding-base-horizontal;
