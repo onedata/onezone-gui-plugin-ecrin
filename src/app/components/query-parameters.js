@@ -52,6 +52,31 @@ export default Component.extend(I18n, {
   publisherFilter: '',
 
   /**
+   * FIXME i18n
+   * @type {Array<string>}
+   */
+  modeOptions: Object.freeze([
+    'Specific study',
+    'Study characteristics',
+    'Via published paper',
+  ]),
+
+  /**
+   * FIXME i18n
+   * @type {Array<string>}
+   */
+  typeFilterOptions: Object.freeze([
+    'type1',
+    'type2',
+    'type3',
+    'type4',
+    'type5',
+    'type6',
+    'type7',
+    'type8',
+  ]),
+
+  /**
    * @type {Ember.ComputedProperty<Object>}
    */
   queryParameters: computed(

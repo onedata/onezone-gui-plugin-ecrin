@@ -15,15 +15,16 @@ $collapse-transition: $height-collapse-transition, padding $collapse-transition-
 
 @import './bootstrap-config';
 @import './common';
-@import './spin-spinner-extensions.scss';
+@import './ember-power-select-overrides';
+@import './spin-spinner-extensions';
 
 // Global layout
-@import './application-layout.scss';
+@import './application-layout';
 
 // Component styles
-@import './components/one-checkbox.scss';
-@import './components/page-footer.scss';
-@import './components/page-header.scss';
-@import './components/query-parameters.scss';
-@import './components/query-results.scss';
-@import './components/resource-load-error.scss';
+@import './components/one-checkbox';
+@import './components/page-footer';
+@import './components/page-header';
+@import './components/query-parameters';
+@import './components/query-results';
+@import './components/resource-load-error';

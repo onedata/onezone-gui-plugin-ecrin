@@ -9,11 +9,14 @@
   </div>
   <div class="col-xs-12 col-sm-6 form-group">
     <label class="control-label">{{tt this "selectMode"}}</label>
-    <input
-      class="form-control"
-      type="text"
-      value={{mode}}
-      oninput={{action (mut mode) value="target.value"}}>
+    {{#power-select
+      selected=mode
+      options=modeOptions
+      onchange=(action (mut mode))
+      searchEnabled=false
+      as |mode|}}
+      {{mode}}
+    {{/power-select}}
   </div>
 </div>
 <div class="row">
@@ -37,11 +40,13 @@
 <div class="row">
   <div class="col-xs-12 col-sm-3 form-group">
     <label class="control-label">{{tt this "filterByType"}}</label>
-    <input
-      class="form-control"
-      type="text"
-      value={{typeFilter}}
-      oninput={{action (mut typeFilter) value="target.value"}}>
+    {{#power-select-multiple
+      options=typeFilterOptions
+      selected=typeFilter
+      onchange=(action (mut typeFilter))
+      as |typeFilter|}}
+      {{typeFilter}}
+    {{/power-select-multiple}}
   </div>
   <div class="col-xs-12 col-sm-3 form-group">
     <label class="control-label">{{tt this "filterByAccessType"}}</label>

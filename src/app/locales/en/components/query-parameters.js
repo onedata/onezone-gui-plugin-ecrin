@@ -5,7 +5,7 @@ export default {
   studyTopicsInclude: 'Stody topics include',
   filterByType: 'Filter by type',
   filterByAccessType: 'Filter by access type',
-  filterByYear: 'Filter by publisher',
+  filterByYear: 'Filter by year',
   filterByPublisher: 'Filter by publisher',
   find: 'Find',
   clearAll: 'Clear all',
