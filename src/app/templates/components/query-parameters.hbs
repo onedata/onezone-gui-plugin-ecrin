@@ -1,77 +1,112 @@
 <div class="row">
   <div class="col-xs-12 col-sm-6 form-group">
-    <label class="control-label">{{tt this "search"}}</label>
-    <input
-      class="form-control"
-      type="text"
-      value={{search}}
-      oninput={{action (mut search) value="target.value"}}>
-  </div>
-  <div class="col-xs-12 col-sm-6 form-group">
     <label class="control-label">{{tt this "selectMode"}}</label>
     {{#power-select
-      selected=mode
+      selected=queryParams.mode
       options=modeOptions
-      onchange=(action (mut mode))
+      onchange=(action onChange "mode")
       searchEnabled=false
       as |mode|}}
-      {{mode}}
+      {{tt this (concat "modes." mode)}}
     {{/power-select}}
   </div>
 </div>
-<div class="row">
-  <div class="col-xs-12 col-sm-6 form-group">
-    <label class="control-label">{{tt this "studyTitleContains"}}</label>
-    <input
-      class="form-control"
-      type="text"
-      value={{studyTitleContains}}
-      oninput={{action (mut studyTitleContains) value="target.value"}}>
+{{#if (eq queryParams.mode "specificStudy")}}
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 form-group">
+      <label class="control-label" for="study-id-input">{{tt this "studyId"}}</label>
+      <input
+        id="study-id-input"
+        class="form-control"
+        type="text"
+        value={{queryParams.studyId}}
+        oninput={{action (action onChange "studyId") value="target.value"}}>
+    </div>
   </div>
-  <div class="col-xs-12 col-sm-6 form-group">
-    <label class="control-label">{{tt this "studyTopicsInclude"}}</label>
-    <input
-      class="form-control"
-      type="text"
-      value={{studyTopicsInclude}}
-      oninput={{action (mut studyTopicsInclude) value="target.value"}}>
+{{else if (eq queryParams.mode "studyCharact")}}
+  <div class="row">
+    {{!-- <div class="col-xs-12 col-sm-6 form-group">
+      <label class="control-label">{{tt this "search"}}</label>
+      <input
+        class="form-control"
+        type="text"
+        value={{search}}
+        oninput={{action (mut search) value="target.value"}}>
+    </div> --}}
   </div>
-</div>
-<div class="row">
-  <div class="col-xs-12 col-sm-3 form-group">
-    <label class="control-label">{{tt this "filterByType"}}</label>
-    {{#power-select-multiple
-      options=typeFilterOptions
-      selected=typeFilter
-      onchange=(action (mut typeFilter))
-      as |typeFilter|}}
-      {{typeFilter}}
-    {{/power-select-multiple}}
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 form-group">
+      <label class="control-label" for="study-title-contains-input">{{tt this "studyTitleContains"}}</label>
+      <input
+        id="study-title-contains-input"
+        class="form-control"
+        type="text"
+        value={{queryParams.studyTitleContains}}
+        oninput={{action (action onChange "studyTitleContains") value="target.value"}}>
+    </div>
+    <div class="col-xs-12 col-sm-6 form-group">
+      <label class="control-label" for="study-topics-include-input">{{tt this "studyTopicsInclude"}}</label>
+      <input
+        id="study-topics-include-input"
+        class="form-control"
+        type="text"
+        value={{queryParams.studyTopicsInclude}}
+        oninput={{action (action onChange "studyTopicsInclude") value="target.value"}}>
+    </div>
   </div>
-  <div class="col-xs-12 col-sm-3 form-group">
-    <label class="control-label">{{tt this "filterByAccessType"}}</label>
-    <input
-      class="form-control"
-      type="text"
-      value={{accessTypeFilter}}
-      oninput={{action (mut accessTypeFilter) value="target.value"}}>
+  <div class="row">
+    <div class="col-xs-12 col-sm-3 form-group">
+      <label class="control-label">{{tt this "filterByType"}}</label>
+      {{#power-select-multiple
+        options=typeFilterOptions
+        selected=queryParams.typeFilter
+        onchange=(action onChange "typeFilter")
+        as |typeFilter|}}
+        {{typeFilter.name}}
+      {{/power-select-multiple}}
+    </div>
+    <div class="col-xs-12 col-sm-3 form-group">
+      <label class="control-label">{{tt this "filterByAccessType"}}</label>
+      {{#power-select-multiple
+        options=accessTypeFilterOptions
+        selected=queryParams.accessTypeFilter
+        onchange=(action onChange "accessTypeFilter")
+        as |accessTypeFilter|}}
+        {{accessTypeFilter.name}}
+      {{/power-select-multiple}}
+    </div>
+    <div class="col-xs-12 col-sm-3 form-group">
+      <label class="control-label" for="year-filter-input">{{tt this "filterByYear"}}</label>
+      <input
+        id="year-filter-input"
+        class="form-control"
+        type="text"
+        value={{queryParams.yearFilter}}
+        oninput={{action (action onChange "yearFilter") value="target.value"}}>
+    </div>
+    <div class="col-xs-12 col-sm-3 form-group">
+      <label class="control-label">{{tt this "filterByPublisher"}}</label>
+      {{#power-select-multiple
+        options=publisherFilterOptions
+        selected=queryParams.publisherFilter
+        onchange=(action onChange "publisherFilter")
+        as |publisherFilter|}}
+        {{publisherFilter.name}}
+      {{/power-select-multiple}}
+    </div>
   </div>
-  <div class="col-xs-12 col-sm-3 form-group">
-    <label class="control-label">{{tt this "filterByYear"}}</label>
-    <input
-      class="form-control"
-      type="text"
-      value={{yearFilter}}
-      oninput={{action (mut yearFilter) value="target.value"}}>
+{{else if (eq queryParams.mode "viaPubPaper")}}
+  <div class="row">
+    <div class="col-xs-12 col-sm-6 form-group">
+      <label class="control-label" for="doi-input">{{tt this "doi"}}</label>
+      <input
+        id="doi-input"
+        class="form-control"
+        type="text"
+        value={{queryParams.doi}}
+        oninput={{action (action onChange "doi") value="target.value"}}>
+    </div>
   </div>
-  <div class="col-xs-12 col-sm-3 form-group">
-    <label class="control-label">{{tt this "filterByPublisher"}}</label>
-    <input
-      class="form-control"
-      type="text"
-      value={{publisherFilter}}
-      oninput={{action (mut publisherFilter) value="target.value"}}>
-  </div>
-</div>
+{{/if}}
 {{#bs-button type="primary" onClick=onFind}}{{tt this "find"}}{{/bs-button}}
 {{#bs-button type="default" onClick=onClearAll}}{{tt this "clearAll"}}{{/bs-button}}
