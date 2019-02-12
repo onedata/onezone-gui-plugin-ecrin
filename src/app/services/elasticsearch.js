@@ -12,11 +12,7 @@ export default Service.extend({
    */
   request(method, url, body) {
     const esRequest = this.get('onezoneGuiResources.esRequest');
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-
-    return esRequest(method, url, headers, body);
+    return esRequest(method, url, JSON.stringify(body));
   },
 
   /**

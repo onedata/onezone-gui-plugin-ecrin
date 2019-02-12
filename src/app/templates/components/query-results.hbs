@@ -2,11 +2,8 @@
 {{#bs-accordion as |acc|}}
   {{#each results as |result|}}
     <div class="data-row" data-row-id={{result.id}}>
-      {{#acc.item value=result.id as |accItem|}}
-        {{#accItem.title}}{{result.name}}{{/accItem.title}}
-        {{#accItem.body}}
-          body
-        {{/accItem.body}}
+      {{#acc.item value=result._id as |accItem|}}
+        {{query-results/result item=accItem result=result}}
       {{/acc.item}}
     </div>
   {{/each}}

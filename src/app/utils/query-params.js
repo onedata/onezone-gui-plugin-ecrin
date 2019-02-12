@@ -1,4 +1,5 @@
 import EmberObject from '@ember/object';
+import { computed } from '@ember/object';
 
 export default EmberObject.extend({
   /**
@@ -29,13 +30,13 @@ export default EmberObject.extend({
    * Only for mode === 'studyCharact'
    * @type {string}
    */
-  typeFilter: undefined,
+  typeFilter: Object.freeze([]),
 
   /**
    * Only for mode === 'studyCharact'
    * @type {string}
    */
-  accessTypeFilter: undefined,
+  accessTypeFilter: Object.freeze([]),
 
   /**
    * Only for mode === 'studyCharact'
@@ -47,13 +48,61 @@ export default EmberObject.extend({
    * Only for mode === 'studyCharact'
    * @type {string}
    */
-  publisherFilter: '',
+  publisherFilter: Object.freeze([]),
   
   /**
    * Only for mode === 'viaPubPaper'
    * @type {string}
    */
   doi: '',
+
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
+  hasParams: computed(
+    'mode',
+    'studyId',
+    'studyTitleContains',
+    'studyTopicsInclude',
+    'typeFilter',
+    'accessTypeFilter',
+    'yearFilter',
+    'publisherFilter',
+    'doi',
+    function hasParams() {
+      const {
+        mode,
+        studyId,
+        studyTitleContains,
+        studyTopicsInclude,
+        typeFilter,
+        accessTypeFilter,
+        yearFilter,
+        publisherFilter,
+        doi,
+      } = this.getProperties(
+        'mode',
+        'studyId',
+        'studyTitleContains',
+        'studyTopicsInclude',
+        'typeFilter',
+        'accessTypeFilter',
+        'yearFilter',
+        'publisherFilter',
+        'doi'
+      );
+      switch (mode) {
+        case 'specificStudy':
+          return !!studyId;
+        case 'studyCharact':
+          return !!studyTitleContains || !!studyTopicsInclude ||
+            !!typeFilter.length || !!accessTypeFilter.length || !!yearFilter ||
+            !!publisherFilter.length;
+        case 'viaPubPaper':
+          return !!doi;
+      }
+    }
+  ),
 
   /**
    * Clears query params
@@ -65,10 +114,10 @@ export default EmberObject.extend({
       studyId: '',
       studyTitleContains: '',
       studyTopicsInclude: '',
-      typeFilter: undefined,
-      accessTypeFilter: undefined,
+      typeFilter: [],
+      accessTypeFilter: [],
       yearFilter: '',
-      publisherFilter: '',
+      publisherFilter: [],
       doi: '',
     });
   },
