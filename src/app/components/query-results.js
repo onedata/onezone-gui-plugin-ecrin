@@ -1,5 +1,5 @@
 import Component from '@ember/component';
-import { get, computed, observer } from '@ember/object';
+import { get, getProperties, computed, observer } from '@ember/object';
 import { htmlSafe } from '@ember/string';
 import ListWatcher from 'onezone-gui-plugin-ecrin/utils/list-watcher';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
@@ -20,16 +20,40 @@ export default Component.extend(I18n, {
    */
   results: undefined,
 
-  rowHeight: 47,
+  rowHeight: 43,
+
+  expandedRowExtraHeight: 200,
 
   /**
    * @type {JQuery}
    */
   scrollContainer: undefined,
 
+  /**
+   * @type {string}
+   */
+  expandedResultId: undefined,
+
   firstRowHeight: computed('rowHeight', 'results._start', function firstRowHeight() {
-    const _start = this.get('results._start');
-    return _start ? _start * this.get('rowHeight') : 0;
+    const {
+      expandedResultId,
+      results,
+      rowHeight,
+      expandedRowExtraHeight,
+    } = this.getProperties('expandedResultId', 'results', 'rowHeight', 'expandedRowExtraHeight');
+    const {
+      _start,
+      sourceArray,
+    } = getProperties(results, '_start', 'sourceArray');
+    if (_start) {
+      return 0;
+    } else {
+      let height = _start * rowHeight;
+      if (sourceArray.slice(0, _start).mapBy('_id').includes(expandedResultId)) {
+        height += expandedRowExtraHeight;
+      }
+      return height;
+    }
   }),
 
   firstRowStyle: computed('firstRowHeight', function firstRowStyle() {
@@ -79,7 +103,7 @@ export default Component.extend(I18n, {
   onListScroll(items, headerVisible) {
     const resultsArray = this.get('results');
     const sourceArray = get(resultsArray, 'sourceArray');
-    const resultsArrayIds = sourceArray.mapBy('id');
+    const resultsArrayIds = sourceArray.mapBy('_id');
     const firstId = items[0] && items[0].getAttribute('data-row-id') || null;
     const lastId = items[items.length - 1] &&
       items[items.length - 1].getAttribute('data-row-id') || null;
@@ -97,5 +121,11 @@ export default Component.extend(I18n, {
     }
     resultsArray.setProperties({ startIndex, endIndex });
     safeExec(this, 'set', 'headerVisible', headerVisible);
+  },
+
+  actions: {
+    resultExpanded(resultId) {
+      this.set('expandedResultId', resultId);
+    },
   },
 });

@@ -1,4 +1,12 @@
 {{#item.title}}{{title}}{{/item.title}}
 {{#item.body}}
-  body
+  {{#each innerRecords as |innerRecord|}}
+    {{#if isRelationInverted}}
+    {{else}}
+      <div>{{innerRecord._source.type}}: {{innerRecord._source.description}}</div>
+    {{/if}}
+  {{/each}}
+  {{#unless (eq innerRecordsNumber innerRecords.length)}}
+    {{#bs-button onClick=(action "loadMore")}}Load more...{{/bs-button}}
+  {{/unless}}
 {{/item.body}}

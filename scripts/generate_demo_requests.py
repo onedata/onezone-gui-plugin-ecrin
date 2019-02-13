@@ -33,7 +33,12 @@ for i in range(number_of_dos):
     'studies': random.sample(studies_ids, studies_per_do)
   })
 
-requests = [{ 'method': 'PUT', 'url': hostname + '/' + index, 'body': '' } for index in ['studies', 'dos']]
+index_creation_body = {
+  'studies': { "mappings": { "study": { "properties": { "id": { "type": "keyword" } } } }},
+  'dos': { "mappings": { "do": { "properties": { "id": { "type": "keyword" } } } }}
+}
+
+requests = [{ 'method': 'PUT', 'url': hostname + '/' + index, 'body': json.dumps(index_creation_body[index], ensure_ascii=False) } for index in ['studies', 'dos']]
 for study in studies:
   requests.append({
     'method': 'POST',

@@ -43,40 +43,31 @@ export default Component.extend(I18n, {
 
   fetchResults(startFromIndex, size, offset) {
     if (startFromIndex === undefined) {
-      startFromIndex = 0;
+      startFromIndex = {};
     }
     const method = this.getQueryMethod();
     const path = this.getQueryPath();
-    const body = method === 'GET' ? undefined : this.getQueryBody();
+    const body = method === 'GET' ? undefined : this.getQueryBody(startFromIndex, size, offset);
     return this.get('elasticsearch').request(method, path, body)
       .then(results => {
         // if is an array of documents
         if (results.hits !== undefined) {
           results = results.hits.hits;
           results.forEach((doc, i) => {
-            doc.index = i;
+            doc.index = {
+              index: (startFromIndex.index || 0) + i,
+              id: doc._id,
+            };
           });
           return results;
         } else {
-          results.index = 0;
+          results.index = {
+            index: 0,
+            id: results._id,
+          };
           return [results];
         }
       });
-    // return new Promise((resolve, reject) => {
-    //   const records = [];
-    //   for (let i = 1; i < size+1; i++) {
-    //     records.push({
-    //       id: String(startFromIndex + offset + i),
-    //       index: startFromIndex + offset + i,
-    //       name: 'record' + (startFromIndex + offset + i),
-    //     });
-    //   }
-    //   if (startFromIndex < 200) {
-    //     resolve(records);
-    //   } else {
-    //     reject('error');
-    //   }
-    // });
   },
 
   getQueryMethod() {
@@ -109,12 +100,16 @@ export default Component.extend(I18n, {
     } = this.getProperties('mode', 'queryParams');
     const hasParams = get(queryParams, 'hasParams');
     const body = {
+      size,
       // FIXME sorting text fields does not work
-      // sort: [
-      //   { title: 'asc' },
-      // ],
+      sort: [
+        { _id: 'asc' },
+      ],
       query: {},
     };
+    if (startFromIndex.index !== undefined) {
+      body.search_after = [startFromIndex.id];
+    }
     if (!hasParams) {
       body.query.match_all = {};
     } else {
@@ -181,6 +176,17 @@ export default Component.extend(I18n, {
         startIndex: 0,
         endIndex: 50,
         indexMargin: 24,
+        sortFun: (a, b) => {
+          const ai = get(a, 'index.index');
+          const bi = get(b, 'index.index');
+          if (ai < bi) {
+            return -1;
+          } else if (ai > bi) {
+            return 1;
+          } else {
+            return 0;
+          }
+        },
       }));
     },
     clearAll() {

@@ -21,6 +21,8 @@
 
   .panel-body {
     padding: $padding-base-vertical $padding-base-horizontal;
+    max-height: 200px;
+    overflow-y: scroll;
   }
 
   .panel-group .panel-heading + .panel-collapse > .panel-body {
