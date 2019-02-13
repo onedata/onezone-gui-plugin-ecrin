@@ -7,6 +7,6 @@
     {{/if}}
   {{/each}}
   {{#unless (eq innerRecordsNumber innerRecords.length)}}
-    {{#bs-button onClick=(action "loadMore")}}Load more...{{/bs-button}}
+    {{#bs-button size="sm" onClick=(action "loadMore")}}{{tt this "loadMore"}}{{/bs-button}}
   {{/unless}}
 {{/item.body}}

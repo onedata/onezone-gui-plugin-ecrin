@@ -4,14 +4,8 @@
   }
 
   .data-row:nth-child(odd) {
-    .panel-body {
+    .panel-body, .panel-heading {
       background-color: $panel-default-heading-bg;
-    }
-  }
-
-  .data-row:nth-child(even) {
-    .panel-heading {
-      background-color: $color-one-white;
     }
   }
 
@@ -21,7 +15,7 @@
 
   .panel-body {
     padding: $padding-base-vertical $padding-base-horizontal;
-    max-height: 200px;
+    height: 200px;
     overflow-y: scroll;
   }
 

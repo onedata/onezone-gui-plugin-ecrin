@@ -5,11 +5,17 @@ import { inject as service } from '@ember/service';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
 import { resolve } from 'rsvp';
 import { A } from '@ember/array';
+import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 
-export default Component.extend({
+export default Component.extend(I18n, {
   classNames: ['query-results-result'],
 
   elasticsearch: service(),
+
+  /**
+   * @override
+   */
+  i18nPrefix: 'components.queryResults.result',
 
   /**
    * @virtual

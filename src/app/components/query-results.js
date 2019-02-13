@@ -45,7 +45,7 @@ export default Component.extend(I18n, {
       _start,
       sourceArray,
     } = getProperties(results, '_start', 'sourceArray');
-    if (_start) {
+    if (!_start) {
       return 0;
     } else {
       let height = _start * rowHeight;
