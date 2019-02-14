@@ -121,10 +121,14 @@ export default Component.extend(I18n, {
       );
       let searchAfter = undefined;
       if (innerRecordsNumber > 0) {
-        searchAfter = [get(innerRecords, 'lastObject._id')];
+        searchAfter = [
+          get(innerRecords, 'lastObject._source.year') || 0,
+          get(innerRecords, 'lastObject._id'),
+        ];
       }
       const body = {
         sort: {
+          year: 'asc',
           _id: 'asc',
         },
         query: {

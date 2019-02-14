@@ -4,7 +4,6 @@ import { reads } from '@ember/object/computed';
 import ReplacingChunksArray from 'onezone-gui-plugin-ecrin/utils/replacing-chunks-array';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { resolve } from 'rsvp';
-import QueryParams from 'onezone-gui-plugin-ecrin/utils/query-params';
 import { inject as service } from '@ember/service';
 
 export default Component.extend(I18n, {
@@ -18,11 +17,10 @@ export default Component.extend(I18n, {
   i18nPrefix: 'components.contentQuery',
 
   /**
+   * @virtual
    * @type {Object}
    */
-  queryParams: computed(function queryParams() {
-    return QueryParams.create();
-  }),
+  queryParams: undefined,
 
   /**
    * @type {Ember.ComputedProperty<string>}
@@ -40,6 +38,11 @@ export default Component.extend(I18n, {
       indexMargin: 24,
     });
   }),
+
+  init() {
+    this._super(...arguments);
+    this.send('find');
+  },
 
   fetchResults(startFromIndex, size, offset) {
     if (startFromIndex === undefined) {
@@ -67,14 +70,24 @@ export default Component.extend(I18n, {
           };
           return [results];
         }
+      })
+      .catch(error => {
+        if (get(error, 'status') === 404) {
+          return [];
+        } else {
+          throw error;
+        }
       });
   },
 
   getQueryMethod() {
-    const mode = this.get('mode');
+    const {
+      mode,
+      queryParams,
+    } = this.getProperties('mode', 'queryParams');
     switch (mode) {
       case 'specificStudy':
-        return 'GET';
+        return get(queryParams, 'hasParams') ? 'GET' : 'POST';
       default:
         return 'POST';
     }
@@ -87,7 +100,7 @@ export default Component.extend(I18n, {
     } = this.getProperties('mode', 'queryParams');
     switch (mode) {
       case 'specificStudy':
-        return '/studies/study/' + get(queryParams, 'studyId');
+        return '/studies/study/' + (get(queryParams, 'studyId') || '_search');
       case 'studyCharact':
         return '/studies/study/_search';
     }

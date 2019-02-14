@@ -41,15 +41,15 @@ export default Component.extend(I18n, {
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  typeFilterOptions: reads('configuration.configuration.typeMapping'),
+  typeFilterOptions: reads('configuration.typeMapping'),
 
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  accessTypeFilterOptions: reads('configuration.configuration.accessTypeMapping'),
+  accessTypeFilterOptions: reads('configuration.accessTypeMapping'),
 
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  publisherFilterOptions: reads('configuration.configuration.publisherMapping'),
+  publisherFilterOptions: reads('configuration.publisherMapping'),
 });
