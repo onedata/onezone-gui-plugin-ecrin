@@ -1,5 +1,5 @@
 import Component from '@ember/component';
-import { computed, get, getProperties } from '@ember/object';
+import { computed, observer, get, getProperties } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import ReplacingChunksArray from 'onezone-gui-plugin-ecrin/utils/replacing-chunks-array';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
@@ -39,12 +39,25 @@ export default Component.extend(I18n, {
     });
   }),
 
+  queryParamsObserver: observer('queryParams', function queryParamsObserver() {
+    this.send('find');
+  }),
+
   init() {
     this._super(...arguments);
-    this.send('find');
+    this.queryParamsObserver();
   },
 
   fetchResults(startFromIndex, size, offset) {
+    const {
+      mode,
+      queryParams,
+    } = this.getProperties('mode', 'queryParams');
+    if ((mode === 'specificStudy' || mode === 'viaPubPaper') &&
+      get(queryParams, 'hasParams') &&
+      startFromIndex) {
+      return resolve([]);
+    }
     if (startFromIndex === undefined) {
       startFromIndex = {};
     }
@@ -87,6 +100,7 @@ export default Component.extend(I18n, {
     } = this.getProperties('mode', 'queryParams');
     switch (mode) {
       case 'specificStudy':
+      case 'viaPubPaper':
         return get(queryParams, 'hasParams') ? 'GET' : 'POST';
       default:
         return 'POST';
@@ -103,6 +117,8 @@ export default Component.extend(I18n, {
         return '/studies/study/' + (get(queryParams, 'studyId') || '_search');
       case 'studyCharact':
         return '/studies/study/_search';
+      case 'viaPubPaper':
+        return '/dos/do/' + (get(queryParams, 'doi') || '_search');
     }
   },
 

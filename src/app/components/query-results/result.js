@@ -1,6 +1,6 @@
 import Component from '@ember/component';
 import { observer, computed, get } from '@ember/object';
-import { reads, alias, equal } from '@ember/object/computed';
+import { reads, alias, equal, or } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
 import { resolve } from 'rsvp';
@@ -50,7 +50,7 @@ export default Component.extend(I18n, {
   /**
    * @type {Ember.ComputedProperty<string>}
    */
-  title: reads('source.title'),
+  title: or('source.title', 'source.description'),
 
   /**
    * @type {Ember.ComputedProperty<string>}
@@ -74,6 +74,17 @@ export default Component.extend(I18n, {
    * @type {Ember.ComputedProperty<number>}
    */
   innerRecordsNumber: alias('result.innerRecordNumber'),
+
+  /**
+   * @type {Ember.ComputedProperty<string>}
+   */
+  innerRecordsQueryPath: computed(
+    'isRelationInverted',
+    function innerRecordsSearchPath() {
+      return this.get('isRelationInverted') ?
+        '/studies/study/_search' : '/dos/do/_search';
+    }
+  ),
 
   isExpandedObserver: observer(
     'isExpanded',
@@ -112,36 +123,55 @@ export default Component.extend(I18n, {
         elasticsearch,
         innerRecordsNumber,
         innerRecords,
-        id,
+        innerRecordsQueryPath,
+        isRelationInverted,
       } = this.getProperties(
         'elasticsearch',
         'innerRecordsNumber',
         'innerRecords',
-        'id'
+        'innerRecordsQueryPath',
+        'isRelationInverted'
       );
+      let body = {};
       let searchAfter = undefined;
-      if (innerRecordsNumber > 0) {
-        searchAfter = [
-          get(innerRecords, 'lastObject._source.year') || 0,
-          get(innerRecords, 'lastObject._id'),
-        ];
-      }
-      const body = {
-        sort: {
-          year: 'asc',
-          _id: 'asc',
-        },
-        query: {
-          term: {
-            studies: id,
+      if (isRelationInverted) {
+        if (innerRecordsNumber > 0) {
+          searchAfter = [get(innerRecords, 'lastObject._id')];
+        }
+        body = {
+          sort: {
+            _id: 'asc',
           },
-        },
-      };
+          query: {
+            terms: {
+              _id: this.get('source.studies'),
+            },
+          },
+        };
+      } else {
+        if (innerRecordsNumber > 0) {
+          searchAfter = [
+            get(innerRecords, 'lastObject._source.year') || 0,
+            get(innerRecords, 'lastObject._id'),
+          ];
+        }
+        body = {
+          sort: {
+            year: 'asc',
+            _id: 'asc',
+          },
+          query: {
+            term: {
+              studies: this.get('id'),
+            },
+          },
+        };
+      }
       if (searchAfter) {
         body.search_after = searchAfter;
       }
       fetchInnerRecordsProxy = PromiseObject.create({
-        promise: elasticsearch.request('POST', '/dos/do/_search', body)
+        promise: elasticsearch.request('POST', innerRecordsQueryPath, body)
           .then(results => {
             if (innerRecordsNumber === -1) {
               this.set('innerRecordsNumber', results.hits.total);

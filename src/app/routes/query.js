@@ -6,6 +6,18 @@ import QueryParams from 'onezone-gui-plugin-ecrin/utils/query-params';
 export default Route.extend({
   configuration: service(),
 
+  queryParams: {
+    mode: { refreshModel: true },
+    studyId: { refreshModel: true },
+    studyTitleContains: { refreshModel: true },
+    studyTopicsInclude: { refreshModel: true },
+    yearFilter: { refreshModel: true },
+    doi: { refreshModel: true },
+    typeFilter: { refreshModel: true },
+    accessTypeFilter: { refreshModel: true },
+    publisherFilter: { refreshModel: true },
+  },
+
   model(params, transition) {
     const queryParams = get(transition, 'queryParams');
     const queryParamsObject = QueryParams.create();

@@ -8,6 +8,9 @@
 </ul>
 {{#item.body}}
   {{#if isRelationInverted}}
+    {{#each innerRecords as |innerRecord|}}
+      {{#link-to "query" (query-params mode="specificStudy" studyId=innerRecord._id) preventDefault=false}}{{innerRecord._source.title}}{{/link-to}}<br>
+    {{/each}}
   {{else}}
     <table class="do-record table">
       {{#each innerRecords as |innerRecord|}}
