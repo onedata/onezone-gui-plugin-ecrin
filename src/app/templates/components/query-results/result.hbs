@@ -7,13 +7,31 @@
   <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
 </ul>
 {{#item.body}}
-  {{#each innerRecords as |innerRecord|}}
-    {{#if isRelationInverted}}
-    {{else}}
-      <div>{{innerRecord._source.type}}: {{innerRecord._source.description}}</div>
-    {{/if}}
-  {{/each}}
+  {{#if isRelationInverted}}
+  {{else}}
+    <table class="do-record table">
+      {{#each innerRecords as |innerRecord|}}
+        <tr>
+          <td class="do-type">{{innerRecord._source.type}}</td>
+          <td class="do-description">
+            {{#if innerRecord._source.description}}
+              <p>{{innerRecord._source.description}}</p>
+            {{/if}}
+            {{#if innerRecord._source.url}}
+              <p>{{innerRecord._source.url}}</p>
+            {{/if}}
+          </td>
+          <td class="do-year">{{or innerRecord._source.year "-"}}</td>
+          <td class="do-status"><span class="do-status-icon {{or innerRecord._source.status "unknown"}}"></span></td>
+        </tr>
+      {{/each}}
+    </table>
+  {{/if}}
   {{#unless (eq innerRecordsNumber innerRecords.length)}}
-    {{#bs-button size="sm" onClick=(action "loadMore")}}{{tt this "loadMore"}}{{/bs-button}}
+    {{#if fetchInnerRecordsProxy.isPending}}
+      {{spin-spinner-block sizeClass="xs" class="loading-inner-spinner"}} <span>{{tt this "loading"}}</span>
+    {{else}}
+      {{#bs-button size="sm" onClick=(action "loadMore") class="load-more"}}{{tt this "loadMore"}}{{/bs-button}}
+    {{/if}}
   {{/unless}}
 {{/item.body}}

@@ -9,7 +9,7 @@ topics_number = 5
 types = list('type' + str(i) for i in range(6))
 accessTypes = (0, 1)
 publishers = list('publisher' + str(i) for i in range(4))
-do_types = list('doType' + str(i) for i in range(5))
+do_types = ('Registry entry', 'Analysis dataset', 'Other dataset')
 studies_per_do = 5
 
 studies = []
@@ -30,6 +30,9 @@ for i in range(number_of_dos):
     'id': 'do' + str(i),
     'type': random.choice(do_types),
     'description': 'Some description for DO with ID do' + str(i),
+    'year': random.randint(1990, 2019),
+    'status': random.choice(('success', 'warning')),
+    'url': 'https://some-very-important-resource.com/?id=' + str(i),
     'studies': random.sample(studies_ids, studies_per_do)
   })
 

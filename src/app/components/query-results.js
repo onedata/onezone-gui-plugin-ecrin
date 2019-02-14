@@ -22,7 +22,7 @@ export default Component.extend(I18n, {
 
   rowHeight: 43,
 
-  expandedRowExtraHeight: 200,
+  expandedRowExtraHeight: 250,
 
   /**
    * @type {JQuery}

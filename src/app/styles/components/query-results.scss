@@ -1,4 +1,5 @@
 .query-results {
+  margin-top: $padding-base-vertical;
   .panel {
     margin-bottom: $padding-small-vertical;
   }
@@ -22,7 +23,7 @@
 
   .panel-body {
     padding: $padding-base-vertical $padding-base-horizontal;
-    height: 200px;
+    height: 250px;
     overflow-y: scroll;
   }
 
@@ -45,7 +46,7 @@
 
   .result-action {
     display: inline-block;
-    color: lighten($color-one-dark-gray, 25%);
+    color: $main-text-light-color;
     cursor: pointer;
     .one-icon {
       font-size: 1.7em;
@@ -53,5 +54,63 @@
     &:hover {
       color: $main-text-color;
     }
+  }
+
+  .do-record {
+    table-layout: fixed;
+    margin-bottom: 0;
+    tr + tr td {
+      padding-top: $padding-base-vertical;
+    }
+    td {
+      vertical-align: top;
+      word-break: break-all;
+    }
+  }
+
+  .do-type {
+    width: 10em;
+  }
+
+  .do-description {
+    color: $main-text-light-color;
+    p {
+      margin-bottom: $padding-small-vertical;
+    }
+  }
+
+  .do-year {
+    width: 4em;
+    color: $main-text-light-color;
+  }
+
+  .do-status {
+    width: 20px;
+    text-align: center;
+  }
+
+  .do-status-icon {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 100%;
+    &.unknown {
+      background-color: $main-text-light-color;
+    }
+    &.warning {
+      background-color: $color-one-warning;
+    }
+    &.success {
+      background-color: $color-one-success;
+    }
+  }
+
+  .loading-inner-spinner {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .load-more {
+    margin-top: $padding-base-vertical;
   }
 }
