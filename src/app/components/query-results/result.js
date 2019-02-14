@@ -150,6 +150,9 @@ export default Component.extend(I18n, {
   },
 
   actions: {
+    resultAction() {
+      console.log('result action!');
+    },
     loadMore() {
       this.fetchNextInnerRecords();
     },

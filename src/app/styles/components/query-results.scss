@@ -9,8 +9,15 @@
     }
   }
 
+  .data-row .panel-heading:hover {
+    background-color: darken($panel-default-heading-bg, 5%);
+  }
+
   .panel-heading {
-    padding: $padding-base-vertical $padding-base-horizontal;
+    padding: $padding-base-vertical 100px $padding-base-vertical $padding-base-horizontal;
+    a:hover {
+      color: $main-text-color;
+    }
   }
 
   .panel-body {
@@ -21,5 +28,30 @@
 
   .panel-group .panel-heading + .panel-collapse > .panel-body {
     border-top: 0;
+  }
+
+  .query-results-result {
+    position: relative;
+  }
+
+  .result-actions {
+    position: absolute;
+    top: $padding-base-vertical - 3px;
+    right: $padding-base-horizontal;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+
+  .result-action {
+    display: inline-block;
+    color: lighten($color-one-dark-gray, 25%);
+    cursor: pointer;
+    .one-icon {
+      font-size: 1.7em;
+    }
+    &:hover {
+      color: $main-text-color;
+    }
   }
 }

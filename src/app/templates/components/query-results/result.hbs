@@ -1,4 +1,11 @@
-{{#item.title}}{{title}}{{/item.title}}
+{{#item.title}}
+  {{#truncated-string}}{{title}}{{/truncated-string}}
+{{/item.title}}
+<ul class="result-actions">
+  <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
+  <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
+  <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
+</ul>
 {{#item.body}}
   {{#each innerRecords as |innerRecord|}}
     {{#if isRelationInverted}}
