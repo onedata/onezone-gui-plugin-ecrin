@@ -8,16 +8,17 @@ describe('Unit | Utility | range to numbers', function () {
   });
 
   it('interprets string with multiple numbers', function () {
-    expect(rangeToNumbers('2000,1995,2005')).to.deep.equal([1995, 2000, 2005]);
+    expect(rangeToNumbers('2000,1995,2005'))
+      .to.have.deep.members([1995, 2000, 2005]);
   });
 
   it('interprets string with multiple ranges', function () {
     expect(rangeToNumbers('1998-1998,2000-2005'))
-      .to.deep.equal([1998, 2000, 2001, 2002, 2003, 2004, 2005]);
+      .to.have.deep.members([1998, { start: 2000, end: 2005 }]);
   });
 
   it('interprets string with mixed ranges and numbers', function () {
     expect(rangeToNumbers('1998-1998,2000,1995-1996'))
-      .to.deep.equal([1995, 1996, 1998, 2000]);
+      .to.have.deep.members([1998, 2000, { start: 1995, end: 1996 }]);
   });
 });

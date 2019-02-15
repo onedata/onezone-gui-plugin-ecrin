@@ -1,11 +1,11 @@
 /**
- * Converts a string to an array of numbers. Passed string consists of number
+ * Converts a string to an array of numbers/ranges. Passed string consists of number
  * and/or ranges, that are comma-separated. Range is indicated by a hyphen (-)
  * between two numbers. Examples:
  * '2000' -> [2000]
  * '2000,2003' -> [2000, 2003]
- * '2000-2003' -> [2000, 2001, 2002, 2003]
- * '1992-1993,1995,1996-1997' -> [1992, 1993, 1995, 1996, 1997]
+ * '2000-2003' -> [{start: 2000, end: 2003}]
+ * '1992-1993,1995,1996-1997' -> [{start: 1992, end: 1993}, 1995, {start: 1996, end: 1997}]
  *
  * @module utils/range-to-numbers
  * @author Michał Borzęcki
@@ -14,8 +14,12 @@
  */
 
 export default function rangeToNumbers(rangeString) {
+  if (typeof rangeString !== 'string') {
+    return [];
+  }
   const parts = rangeString.split(',');
   const numbers = new Set();
+  const ranges = [];
   for (let part of parts) {
     if (part.includes('-')) {
       const partSections = part.split('-').map((n) => parseInt(n));
@@ -23,18 +27,20 @@ export default function rangeToNumbers(rangeString) {
         isNaN(partSections[0]) ||
         isNaN(partSections[1]) ||
         partSections[0] > partSections[1]) {
-        return;
+        return [];
       }
-      for (let num = partSections[0]; num <= partSections[1]; num++) {
-        numbers.add(num);
+      if (partSections[0] === partSections[1]) {
+        numbers.add(partSections[0]);
+      } else {
+        ranges.push({ start: partSections[0], end: partSections[1] });
       }
     } else {
       const num = parseInt(part);
       if (isNaN(num)) {
-        return;
+        return [];
       }
       numbers.add(num);
     }
   }
-  return Array.from(numbers).sort((a,b) => a - b);
+  return Array.from(numbers).concat(ranges);
 }

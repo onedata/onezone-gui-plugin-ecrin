@@ -5,6 +5,7 @@ import ReplacingChunksArray from 'onezone-gui-plugin-ecrin/utils/replacing-chunk
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { resolve } from 'rsvp';
 import { inject as service } from '@ember/service';
+import rangeToNumbers from 'onezone-gui-plugin-ecrin/utils/range-to-numbers';
 
 export default Component.extend(I18n, {
   classNames: ['content-query', 'content'],
@@ -148,12 +149,14 @@ export default Component.extend(I18n, {
           studyTitleContains,
           typeFilter,
           accessTypeFilter,
+          parsedYearFilter,
           publisherFilter,
         } = getProperties(
           queryParams,
           'studyTitleContains',
           'typeFilter',
           'accessTypeFilter',
+          'parsedYearFilter',
           'publisherFilter'
         );
         if (studyTitleContains) {
@@ -181,6 +184,34 @@ export default Component.extend(I18n, {
               accessType: accessTypeFilter.mapBy('id'),
             },
           });
+        }
+        if (parsedYearFilter.length) {
+          body.query.bool = body.query.bool || {};
+          body.query.bool.filter = body.query.bool.filter || [];
+          const filter = {
+            bool: {
+              should: [],
+            },
+          };
+          parsedYearFilter.forEach(rangeOrNumber => {
+            if (typeof rangeOrNumber === 'number') {
+              filter.bool.should.push({
+                term: {
+                  year: rangeOrNumber,
+                },
+              });
+            } else {
+              filter.bool.should.push({
+                range: {
+                  year: {
+                    gte: rangeOrNumber.start,
+                    lte: rangeOrNumber.end,
+                  },
+                },
+              });
+            }
+          });
+          body.query.bool.filter.push(filter);       
         }
         if (publisherFilter.length) {
           body.query.bool = body.query.bool || {};

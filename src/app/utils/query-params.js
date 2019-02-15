@@ -1,5 +1,6 @@
 import EmberObject from '@ember/object';
 import { computed } from '@ember/object';
+import rangeToNumbers from 'onezone-gui-plugin-ecrin/utils/range-to-numbers';
 
 export default EmberObject.extend({
   /**
@@ -57,6 +58,13 @@ export default EmberObject.extend({
   doi: '',
 
   /**
+   * @type {Ember.ComputedProperty<Array<number|Object>>}
+   */
+  parsedYearFilter: computed('yearFilter', function parsedYearFilter() {
+    return rangeToNumbers(this.get('yearFilter'));
+  }),
+
+  /**
    * @type {Ember.ComputedProperty<boolean>}
    */
   hasParams: computed(
@@ -66,7 +74,7 @@ export default EmberObject.extend({
     'studyTopicsInclude',
     'typeFilter',
     'accessTypeFilter',
-    'yearFilter',
+    'parsedYearFilter',
     'publisherFilter',
     'doi',
     function hasParams() {
@@ -77,7 +85,7 @@ export default EmberObject.extend({
         studyTopicsInclude,
         typeFilter,
         accessTypeFilter,
-        yearFilter,
+        parsedYearFilter,
         publisherFilter,
         doi,
       } = this.getProperties(
@@ -87,7 +95,7 @@ export default EmberObject.extend({
         'studyTopicsInclude',
         'typeFilter',
         'accessTypeFilter',
-        'yearFilter',
+        'parsedYearFilter',
         'publisherFilter',
         'doi'
       );
@@ -96,8 +104,8 @@ export default EmberObject.extend({
           return !!studyId;
         case 'studyCharact':
           return !!studyTitleContains || !!studyTopicsInclude ||
-            !!typeFilter.length || !!accessTypeFilter.length || !!yearFilter ||
-            !!publisherFilter.length;
+            !!typeFilter.length || !!accessTypeFilter.length ||
+            !!parsedYearFilter.length || !!publisherFilter.length;
         case 'viaPubPaper':
           return !!doi;
       }

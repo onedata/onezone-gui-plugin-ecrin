@@ -20,7 +20,8 @@ for i in range(number_of_studies):
     'topics': [random.randint(0, (topics_number - 1) // 2), random.randint(((topics_number - 1) // 2) + 1, topics_number - 1)],
     'type': random.choice(types),
     'accessType': random.choice(accessTypes),
-    'publisher': random.choice(publishers)
+    'publisher': random.choice(publishers),
+    'year': random.randint(1990, 2019),
   })
 studies_ids = list(study['id'] for study in studies)
 
