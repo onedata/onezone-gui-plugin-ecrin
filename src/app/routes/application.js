@@ -6,9 +6,6 @@ export default Route.extend({
 
   beforeModel() {
     this._super(...arguments);
-    return this.get('configuration').reloadConfiguration()
-      .then(() => {
-        this.transitionTo('query');
-      });
+    return this.get('configuration').reloadConfiguration();
   },
 });
