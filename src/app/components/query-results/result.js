@@ -45,6 +45,9 @@ export default Component.extend(I18n, {
    */
   source: reads('result._source'),
 
+  /**
+   * @type {Ember.ComputedProperty<string>}
+   */
   id: reads('result._id'),
 
   /**
@@ -85,6 +88,41 @@ export default Component.extend(I18n, {
         '/studies/study/_search' : '/dos/do/_search';
     }
   ),
+
+  /**
+   * @type {Ember.ComputedProperty<Array<Object>>}
+   */
+  dataObjects: computed(
+    'result',
+    'isRelationInverted',
+    'innerRecords',
+    function dataObjects() {
+      const {
+        result,
+        isRelationInverted,
+        innerRecords,
+      } = this.getProperties(
+        'result',
+        'isRelationInverted',
+        'innerRecords'
+      );
+      return isRelationInverted ? [result] : innerRecords;
+    }
+  ),
+
+  /**
+   * @type {Ember.ComputedProperty<Array<Object>>}
+   */
+  studies: computed('isRelationInverted', 'innerRecords', function studies() {
+    const {
+      isRelationInverted,
+      innerRecords,
+    } = this.getProperties(
+      'isRelationInverted',
+      'innerRecords'
+    );
+    return isRelationInverted ? innerRecords : [];
+  }),
 
   isExpandedObserver: observer(
     'isExpanded',

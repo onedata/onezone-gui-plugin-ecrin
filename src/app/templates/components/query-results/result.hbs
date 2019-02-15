@@ -7,27 +7,37 @@
   <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
 </ul>
 {{#item.body}}
-  {{#if isRelationInverted}}
-    {{#each innerRecords as |innerRecord|}}
-      {{#link-to "query" (query-params mode="specificStudy" studyId=innerRecord._id) preventDefault=false}}{{innerRecord._source.title}}{{/link-to}}<br>
-    {{/each}}
-  {{else}}
-    <table class="do-record table">
-      {{#each innerRecords as |innerRecord|}}
+  {{#if (or dataObjects.length studies.length)}}
+    <table class="do-records table">
+      {{#each dataObjects as |dataObject|}}
         <tr>
-          <td class="do-type">{{innerRecord._source.type}}</td>
+          <td class="do-type">{{dataObject._source.type}}</td>
           <td class="do-description">
-            {{#if innerRecord._source.description}}
-              <p>{{innerRecord._source.description}}</p>
+            {{#if dataObject._source.description}}
+              <p>{{dataObject._source.description}}</p>
             {{/if}}
-            {{#if innerRecord._source.url}}
-              <p>{{innerRecord._source.url}}</p>
+            {{#if dataObject._source.url}}
+              <p>{{dataObject._source.url}}</p>
             {{/if}}
           </td>
-          <td class="do-year">{{or innerRecord._source.year "-"}}</td>
-          <td class="do-status"><span class="do-status-icon {{or innerRecord._source.status "unknown"}}"></span></td>
+          <td class="do-year">{{or dataObject._source.year "-"}}</td>
+          <td class="do-status"><span class="do-status-icon {{or dataObject._source.status "unknown"}}"></span></td>
         </tr>
       {{/each}}
+      {{#if studies.length}}
+        <tr>
+          <td class="do-type">{{tt this "relatedStudies"}}</td>
+          <td class="do-description">
+            {{#each studies as |study|}}
+              <p>
+                {{#link-to "query" (query-params mode="specificStudy" studyId=study._id)}}
+                  {{study._source.title}}
+                {{/link-to}}
+              </p>
+            {{/each}}
+          </td>
+        </tr>
+      {{/if}}
     </table>
   {{/if}}
   {{#unless (eq innerRecordsNumber innerRecords.length)}}

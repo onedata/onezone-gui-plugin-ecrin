@@ -10,6 +10,7 @@ export default Component.extend(I18n, {
   classNames: ['content-query', 'content'],
 
   elasticsearch: service(),
+  router: service(),
 
   /**
    * @override
@@ -40,7 +41,7 @@ export default Component.extend(I18n, {
   }),
 
   queryParamsObserver: observer('queryParams', function queryParamsObserver() {
-    this.send('find');
+    this.find();
   }),
 
   init() {
@@ -195,37 +196,37 @@ export default Component.extend(I18n, {
     return body;
   },
 
+  find() {
+    this.set('queryResults', ReplacingChunksArray.create({
+      fetch: (...fetchArgs) => this.fetchResults(...fetchArgs),
+      startIndex: 0,
+      endIndex: 50,
+      indexMargin: 24,
+      sortFun: (a, b) => {
+        const ai = get(a, 'index.index');
+        const bi = get(b, 'index.index');
+        if (ai < bi) {
+          return -1;
+        } else if (ai > bi) {
+          return 1;
+        } else {
+          return 0;
+        }
+      },
+    }));
+  },
+
   actions: {
     parameterChanged(fieldName, newValue) {
       this.set(`queryParams.${fieldName}`, newValue);
     },
     find() {
-      this.set('queryResults', ReplacingChunksArray.create({
-        fetch: (...fetchArgs) => this.fetchResults(...fetchArgs),
-        startIndex: 0,
-        endIndex: 50,
-        indexMargin: 24,
-        sortFun: (a, b) => {
-          const ai = get(a, 'index.index');
-          const bi = get(b, 'index.index');
-          if (ai < bi) {
-            return -1;
-          } else if (ai > bi) {
-            return 1;
-          } else {
-            return 0;
-          }
-        },
-      }));
+      this.get('router').transitionTo({
+        queryParams: this.get('queryParams.queryParams'),
+      });
     },
     clearAll() {
       this.get('queryParams').clear();
-      this.set('queryResults', ReplacingChunksArray.create({
-        fetch: () => resolve([]),
-        startIndex: 0,
-        endIndex: 50,
-        indexMargin: 24,
-      }));
     },
   },
 });

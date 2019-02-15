@@ -105,12 +105,83 @@ export default EmberObject.extend({
   ),
 
   /**
+   * @type {Ember.ComputedProperty<Object>}
+   */
+  queryParams: computed(
+    'mode',
+    'studyId',
+    'studyTitleContains',
+    'studyTopicsInclude',
+    'typeFilter',
+    'accessTypeFilter',
+    'yearFilter',
+    'publisherFilter',
+    'doi',
+    function queryParams() {
+      const {
+        mode,
+        studyId,
+        doi,
+      } = this.getProperties(
+        'mode',
+        'studyId',
+        'doi'
+      );
+      const params = {
+        mode,
+        studyId: null,
+        studyTitleContains: null,
+        studyTopicsInclude: null,
+        typeFilter: null,
+        accessTypeFilter: null,
+        yearFilter: null,
+        publisherFilter: null,
+        doi: null,
+      };
+      switch (mode) {
+        case 'specificStudy':
+          if (studyId) {
+            params.studyId = studyId;
+          }
+          break;
+        case 'studyCharact':
+          [
+            'studyTitleContains',
+            'studyTopicsInclude',
+            'yearFilter',
+          ].forEach(filterName => {
+            const filter = this.get(filterName);
+            if (filter) {
+              params[filterName] = filter;
+            }
+          });
+          [
+            'typeFilter',
+            'accessTypeFilter',
+            'publisherFilter',
+          ].forEach(filterName => {
+            const filter = this.get(filterName);
+            if (filter.length) {
+              params[filterName] = JSON.stringify(filter.mapBy('id'));
+            }
+          });
+          break;
+        case 'viaPubPaper':
+          if (doi) {
+            params.doi = doi;
+          }
+          break;
+      }
+      return params;
+    }
+  ),
+
+  /**
    * Clears query params
    * @returns {undefined}
    */
   clear() {
     this.setProperties({
-      mode: 'studyCharact',
       studyId: '',
       studyTitleContains: '',
       studyTopicsInclude: '',

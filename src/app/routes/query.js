@@ -38,9 +38,15 @@ export default Route.extend({
       ['accessTypeFilter', 'accessTypeMapping'],
       ['publisherFilter', 'publisherMapping'],
     ].forEach(([filterName, mappingName]) => {
-      if (queryParams[filterName] && queryParams[filterName].length) {
+      let filters = queryParams[filterName];
+      try {
+        filters = JSON.parse(queryParams[filterName]);
+      } catch (e) {
+        filters = [];
+      }
+      if (filters && filters.length) {
         const mapping = this.get(`configuration.${mappingName}`);
-        const filters = queryParams[filterName]
+        filters = filters
           .reduce((arr, filterId) => {
             const filter = mapping.findBy('id', filterId);
             if (filter) {
@@ -51,7 +57,6 @@ export default Route.extend({
         set(queryParamsObject, filterName, filters);
       }
     });
-    console.log(queryParamsObject);
     return queryParamsObject;
   },
 });
