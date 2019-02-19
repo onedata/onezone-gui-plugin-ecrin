@@ -13,7 +13,7 @@ export default Service.extend({
   /**
    * @type {Ember.ComputedProperty<Object>}
    */
-  globalResources: reads('_window.onezoneGuiResources'),
+  globalResources: reads('_window.parent.onezoneGuiResources'),
 
   /**
    * Onezone data dedicated for this plugin.
@@ -26,7 +26,6 @@ export default Service.extend({
    * @type {Ember.ComputedProperty<Function>}
    * @param {string} method one of `get`, `post`, `put`, `delete`
    * @param {string} url url (without host)
-   * @param {Object} headers request headers
    * @param {string|undefined} body request body
    * @returns {Promise<any>} request result
    */

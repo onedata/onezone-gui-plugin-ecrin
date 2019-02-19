@@ -45,14 +45,14 @@ index_creation_body = {
 requests = [{ 'method': 'PUT', 'url': hostname + '/' + index, 'body': json.dumps(index_creation_body[index], ensure_ascii=False) } for index in ['studies', 'dos']]
 for study in studies:
   requests.append({
-    'method': 'POST',
-    'url': hostname + '/studies/study/' + study['id'],
+    'method': 'PUT',
+    'url': hostname + '/studies/study/' + study['id'] + '/_create',
     'body': json.dumps(study, ensure_ascii=False)
   })
 for do in dos:
   requests.append({
-    'method': 'POST',
-    'url': hostname + '/dos/do/' + do['id'],
+    'method': 'PUT',
+    'url': hostname + '/dos/do/' + do['id'] + '/_create',
     'body': json.dumps(do, ensure_ascii=False)
   })
 
