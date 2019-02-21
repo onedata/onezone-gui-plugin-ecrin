@@ -163,12 +163,14 @@ export default Component.extend(I18n, {
         innerRecords,
         innerRecordsQueryPath,
         isRelationInverted,
+        source,
       } = this.getProperties(
         'elasticsearch',
         'innerRecordsNumber',
         'innerRecords',
         'innerRecordsQueryPath',
-        'isRelationInverted'
+        'isRelationInverted',
+        'source'
       );
       let body = {};
       let searchAfter = undefined;
@@ -180,9 +182,10 @@ export default Component.extend(I18n, {
           sort: {
             _id: 'asc',
           },
+          size: 10000,
           query: {
             terms: {
-              _id: this.get('source.studies'),
+              id: get(source, 'related_studies').mapBy('id'),
             },
           },
         };
@@ -198,9 +201,10 @@ export default Component.extend(I18n, {
             year: 'asc',
             _id: 'asc',
           },
+          size: 15,
           query: {
-            term: {
-              studies: this.get('id'),
+            terms: {
+              id: get(source, 'linked_data_objects').mapBy('id'),
             },
           },
         };

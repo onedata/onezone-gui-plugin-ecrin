@@ -5,7 +5,6 @@ import ReplacingChunksArray from 'onezone-gui-plugin-ecrin/utils/replacing-chunk
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { resolve } from 'rsvp';
 import { inject as service } from '@ember/service';
-import rangeToNumbers from 'onezone-gui-plugin-ecrin/utils/range-to-numbers';
 
 export default Component.extend(I18n, {
   classNames: ['content-query', 'content'],
@@ -124,7 +123,7 @@ export default Component.extend(I18n, {
     }
   },
 
-  getQueryBody(startFromIndex, size, offset) {
+  getQueryBody(startFromIndex, size) {
     const {
       mode,
       queryParams,
@@ -147,6 +146,7 @@ export default Component.extend(I18n, {
       if (mode === 'studyCharact') {
         const {
           studyTitleContains,
+          studyTopicsInclude,
           typeFilter,
           accessTypeFilter,
           parsedYearFilter,
@@ -154,6 +154,7 @@ export default Component.extend(I18n, {
         } = getProperties(
           queryParams,
           'studyTitleContains',
+          'studyTopicsInclude',
           'typeFilter',
           'accessTypeFilter',
           'parsedYearFilter',
@@ -161,12 +162,23 @@ export default Component.extend(I18n, {
         );
         if (studyTitleContains) {
           body.query.bool = {
-            must: {
-              match: {
-                title: studyTitleContains,
+            must: [{
+              simple_query_string: {
+                query: studyTitleContains,
+                fields: ['title'],
               },
-            },
+            }],
           };
+        }
+        if (studyTopicsInclude) {
+          body.query.bool = body.query.bool || {};
+          body.query.bool.must = body.query.bool.must || [];
+          body.query.bool.must.push({
+            simple_query_string: {
+              query: studyTopicsInclude,
+              fields: ['study_topics.value'],
+            },
+          });
         }
         if (typeFilter.length) {
           body.query.bool = body.query.bool || {};
