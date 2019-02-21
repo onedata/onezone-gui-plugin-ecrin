@@ -3,7 +3,11 @@
   {{#each results as |result|}}
     <div class="data-row" data-row-id={{result._id}}>
       {{#acc.item value=result._id as |accItem|}}
-        {{query-results/result item=accItem result=result isExpanded=(eq result._id expandedResultId)}}
+        {{query-results/result
+          item=accItem
+          result=result
+          isExpanded=(eq result._id expandedResultId)
+          queryParams=queryParams}}
       {{/acc.item}}
     </div>
   {{/each}}

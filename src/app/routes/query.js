@@ -11,11 +11,11 @@ export default Route.extend({
     studyId: { refreshModel: true },
     studyTitleContains: { refreshModel: true },
     studyTopicsInclude: { refreshModel: true },
-    yearFilter: { refreshModel: true },
     doi: { refreshModel: true },
-    typeFilter: { refreshModel: true },
-    accessTypeFilter: { refreshModel: true },
-    publisherFilter: { refreshModel: true },
+    yearFilter: { refreshModel: false },
+    typeFilter: { refreshModel: false },
+    accessTypeFilter: { refreshModel: false },
+    publisherFilter: { refreshModel: false },
   },
 
   model(params, transition) {
@@ -57,6 +57,7 @@ export default Route.extend({
         set(queryParamsObject, filterName, filters);
       }
     });
+    queryParamsObject.applyDoParams();
     return queryParamsObject;
   },
 });

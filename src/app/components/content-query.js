@@ -19,7 +19,7 @@ export default Component.extend(I18n, {
 
   /**
    * @virtual
-   * @type {Object}
+   * @type {Utils.QueryParams}
    */
   queryParams: undefined,
 
@@ -147,18 +147,18 @@ export default Component.extend(I18n, {
         const {
           studyTitleContains,
           studyTopicsInclude,
-          typeFilter,
-          accessTypeFilter,
-          parsedYearFilter,
-          publisherFilter,
+          // typeFilter,
+          // accessTypeFilter,
+          // parsedYearFilter,
+          // publisherFilter,
         } = getProperties(
           queryParams,
           'studyTitleContains',
           'studyTopicsInclude',
-          'typeFilter',
-          'accessTypeFilter',
-          'parsedYearFilter',
-          'publisherFilter'
+          // 'typeFilter',
+          // 'accessTypeFilter',
+          // 'parsedYearFilter',
+          // 'publisherFilter'
         );
         if (studyTitleContains) {
           body.query.bool = {
@@ -180,60 +180,60 @@ export default Component.extend(I18n, {
             },
           });
         }
-        if (typeFilter.length) {
-          body.query.bool = body.query.bool || {};
-          body.query.bool.filter = [{
-            terms: {
-              type: typeFilter,
-            },
-          }];
-        }
-        if (accessTypeFilter.length) {
-          body.query.bool = body.query.bool || {};
-          body.query.bool.filter = body.query.bool.filter || [];
-          body.query.bool.filter.push({
-            terms: {
-              accessType: accessTypeFilter.mapBy('id'),
-            },
-          });
-        }
-        if (parsedYearFilter.length) {
-          body.query.bool = body.query.bool || {};
-          body.query.bool.filter = body.query.bool.filter || [];
-          const filter = {
-            bool: {
-              should: [],
-            },
-          };
-          parsedYearFilter.forEach(rangeOrNumber => {
-            if (typeof rangeOrNumber === 'number') {
-              filter.bool.should.push({
-                term: {
-                  year: rangeOrNumber,
-                },
-              });
-            } else {
-              filter.bool.should.push({
-                range: {
-                  year: {
-                    gte: rangeOrNumber.start,
-                    lte: rangeOrNumber.end,
-                  },
-                },
-              });
-            }
-          });
-          body.query.bool.filter.push(filter);       
-        }
-        if (publisherFilter.length) {
-          body.query.bool = body.query.bool || {};
-          body.query.bool.filter = body.query.bool.filter || [];
-          body.query.bool.filter.push({
-            terms: {
-              publisher: publisherFilter.mapBy('id'),
-            },
-          });
-        }
+        // if (typeFilter.length) {
+        //   body.query.bool = body.query.bool || {};
+        //   body.query.bool.filter = [{
+        //     terms: {
+        //       type: typeFilter,
+        //     },
+        //   }];
+        // }
+        // if (accessTypeFilter.length) {
+        //   body.query.bool = body.query.bool || {};
+        //   body.query.bool.filter = body.query.bool.filter || [];
+        //   body.query.bool.filter.push({
+        //     terms: {
+        //       accessType: accessTypeFilter.mapBy('id'),
+        //     },
+        //   });
+        // }
+        // if (parsedYearFilter.length) {
+        //   body.query.bool = body.query.bool || {};
+        //   body.query.bool.filter = body.query.bool.filter || [];
+        //   const filter = {
+        //     bool: {
+        //       should: [],
+        //     },
+        //   };
+        //   parsedYearFilter.forEach(rangeOrNumber => {
+        //     if (typeof rangeOrNumber === 'number') {
+        //       filter.bool.should.push({
+        //         term: {
+        //           year: rangeOrNumber,
+        //         },
+        //       });
+        //     } else {
+        //       filter.bool.should.push({
+        //         range: {
+        //           year: {
+        //             gte: rangeOrNumber.start,
+        //             lte: rangeOrNumber.end,
+        //           },
+        //         },
+        //       });
+        //     }
+        //   });
+        //   body.query.bool.filter.push(filter);       
+        // }
+        // if (publisherFilter.length) {
+        //   body.query.bool = body.query.bool || {};
+        //   body.query.bool.filter = body.query.bool.filter || [];
+        //   body.query.bool.filter.push({
+        //     terms: {
+        //       publisher: publisherFilter.mapBy('id'),
+        //     },
+        //   });
+        // }
       }
     }
     return body;
@@ -270,6 +270,12 @@ export default Component.extend(I18n, {
     },
     clearAll() {
       this.get('queryParams').clear();
+    },
+    filter() {
+      this.get('queryParams').applyDoParams();
+      this.get('router').transitionTo({
+        queryParams: this.get('queryParams.doQueryParams'),
+      });
     },
   },
 });

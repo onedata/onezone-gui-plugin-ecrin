@@ -1,16 +1,18 @@
 import Component from '@ember/component';
-import { observer, computed, get } from '@ember/object';
+import { observer, computed, get, set, getProperties } from '@ember/object';
 import { reads, alias, equal, or } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
 import { resolve } from 'rsvp';
 import { A } from '@ember/array';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
+import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 
 export default Component.extend(I18n, {
   classNames: ['query-results-result'],
 
   elasticsearch: service(),
+  configuration: service(),
 
   /**
    * @override
@@ -24,6 +26,12 @@ export default Component.extend(I18n, {
 
   /**
    * @virtual
+   * @type {Utils.QueryParams}
+   */
+  queryParams: undefined,
+
+  /**
+   * @virtual
    * @type {BsAccordion.Item}
    */
   item: undefined,
@@ -33,6 +41,16 @@ export default Component.extend(I18n, {
    * @type {boolean}
    */
   isExpanded: false,
+
+  /**
+   * @type {Ember.ComputedProperty<Array<Object>>}
+   */
+  typeMapping: reads('configuration.typeMapping'),
+
+  /**
+   * @type {Ember.ComputedProperty<Object>}
+   */
+  doParams: reads('queryParams.activeDoParams'),
 
   fetchInnerRecordsProxy: computed(function () {
     return PromiseObject.create({
@@ -137,19 +155,30 @@ export default Component.extend(I18n, {
     }
   ),
 
+  doParamsObserver: observer('doParams', function doParamsObserver() {
+    this.resetInnerRecords();
+    if (this.get('isExpanded')) {
+      this.fetchNextInnerRecords();
+    }
+  }),
+
   init() {
     this._super(...arguments);
 
     const innerRecordsNumber = this.get('innerRecordsNumber');
 
     if (innerRecordsNumber === undefined) {
-      this.setProperties({
-        innerRecords: A(),
-        innerRecordsNumber: -1,
-      });
+      this.resetInnerRecords();
     }
 
     this.isExpandedObserver();
+  },
+
+  resetInnerRecords() {
+    this.setProperties({
+      innerRecords: A(),
+      innerRecordsNumber: -1,
+    });
   },
 
   fetchNextInnerRecords() {
@@ -164,13 +193,29 @@ export default Component.extend(I18n, {
         innerRecordsQueryPath,
         isRelationInverted,
         source,
+        typeMapping,
+        doParams,
       } = this.getProperties(
         'elasticsearch',
         'innerRecordsNumber',
         'innerRecords',
         'innerRecordsQueryPath',
         'isRelationInverted',
-        'source'
+        'source',
+        'typeMapping',
+        'doParams',
+      );
+      const {
+        typeFilter,
+        accessTypeFilter,
+        // parsedYearFilter,
+        // publisherFilter,
+      } = getProperties(
+        doParams,
+        'typeFilter',
+        'accessTypeFilter',
+        'parsedYearFilter',
+        'publisherFilter'
       );
       let body = {};
       let searchAfter = undefined;
@@ -203,11 +248,29 @@ export default Component.extend(I18n, {
           },
           size: 15,
           query: {
-            terms: {
-              id: get(source, 'linked_data_objects').mapBy('id'),
+            bool: {
+              filter: [{
+                terms: {
+                  id: get(source, 'linked_data_objects').mapBy('id'),
+                },
+              }],
             },
           },
         };
+        if (typeFilter && get(typeFilter, 'length')) {
+          body.query.bool.filter.push({
+            terms: {
+              'type.id': typeFilter.mapBy('id'),
+            },
+          });
+        }
+        if (accessTypeFilter && get(accessTypeFilter, 'length')) {
+          body.query.bool.filter.push({
+            terms: {
+              'access_type.id': accessTypeFilter.mapBy('id'),
+            },
+          });
+        }
       }
       if (searchAfter) {
         body.search_after = searchAfter;
@@ -216,9 +279,21 @@ export default Component.extend(I18n, {
         promise: elasticsearch.request('POST', innerRecordsQueryPath, body)
           .then(results => {
             if (innerRecordsNumber === -1) {
-              this.set('innerRecordsNumber', results.hits.total);
+              safeExec(this, () => {
+                this.set('innerRecordsNumber', results.hits.total);
+              });
             }
-            innerRecords.pushObjects(results.hits.hits);
+            const hits = results.hits.hits;
+            if (!isRelationInverted) {
+              hits.forEach(({_source: { type }}) => {
+                const typeId = get(type, 'id');
+                const typeDef = typeMapping.findBy('id', typeId);
+                if (typeDef) {
+                  set(type, 'translatedName', get(typeDef, 'name'));
+                }
+              });
+            }
+            innerRecords.pushObjects(hits);
           }),
       });
       return this.set('fetchInnerRecordsProxy', fetchInnerRecordsProxy);

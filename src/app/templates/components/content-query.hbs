@@ -2,6 +2,7 @@
   queryParams=queryParams
   onChange=(action "parameterChanged")
   onFind=(action "find")
-  onClearAll=(action "clearAll")}}
-{{query-results results=queryResults}}
+  onClearAll=(action "clearAll")
+  onFilter=(action "filter")}}
+{{query-results results=queryResults queryParams=queryParams}}
 {{yield}}

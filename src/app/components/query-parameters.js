@@ -25,6 +25,13 @@ export default Component.extend(I18n, {
 
   /**
    * @virtual
+   * @type {Function}
+   * @returns {undefined}
+   */
+  onFilter: () => {},
+
+  /**
+   * @virtual
    * @type {Utils.QueryParams}
    */
   queryParams: undefined,

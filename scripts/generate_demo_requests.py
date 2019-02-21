@@ -9,7 +9,7 @@ number_of_studies = 100
 number_of_dos = 500
 topics_number = 5
 types = list('type' + str(i) for i in range(6))
-accessTypes = (0, 1)
+accessTypes = ({'id': 0, 'name': 'Public'}, {'id': 1, 'name': 'Private'})
 publishers = list('publisher' + str(i) for i in range(4))
 do_types = ('Registry entry', 'Analysis dataset', 'Other dataset')
 studies_per_do = 5
@@ -33,7 +33,6 @@ for i in range(number_of_studies):
     'title': 'Study no ' + str(i),
     'topics': [random.randint(0, (topics_number - 1) // 2), random.randint(((topics_number - 1) // 2) + 1, topics_number - 1)],
     'type': random.choice(types),
-    'accessType': random.choice(accessTypes),
     'publisher': random.choice(publishers),
     'year': random.randint(1990, 2019),
     'study_topics': random.sample(study_topics, number_of_study_topics_per_study),
@@ -48,10 +47,13 @@ for i in range(number_of_dos):
   for study in studies:
     if study['id'] in related_studies:
       study['linked_data_objects'].append({'id': do_id})
+  do_type_id = random.randint(0, len(do_types) - 1)
+  do_type = {'id': do_type_id, 'name': do_types[do_type_id]}
   dos.append({
     'id': do_id,
-    'type': random.choice(do_types),
+    'type': do_type,
     'description': 'Some description for DO with ID do' + str(i),
+    'access_type': random.choice(accessTypes),
     'year': random.randint(1990, 2019),
     'status': random.choice(('success', 'warning')),
     'url': 'https://some-very-important-resource.com/?id=' + str(i),

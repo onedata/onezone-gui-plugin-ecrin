@@ -11,7 +11,7 @@
     <table class="do-records table">
       {{#each dataObjects as |dataObject|}}
         <tr>
-          <td class="do-type">{{dataObject._source.type}}</td>
+          <td class="do-type">{{or dataObject._source.type.translatedName dataObject._source.type.name}}</td>
           <td class="do-description">
             {{#if dataObject._source.description}}
               <p>{{dataObject._source.description}}</p>

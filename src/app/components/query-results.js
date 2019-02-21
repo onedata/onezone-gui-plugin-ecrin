@@ -20,6 +20,12 @@ export default Component.extend(I18n, {
    */
   results: undefined,
 
+  /**
+   * @virtual
+   * @type {Utils.QueryParams}
+   */
+  queryParams: undefined,
+
   rowHeight: 43,
 
   expandedRowExtraHeight: 250,

@@ -1,5 +1,4 @@
-import EmberObject from '@ember/object';
-import { computed } from '@ember/object';
+import EmberObject, { computed, get } from '@ember/object';
 import rangeToNumbers from 'onezone-gui-plugin-ecrin/utils/range-to-numbers';
 
 export default EmberObject.extend({
@@ -28,25 +27,21 @@ export default EmberObject.extend({
   studyTopicsInclude: '',
 
   /**
-   * Only for mode === 'studyCharact'
    * @type {string}
    */
   typeFilter: Object.freeze([]),
 
   /**
-   * Only for mode === 'studyCharact'
    * @type {string}
    */
   accessTypeFilter: Object.freeze([]),
 
   /**
-   * Only for mode === 'studyCharact'
    * @type {string}
    */
   yearFilter: '',
 
   /**
-   * Only for mode === 'studyCharact'
    * @type {string}
    */
   publisherFilter: Object.freeze([]),
@@ -56,6 +51,18 @@ export default EmberObject.extend({
    * @type {string}
    */
   doi: '',
+
+  /**
+   * Set by applyDoParams()
+   * @type {boolean}
+   */
+  hasActiveDoParams: false,
+
+  /**
+   * Set by applyDoParams()
+   * @type {Object}
+   */
+  activeDoParams: Object.freeze({}),
 
   /**
    * @type {Ember.ComputedProperty<Array<number|Object>>}
@@ -72,10 +79,10 @@ export default EmberObject.extend({
     'studyId',
     'studyTitleContains',
     'studyTopicsInclude',
-    'typeFilter',
-    'accessTypeFilter',
-    'parsedYearFilter',
-    'publisherFilter',
+    // 'typeFilter',
+    // 'accessTypeFilter',
+    // 'parsedYearFilter',
+    // 'publisherFilter',
     'doi',
     function hasParams() {
       const {
@@ -83,33 +90,55 @@ export default EmberObject.extend({
         studyId,
         studyTitleContains,
         studyTopicsInclude,
-        typeFilter,
-        accessTypeFilter,
-        parsedYearFilter,
-        publisherFilter,
+        // typeFilter,
+        // accessTypeFilter,
+        // parsedYearFilter,
+        // publisherFilter,
         doi,
       } = this.getProperties(
         'mode',
         'studyId',
         'studyTitleContains',
         'studyTopicsInclude',
-        'typeFilter',
-        'accessTypeFilter',
-        'parsedYearFilter',
-        'publisherFilter',
+        // 'typeFilter',
+        // 'accessTypeFilter',
+        // 'parsedYearFilter',
+        // 'publisherFilter',
         'doi'
       );
       switch (mode) {
         case 'specificStudy':
           return !!studyId;
         case 'studyCharact':
-          return !!studyTitleContains || !!studyTopicsInclude ||
-            !!typeFilter.length || !!accessTypeFilter.length ||
-            !!parsedYearFilter.length || !!publisherFilter.length;
+          return !!studyTitleContains || !!studyTopicsInclude;
+            // !!typeFilter.length || !!accessTypeFilter.length ||
+            // !!parsedYearFilter.length || !!publisherFilter.length;
         case 'viaPubPaper':
           return !!doi;
       }
     }
+  ),
+
+  hasDoParams: computed(
+    'typeFilter',
+    'accessTypeFilter',
+    'parsedYearFilter',
+    'publisherFilter',
+    function hasDoParams() {
+      const {
+        typeFilter,
+        accessTypeFilter,
+        parsedYearFilter,
+        publisherFilter,
+      } = this.getProperties(
+        'typeFilter',
+        'accessTypeFilter',
+        'parsedYearFilter',
+        'publisherFilter',
+      );
+      return !!typeFilter.length || !!accessTypeFilter.length ||
+        !parsedYearFilter.length || !!publisherFilter.length;
+    },
   ),
 
   /**
@@ -120,10 +149,6 @@ export default EmberObject.extend({
     'studyId',
     'studyTitleContains',
     'studyTopicsInclude',
-    'typeFilter',
-    'accessTypeFilter',
-    'yearFilter',
-    'publisherFilter',
     'doi',
     function queryParams() {
       const {
@@ -132,6 +157,8 @@ export default EmberObject.extend({
         doi,
       } = this.getProperties(
         'mode',
+        'hasActiveDoParams',
+        'activeDoParams',
         'studyId',
         'doi'
       );
@@ -140,10 +167,6 @@ export default EmberObject.extend({
         studyId: null,
         studyTitleContains: null,
         studyTopicsInclude: null,
-        typeFilter: null,
-        accessTypeFilter: null,
-        yearFilter: null,
-        publisherFilter: null,
         doi: null,
       };
       switch (mode) {
@@ -156,21 +179,10 @@ export default EmberObject.extend({
           [
             'studyTitleContains',
             'studyTopicsInclude',
-            'yearFilter',
           ].forEach(filterName => {
             const filter = this.get(filterName);
             if (filter) {
               params[filterName] = filter;
-            }
-          });
-          [
-            'typeFilter',
-            'accessTypeFilter',
-            'publisherFilter',
-          ].forEach(filterName => {
-            const filter = this.get(filterName);
-            if (filter.length) {
-              params[filterName] = JSON.stringify(filter.mapBy('id'));
             }
           });
           break;
@@ -183,6 +195,69 @@ export default EmberObject.extend({
       return params;
     }
   ),
+
+  doQueryParams: computed(
+    'hasActiveDoParams',
+    'activeDoParams',
+    function doQueryParams() {
+      const {
+        hasActiveDoParams,
+        activeDoParams,
+      } = this.getProperties(
+        'hasActiveDoParams',
+        'activeDoParams',
+      );
+      const params = {
+        typeFilter: null,
+        accessTypeFilter: null,
+        yearFilter: null,
+        publisherFilter: null,
+      };
+      if (hasActiveDoParams) {
+        const yearFilter = get(activeDoParams, 'yearFilter');
+        if (yearFilter) {
+          params['yearFilter'] = yearFilter;
+        }
+        [
+          'typeFilter',
+          'accessTypeFilter',
+          'publisherFilter',
+        ].forEach(filterName => {
+          const filter = get(activeDoParams, filterName);
+          if (filter && filter.length) {
+            params[filterName] = JSON.stringify(filter.mapBy('id'));
+          }
+        });
+      }
+      return params;
+    }
+  ),
+
+  applyDoParams() {
+    let activeDoParams = {}, hasActiveDoParams = false;
+    if (this.get('hasDoParams')) {
+      [
+        'typeFilter',
+        'accessTypeFilter',
+        'parsedYearFilter',
+        'publisherFilter',
+      ].forEach(filterName => {
+        const filter = this.get(filterName);
+        if (filter && filter.length) {
+          activeDoParams[filterName] = filter;
+        }
+      });
+      const yearFilter = this.get('yearFilter');
+      if (yearFilter) {
+        activeDoParams['yearFilter'] = yearFilter;
+      }
+      hasActiveDoParams = true;
+    }
+    this.setProperties({
+      activeDoParams,
+      hasActiveDoParams,
+    });
+  },
 
   /**
    * Clears query params

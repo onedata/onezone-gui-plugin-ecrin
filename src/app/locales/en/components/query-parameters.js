@@ -11,6 +11,7 @@ export default {
   doi: 'DOI',
   find: 'Find',
   clearAll: 'Clear all',
+  filter: 'Filter',
   modes: {
     specificStudy: 'Specific study',
     studyCharact: 'Study characteristics',
