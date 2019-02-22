@@ -67,8 +67,26 @@ for i in range(number_of_dos):
   })
 
 index_creation_body = {
-  'studies': { "mappings": { "study": { "properties": { "study_identifiers": { "type": "nested", "properties": { "type": { "type": 'keyword'}, 'value': {'type': 'keyword'}} } } } }},
-#   'dos': { "mappings": { "do": { "properties": { "id": { "type": "keyword" } } } }}
+  'studies': {
+    'mappings': {
+      'study': {
+        'properties': {
+          'study_identifiers': {
+            'type': 'nested',
+            'properties': {
+              'type': {
+                'type': 'keyword'
+              },
+              'value': {
+                'type': 'keyword'
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+#   'dos': { 'mappings': { 'do': { 'properties': { 'id': { 'type': 'keyword' } } } }}
 }
 
 requests = [{ 'method': 'PUT', 'url': hostname + '/' + index, 'body': json.dumps(index_creation_body[index], ensure_ascii=False) } for index in ['studies']]

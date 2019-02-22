@@ -237,7 +237,7 @@ export default Component.extend(I18n, {
       } else {
         if (innerRecordsNumber > 0) {
           searchAfter = [
-            get(innerRecords, 'lastObject._source.year') || 0,
+            get(innerRecords, 'lastObject._source.publication_year') || 0,
             get(innerRecords, 'lastObject._id'),
           ];
         }
