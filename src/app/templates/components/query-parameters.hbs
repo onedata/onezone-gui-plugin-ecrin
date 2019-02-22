@@ -75,6 +75,7 @@
     {{#power-select-multiple
       options=typeFilterOptions
       selected=queryParams.typeFilter
+      closeOnSelect=false
       onchange=(action onChange "typeFilter")
       as |typeFilter|}}
       {{typeFilter.name}}
@@ -85,6 +86,7 @@
     {{#power-select-multiple
       options=accessTypeFilterOptions
       selected=queryParams.accessTypeFilter
+      closeOnSelect=false
       onchange=(action onChange "accessTypeFilter")
       as |accessTypeFilter|}}
       {{accessTypeFilter.name}}
@@ -104,6 +106,7 @@
     {{#power-select-multiple
       options=publisherFilterOptions
       selected=queryParams.publisherFilter
+      closeOnSelect=false
       onchange=(action onChange "publisherFilter")
       as |publisherFilter|}}
       {{publisherFilter.name}}

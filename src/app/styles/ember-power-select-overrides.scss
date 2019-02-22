@@ -64,9 +64,14 @@ $ember-power-select-multiple-option-line-height: $line-height-base;
 
 .ember-power-select-multiple-trigger {
   padding: $padding-base-vertical - 4 $padding-base-horizontal;
+  padding-right: 45px
 }
 
 .ember-power-select-trigger-multiple-input {
   margin-top: 4px;
   max-width: 85%;
+}
+
+.ember-power-select-options[role=listbox] {
+  max-height: 250px;
 }
