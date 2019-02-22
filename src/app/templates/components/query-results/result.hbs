@@ -20,7 +20,7 @@
               <p>{{dataObject._source.url}}</p>
             {{/if}}
           </td>
-          <td class="do-year">{{or dataObject._source.year "-"}}</td>
+          <td class="do-year">{{or dataObject._source.publication_year "-"}}</td>
           <td class="do-status"><span class="do-status-icon {{or dataObject._source.status "unknown"}}"></span></td>
         </tr>
       {{/each}}

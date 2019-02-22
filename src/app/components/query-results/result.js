@@ -208,7 +208,7 @@ export default Component.extend(I18n, {
       const {
         typeFilter,
         accessTypeFilter,
-        // parsedYearFilter,
+        parsedYearFilter,
         // publisherFilter,
       } = getProperties(
         doParams,
@@ -243,7 +243,7 @@ export default Component.extend(I18n, {
         }
         body = {
           sort: {
-            year: 'asc',
+            publication_year: 'asc',
             _id: 'asc',
           },
           size: 15,
@@ -270,6 +270,34 @@ export default Component.extend(I18n, {
               'access_type.id': accessTypeFilter.mapBy('id'),
             },
           });
+        }
+        if (parsedYearFilter && parsedYearFilter.length) {
+          body.query.bool = body.query.bool || {};
+          body.query.bool.filter = body.query.bool.filter || [];
+          const filter = {
+            bool: {
+              should: [],
+            },
+          };
+          parsedYearFilter.forEach(rangeOrNumber => {
+            if (typeof rangeOrNumber === 'number') {
+              filter.bool.should.push({
+                term: {
+                  publication_year: rangeOrNumber,
+                },
+              });
+            } else {
+              filter.bool.should.push({
+                range: {
+                  publication_year: {
+                    gte: rangeOrNumber.start,
+                    lte: rangeOrNumber.end,
+                  },
+                },
+              });
+            }
+          });
+          body.query.bool.filter.push(filter);       
         }
       }
       if (searchAfter) {

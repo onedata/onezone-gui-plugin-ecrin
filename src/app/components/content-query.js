@@ -101,10 +101,10 @@ export default Component.extend(I18n, {
     } = this.getProperties('mode', 'queryParams');
     switch (mode) {
       case 'specificStudy':
+      case 'studyCharact':
+        return 'POST';
       case 'viaPubPaper':
         return get(queryParams, 'hasParams') ? 'GET' : 'POST';
-      default:
-        return 'POST';
     }
   },
 
@@ -115,7 +115,6 @@ export default Component.extend(I18n, {
     } = this.getProperties('mode', 'queryParams');
     switch (mode) {
       case 'specificStudy':
-        return '/studies/study/' + (get(queryParams, 'studyId') || '_search');
       case 'studyCharact':
         return '/studies/study/_search';
       case 'viaPubPaper':
@@ -143,97 +142,67 @@ export default Component.extend(I18n, {
     if (!hasParams) {
       body.query.match_all = {};
     } else {
-      if (mode === 'studyCharact') {
-        const {
-          studyTitleContains,
-          studyTopicsInclude,
-          // typeFilter,
-          // accessTypeFilter,
-          // parsedYearFilter,
-          // publisherFilter,
-        } = getProperties(
-          queryParams,
-          'studyTitleContains',
-          'studyTopicsInclude',
-          // 'typeFilter',
-          // 'accessTypeFilter',
-          // 'parsedYearFilter',
-          // 'publisherFilter'
-        );
-        if (studyTitleContains) {
-          body.query.bool = {
-            must: [{
-              simple_query_string: {
-                query: studyTitleContains,
-                fields: ['title'],
+      switch (mode) {
+        case 'specificStudy': {
+          const {
+            studyIdType,
+            studyId,
+          } = getProperties(
+            queryParams,
+            'studyIdType',
+            'studyId'
+          );
+          body.query = {
+            nested: {
+              path: 'study_identifiers',
+              query: {
+                bool: {
+                  must: [{
+                    term: {
+                      'study_identifiers.type': get(studyIdType, 'id'),
+                    },
+                  }, {
+                    term: {
+                      'study_identifiers.value': studyId,
+                    },
+                  }],
+                },
               },
-            }],
-          };
-        }
-        if (studyTopicsInclude) {
-          body.query.bool = body.query.bool || {};
-          body.query.bool.must = body.query.bool.must || [];
-          body.query.bool.must.push({
-            simple_query_string: {
-              query: studyTopicsInclude,
-              fields: ['study_topics.value'],
             },
-          });
+          };
+          break;
         }
-        // if (typeFilter.length) {
-        //   body.query.bool = body.query.bool || {};
-        //   body.query.bool.filter = [{
-        //     terms: {
-        //       type: typeFilter,
-        //     },
-        //   }];
-        // }
-        // if (accessTypeFilter.length) {
-        //   body.query.bool = body.query.bool || {};
-        //   body.query.bool.filter = body.query.bool.filter || [];
-        //   body.query.bool.filter.push({
-        //     terms: {
-        //       accessType: accessTypeFilter.mapBy('id'),
-        //     },
-        //   });
-        // }
-        // if (parsedYearFilter.length) {
-        //   body.query.bool = body.query.bool || {};
-        //   body.query.bool.filter = body.query.bool.filter || [];
-        //   const filter = {
-        //     bool: {
-        //       should: [],
-        //     },
-        //   };
-        //   parsedYearFilter.forEach(rangeOrNumber => {
-        //     if (typeof rangeOrNumber === 'number') {
-        //       filter.bool.should.push({
-        //         term: {
-        //           year: rangeOrNumber,
-        //         },
-        //       });
-        //     } else {
-        //       filter.bool.should.push({
-        //         range: {
-        //           year: {
-        //             gte: rangeOrNumber.start,
-        //             lte: rangeOrNumber.end,
-        //           },
-        //         },
-        //       });
-        //     }
-        //   });
-        //   body.query.bool.filter.push(filter);       
-        // }
-        // if (publisherFilter.length) {
-        //   body.query.bool = body.query.bool || {};
-        //   body.query.bool.filter = body.query.bool.filter || [];
-        //   body.query.bool.filter.push({
-        //     terms: {
-        //       publisher: publisherFilter.mapBy('id'),
-        //     },
-        //   });
-        // }
+        case 'studyCharact': {
+          const {
+            studyTitleContains,
+            studyTopicsInclude,
+          } = getProperties(
+            queryParams,
+            'studyTitleContains',
+            'studyTopicsInclude',
+          );
+          if (studyTitleContains) {
+            body.query.bool = {
+              must: [{
+                simple_query_string: {
+                  query: studyTitleContains,
+                  fields: ['title'],
+                },
+              }],
+            };
+          }
+          if (studyTopicsInclude) {
+            body.query.bool = body.query.bool || {};
+            body.query.bool.must = body.query.bool.must || [];
+            body.query.bool.must.push({
+              simple_query_string: {
+                query: studyTopicsInclude,
+                fields: ['study_topics.value'],
+              },
+            });
+          }
+          break;
+        }
       }
     }
     return body;

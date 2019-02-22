@@ -9,6 +9,11 @@ export default EmberObject.extend({
   mode: 'studyCharact',
 
   /**
+   * @type {string}
+   */
+  studyIdType: undefined,
+
+  /**
    * Only for mode === 'specificStudy'
    * @type {string}
    */
@@ -76,6 +81,7 @@ export default EmberObject.extend({
    */
   hasParams: computed(
     'mode',
+    'studyIdType',
     'studyId',
     'studyTitleContains',
     'studyTopicsInclude',
@@ -87,32 +93,24 @@ export default EmberObject.extend({
     function hasParams() {
       const {
         mode,
+        studyIdType,
         studyId,
         studyTitleContains,
         studyTopicsInclude,
-        // typeFilter,
-        // accessTypeFilter,
-        // parsedYearFilter,
-        // publisherFilter,
         doi,
       } = this.getProperties(
         'mode',
+        'studyIdType',
         'studyId',
         'studyTitleContains',
         'studyTopicsInclude',
-        // 'typeFilter',
-        // 'accessTypeFilter',
-        // 'parsedYearFilter',
-        // 'publisherFilter',
         'doi'
       );
       switch (mode) {
         case 'specificStudy':
-          return !!studyId;
+          return !!studyIdType && !!studyId;
         case 'studyCharact':
           return !!studyTitleContains || !!studyTopicsInclude;
-            // !!typeFilter.length || !!accessTypeFilter.length ||
-            // !!parsedYearFilter.length || !!publisherFilter.length;
         case 'viaPubPaper':
           return !!doi;
       }
@@ -146,6 +144,7 @@ export default EmberObject.extend({
    */
   queryParams: computed(
     'mode',
+    'studyIdType',
     'studyId',
     'studyTitleContains',
     'studyTopicsInclude',
@@ -153,12 +152,12 @@ export default EmberObject.extend({
     function queryParams() {
       const {
         mode,
+        studyIdType,
         studyId,
         doi,
       } = this.getProperties(
         'mode',
-        'hasActiveDoParams',
-        'activeDoParams',
+        'studyIdType',
         'studyId',
         'doi'
       );
@@ -171,6 +170,9 @@ export default EmberObject.extend({
       };
       switch (mode) {
         case 'specificStudy':
+          if (studyIdType) {
+            params.studyIdType = get(studyIdType, 'id');
+          }
           if (studyId) {
             params.studyId = studyId;
           }

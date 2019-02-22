@@ -1,6 +1,7 @@
 export default {
   search: 'Search',
   selectMode: 'Select mode',
+  studyIdType: 'Study ID type',
   studyId: 'Study ID',
   studyTitleContains: 'Study title contains',
   studyTopicsInclude: 'Study topics include',

@@ -13,6 +13,7 @@ accessTypes = ({'id': 0, 'name': 'Public'}, {'id': 1, 'name': 'Private'})
 publishers = list('publisher' + str(i) for i in range(4))
 do_types = ('Registry entry', 'Analysis dataset', 'Other dataset')
 studies_per_do = 5
+founder_ids = [str(i) for i in range(5)]
 
 study_topics = []
 for i in range(number_of_study_topics):
@@ -28,9 +29,14 @@ for i in range(number_of_study_topics):
 
 studies = []
 for i in range(number_of_studies):
+  study_id = i
   studies.append({
     'id': i,
     'title': 'Study no ' + str(i),
+    'study_identifiers': [
+      {'id': 0, 'value': str(study_id), 'type': 'registryId'},
+      {'id': 1, 'value': random.choice(founder_ids), 'type': 'founderId'}
+    ],
     'topics': [random.randint(0, (topics_number - 1) // 2), random.randint(((topics_number - 1) // 2) + 1, topics_number - 1)],
     'type': random.choice(types),
     'publisher': random.choice(publishers),
@@ -54,19 +60,19 @@ for i in range(number_of_dos):
     'type': do_type,
     'description': 'Some description for DO with ID do' + str(i),
     'access_type': random.choice(accessTypes),
-    'year': random.randint(1990, 2019),
+    'publication_year': random.randint(1990, 2019),
     'status': random.choice(('success', 'warning')),
     'url': 'https://some-very-important-resource.com/?id=' + str(i),
     'related_studies': [{'id': id} for id in related_studies]
   })
 
-# index_creation_body = {
-#   'studies': { "mappings": { "study": { "properties": { "id": { "type": "keyword" } } } }},
+index_creation_body = {
+  'studies': { "mappings": { "study": { "properties": { "study_identifiers": { "type": "nested", "properties": { "type": { "type": 'keyword'}, 'value': {'type': 'keyword'}} } } } }},
 #   'dos': { "mappings": { "do": { "properties": { "id": { "type": "keyword" } } } }}
-# }
+}
 
-# requests = [{ 'method': 'PUT', 'url': hostname + '/' + index, 'body': json.dumps(index_creation_body[index], ensure_ascii=False) } for index in ['studies', 'dos']]
-requests = []
+requests = [{ 'method': 'PUT', 'url': hostname + '/' + index, 'body': json.dumps(index_creation_body[index], ensure_ascii=False) } for index in ['studies']]
+# requests = []
 for study in studies:
   requests.append({
     'method': 'PUT',

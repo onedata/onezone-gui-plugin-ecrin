@@ -14,13 +14,26 @@
 {{#if (eq queryParams.mode "specificStudy")}}
   <div class="row">
     <div class="col-xs-12 col-sm-6 form-group">
-      <label class="control-label" for="study-id-input">{{tt this "studyId"}}</label>
-      <input
-        id="study-id-input"
-        class="form-control"
-        type="text"
-        value={{queryParams.studyId}}
-        oninput={{action (action onChange "studyId") value="target.value"}}>
+      <label class="control-label">{{tt this "studyIdType"}}</label>
+      {{#power-select
+        selected=queryParams.studyIdType
+        options=studyIdTypeMapping
+        onchange=(action onChange "studyIdType")
+        searchEnabled=false
+        as |studyIdType|}}
+        {{studyIdType.name}}
+      {{/power-select}}
+    </div>
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 form-group">
+        <label class="control-label" for="study-id-input">{{tt this "studyId"}}</label>
+        <input
+          id="study-id-input"
+          class="form-control"
+          type="text"
+          value={{queryParams.studyId}}
+          oninput={{action (action onChange "studyId") value="target.value"}}>
+      </div>
     </div>
   </div>
 {{else if (eq queryParams.mode "studyCharact")}}

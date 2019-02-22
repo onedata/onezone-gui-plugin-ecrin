@@ -48,6 +48,11 @@ export default Component.extend(I18n, {
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
+  studyIdTypeMapping: reads('configuration.studyIdTypeMapping'),
+
+  /**
+   * @type {Ember.ComputedProperty<Array<Object>>}
+   */
   typeFilterOptions: reads('configuration.typeMapping'),
 
   /**

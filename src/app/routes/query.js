@@ -8,6 +8,7 @@ export default Route.extend({
 
   queryParams: {
     mode: { refreshModel: true },
+    studyIdType: { refreshModel: true },
     studyId: { refreshModel: true },
     studyTitleContains: { refreshModel: true },
     studyTopicsInclude: { refreshModel: true },
@@ -33,6 +34,15 @@ export default Route.extend({
         set(queryParamsObject, filterName, queryParams[filterName]);
       }
     });
+    
+    if (queryParams.studyIdType) {
+      const studyIdTypeMapping = this.get('configuration.studyIdTypeMapping');
+      const studyIdType = studyIdTypeMapping.findBy('id', queryParams.studyIdType);
+      if (studyIdType) {
+        set(queryParamsObject, 'studyIdType', studyIdType);
+      }
+    }
+
     [
       ['typeFilter', 'typeMapping'],
       ['accessTypeFilter', 'accessTypeMapping'],

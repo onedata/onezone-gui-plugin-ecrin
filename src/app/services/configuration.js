@@ -13,6 +13,11 @@ export default Service.extend({
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
+  studyIdTypeMapping: reads('configuration.studyIdTypeMapping'),
+
+  /**
+   * @type {Ember.ComputedProperty<Array<Object>>}
+   */
   typeMapping: reads('configuration.typeMapping'),
 
   /**
