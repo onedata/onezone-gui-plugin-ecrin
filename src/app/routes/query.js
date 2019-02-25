@@ -13,6 +13,7 @@ export default Route.extend({
     studyTitleContains: { refreshModel: true },
     studyTopicsInclude: { refreshModel: true },
     doi: { refreshModel: true },
+    dataObjectTitle: { refreshModel: true },
     yearFilter: { refreshModel: false },
     typeFilter: { refreshModel: false },
     accessTypeFilter: { refreshModel: false },
@@ -29,12 +30,13 @@ export default Route.extend({
       'studyTopicsInclude',
       'yearFilter',
       'doi',
+      'dataObjectTitle',
     ].forEach(filterName => {
       if (queryParams[filterName]) {
         set(queryParamsObject, filterName, queryParams[filterName]);
       }
     });
-    
+
     if (queryParams.studyIdType) {
       const studyIdTypeMapping = this.get('configuration.studyIdTypeMapping');
       const studyIdType = studyIdTypeMapping.findBy('id', queryParams.studyIdType);

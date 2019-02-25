@@ -58,6 +58,12 @@ export default EmberObject.extend({
   doi: '',
 
   /**
+   * Only for mode === 'viaPubPaper'
+   * @type {string}
+   */
+  dataObjectTitle: '',
+
+  /**
    * Set by applyDoParams()
    * @type {boolean}
    */
@@ -90,6 +96,7 @@ export default EmberObject.extend({
     // 'parsedYearFilter',
     // 'publisherFilter',
     'doi',
+    'dataObjectTitle',
     function hasParams() {
       const {
         mode,
@@ -98,13 +105,15 @@ export default EmberObject.extend({
         studyTitleContains,
         studyTopicsInclude,
         doi,
+        dataObjectTitle,
       } = this.getProperties(
         'mode',
         'studyIdType',
         'studyId',
         'studyTitleContains',
         'studyTopicsInclude',
-        'doi'
+        'doi',
+        'dataObjectTitle'
       );
       switch (mode) {
         case 'specificStudy':
@@ -112,7 +121,7 @@ export default EmberObject.extend({
         case 'studyCharact':
           return !!studyTitleContains || !!studyTopicsInclude;
         case 'viaPubPaper':
-          return !!doi;
+          return !!doi || !!dataObjectTitle;
       }
     }
   ),
@@ -135,7 +144,7 @@ export default EmberObject.extend({
         'publisherFilter',
       );
       return !!typeFilter.length || !!accessTypeFilter.length ||
-        !parsedYearFilter.length || !!publisherFilter.length;
+        !!parsedYearFilter.length || !!publisherFilter.length;
     },
   ),
 
@@ -149,17 +158,20 @@ export default EmberObject.extend({
     'studyTitleContains',
     'studyTopicsInclude',
     'doi',
+    'dataObjectTitle',
     function queryParams() {
       const {
         mode,
         studyIdType,
         studyId,
         doi,
+        dataObjectTitle,
       } = this.getProperties(
         'mode',
         'studyIdType',
         'studyId',
-        'doi'
+        'doi',
+        'dataObjectTitle'
       );
       const params = {
         mode,
@@ -167,6 +179,7 @@ export default EmberObject.extend({
         studyTitleContains: null,
         studyTopicsInclude: null,
         doi: null,
+        dataObjectTitle: null,
       };
       switch (mode) {
         case 'specificStudy':
@@ -191,6 +204,8 @@ export default EmberObject.extend({
         case 'viaPubPaper':
           if (doi) {
             params.doi = doi;
+          } else if (dataObjectTitle) {
+            params.dataObjectTitle = dataObjectTitle;
           }
           break;
       }
@@ -275,6 +290,7 @@ export default EmberObject.extend({
       yearFilter: '',
       publisherFilter: [],
       doi: '',
+      dataObjectTitle: '',
     });
   },
 });

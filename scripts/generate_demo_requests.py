@@ -57,8 +57,9 @@ for i in range(number_of_dos):
   do_type = {'id': do_type_id, 'name': do_types[do_type_id]}
   dos.append({
     'id': do_id,
+    'DOI': str(do_id),
     'type': do_type,
-    'description': 'Some description for DO with ID do' + str(i),
+    'data_object_title': 'Some description for DO with ID do' + str(i),
     'access_type': random.choice(accessTypes),
     'publication_year': random.randint(1990, 2019),
     'status': random.choice(('success', 'warning')),

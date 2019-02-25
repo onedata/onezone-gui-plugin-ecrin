@@ -71,7 +71,7 @@ export default Component.extend(I18n, {
   /**
    * @type {Ember.ComputedProperty<string>}
    */
-  title: or('source.title', 'source.description'),
+  title: or('source.title', 'source.data_object_title'),
 
   /**
    * @type {Ember.ComputedProperty<string>}

@@ -78,6 +78,15 @@
         value={{queryParams.doi}}
         oninput={{action (action onChange "doi") value="target.value"}}>
     </div>
+    <div class="col-xs-12 col-sm-6 form-group">
+      <label class="control-label" for="data-object-title-input">{{tt this "dataObjectTitle"}}</label>
+      <input
+        id="data-object-title-input"
+        class="form-control"
+        type="text"
+        value={{queryParams.dataObjectTitle}}
+        oninput={{action (action onChange "dataObjectTitle") value="target.value"}}>
+    </div>
   </div>
 {{/if}}
 {{#bs-button type="primary" onClick=onFind}}{{tt this "find"}}{{/bs-button}}

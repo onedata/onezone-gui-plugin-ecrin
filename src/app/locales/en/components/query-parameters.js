@@ -10,6 +10,7 @@ export default {
   filterByYear: 'Filter by year',
   filterByPublisher: 'Filter by publisher',
   doi: 'DOI',
+  dataObjectTitle: 'Title',
   find: 'Find',
   clearAll: 'Clear all',
   filter: 'Filter',

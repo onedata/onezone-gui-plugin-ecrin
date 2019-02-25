@@ -13,8 +13,8 @@
         <tr>
           <td class="do-type">{{or dataObject._source.type.translatedName dataObject._source.type.name}}</td>
           <td class="do-description">
-            {{#if dataObject._source.description}}
-              <p>{{dataObject._source.description}}</p>
+            {{#if dataObject._source.data_object_title}}
+              <p>{{dataObject._source.data_object_title}}</p>
             {{/if}}
             {{#if dataObject._source.url}}
               <p>{{dataObject._source.url}}</p>
