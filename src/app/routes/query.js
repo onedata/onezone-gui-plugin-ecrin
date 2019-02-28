@@ -39,7 +39,7 @@ export default Route.extend({
 
     if (queryParams.studyIdType) {
       const studyIdTypeMapping = this.get('configuration.studyIdTypeMapping');
-      const studyIdType = studyIdTypeMapping.findBy('id', queryParams.studyIdType);
+      const studyIdType = studyIdTypeMapping.filter(({ id }) => id == queryParams.studyIdType)[0];
       if (studyIdType) {
         set(queryParamsObject, 'studyIdType', studyIdType);
       }

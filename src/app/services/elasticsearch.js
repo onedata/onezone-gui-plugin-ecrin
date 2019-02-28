@@ -6,13 +6,13 @@ export default Service.extend({
   /**
    * Performs request to Elasticsearch.
    * @param {string} method one of `get`, `post`, `put`, `delete`
-   * @param {string} url url (without host)
+   * @param {string} path url (without host)
    * @param {Object|undefined} body request body
    * @returns {Promise<any>} request result
    */
-  request(method, url, body) {
+  request(method, path, body) {
     const esRequest = this.get('onezoneGuiResources.esRequest');
-    return esRequest(method, url, JSON.stringify(body));
+    return esRequest(method, path, JSON.stringify(body));
   },
 
   /**

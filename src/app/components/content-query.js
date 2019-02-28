@@ -130,9 +130,14 @@ export default Component.extend(I18n, {
     if (startFromIndex.index !== undefined) {
       body.search_after = [startFromIndex.id];
     }
-    if (!hasParams) {
-      body.query.match_all = {};
-    } else {
+    body.query.bool = {
+      must: {
+        term: {
+          type: 'study',
+        },
+      },
+    };
+    if (hasParams) {
       const {
         studyIdType,
         studyId,
@@ -143,16 +148,16 @@ export default Component.extend(I18n, {
       );
       body.query = {
         nested: {
-          path: 'study_identifiers',
+          path: 'study_payload.study_identifiers',
           query: {
             bool: {
               must: [{
                 term: {
-                  'study_identifiers.type': get(studyIdType, 'id'),
+                  'study_payload.study_identifiers.type.id': get(studyIdType, 'id'),
                 },
               }, {
                 term: {
-                  'study_identifiers.value': studyId,
+                  'study_payload.study_identifiers.value': studyId,
                 },
               }],
             },
@@ -161,11 +166,7 @@ export default Component.extend(I18n, {
       };
     }
 
-    return this.get('elasticsearch').request(
-      'POST',
-      '/studies/study/_search',
-      body
-    );
+    return this.get('elasticsearch').request('post', '_search', body);
   },
 
   fetchStudyCharact(startFromIndex, size) {
@@ -175,9 +176,14 @@ export default Component.extend(I18n, {
     if (startFromIndex.index !== undefined) {
       body.search_after = [startFromIndex.id];
     }
-    if (!hasParams) {
-      body.query.match_all = {};
-    } else {
+    body.query.bool = {
+      must: {
+        term: {
+          type: 'study',
+        },
+      },
+    };
+    if (hasParams) {
       const {
         studyTitleContains,
         studyTopicsInclude,
@@ -191,7 +197,7 @@ export default Component.extend(I18n, {
           must: [{
             simple_query_string: {
               query: studyTitleContains,
-              fields: ['title'],
+              fields: ['study_payload.scientific_title.title'],
             },
           }],
         };
@@ -202,17 +208,13 @@ export default Component.extend(I18n, {
         body.query.bool.must.push({
           simple_query_string: {
             query: studyTopicsInclude,
-            fields: ['study_topics.value'],
+            fields: ['study_payload.study_topics.value'],
           },
         });
       }
     }
 
-    return this.get('elasticsearch').request(
-      'POST',
-      '/studies/study/_search',
-      body
-    );
+    return this.get('elasticsearch').request('post', '_search', body);
   },
 
   fetchViaPubPaper(startFromIndex, size) {
@@ -222,56 +224,55 @@ export default Component.extend(I18n, {
     } = this.getProperties('elasticsearch', 'queryParams');
     const hasParams = get(queryParams, 'hasParams');
     let body = this.constructQueryBaseBody(size);
+    body.query.bool = {
+      filter: [{
+        term: {
+          type: 'data_object',
+        },
+      }],
+    };
     delete body.size;
-    if (!hasParams) {
-      return resolve(null);
-    } else {
+    if (hasParams) {
       const {
         doi,
         dataObjectTitle,
       } = getProperties(queryParams, 'doi', 'dataObjectTitle');
       if (doi) {
-        body.query.bool = {
-          must: [{
-            term: {
-              DOI: doi,
-            },
-          }],
-        };
+        body.query.bool.filter.push({
+          term: {
+            'data_object_payload.DOI': doi,
+          },
+        });
       }
       else {
-        body.query.bool = {
-          must: [{
-            simple_query_string: {
-              query: dataObjectTitle,
-              fields: ['data_object_title'],
-            },
-          }],
-        };
+        body.query.bool.filter.push({
+          simple_query_string: {
+            query: dataObjectTitle,
+            fields: ['data_object_payload.data_object_title'],
+          },
+        });
       }
+    } else {
+      return resolve(null);
     }
 
-    return elasticsearch.request(
-      'POST',
-      '/dos/do/_search',
-      body
-    ).then(doResults => {
+    return elasticsearch.request('post', '_search', body).then(doResults => {
       doResults = (doResults.hits || {}).hits;
       const dataObject = doResults ? doResults[0] : null;
       if (dataObject) {
         body = this.constructQueryBaseBody(size);
         body.query.bool = {
           must: [{
+            term: {
+              type: 'study',
+            },
+          }, {
             terms: {
-              id: dataObject._source.related_studies.mapBy('id'),
+              'study_payload.id': dataObject._source.data_object_payload.related_studies.mapBy('id'),
             },
           }],
         };
-        return elasticsearch.request(
-          'POST',
-          '/studies/study/_search',
-          body
-        );
+        return elasticsearch.request('post', '_search', body);
       } else {
         return null;
       }

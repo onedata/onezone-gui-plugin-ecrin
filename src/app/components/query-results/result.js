@@ -1,6 +1,6 @@
 import Component from '@ember/component';
 import { observer, computed, get, set, getProperties } from '@ember/object';
-import { reads, alias, equal, or } from '@ember/object/computed';
+import { reads, alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
 import { resolve } from 'rsvp';
@@ -63,27 +63,12 @@ export default Component.extend(I18n, {
    */
   source: reads('result._source'),
 
+  studyPayload: reads('source.study_payload'),
+
   /**
    * @type {Ember.ComputedProperty<string>}
    */
   id: reads('result._id'),
-
-  /**
-   * @type {Ember.ComputedProperty<string>}
-   */
-  title: or('source.title', 'source.data_object_title'),
-
-  /**
-   * @type {Ember.ComputedProperty<string>}
-   */
-  resultType: reads('result._type'),
-
-  /**
-   * Is true if component should show multiple studies for DO instead of
-   * multiple DOs for study
-   * @type {Ember.ComputedProperty<boolean>}
-   */
-  isRelationInverted: equal('resultType', 'do'),
 
   /**
    * @type {Ember.ComputedProperty<Ember.A<Object>>}
@@ -94,53 +79,12 @@ export default Component.extend(I18n, {
    * Is different than -1 if inner records have been fetched at least once
    * @type {Ember.ComputedProperty<number>}
    */
-  innerRecordsNumber: alias('result.innerRecordNumber'),
-
-  /**
-   * @type {Ember.ComputedProperty<string>}
-   */
-  innerRecordsQueryPath: computed(
-    'isRelationInverted',
-    function innerRecordsSearchPath() {
-      return this.get('isRelationInverted') ?
-        '/studies/study/_search' : '/dos/do/_search';
-    }
-  ),
+  innerRecordsNumber: alias('result.innerRecordsNumber'),
 
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  dataObjects: computed(
-    'result',
-    'isRelationInverted',
-    'innerRecords',
-    function dataObjects() {
-      const {
-        result,
-        isRelationInverted,
-        innerRecords,
-      } = this.getProperties(
-        'result',
-        'isRelationInverted',
-        'innerRecords'
-      );
-      return isRelationInverted ? [result] : innerRecords;
-    }
-  ),
-
-  /**
-   * @type {Ember.ComputedProperty<Array<Object>>}
-   */
-  studies: computed('isRelationInverted', 'innerRecords', function studies() {
-    const {
-      isRelationInverted,
-      innerRecords,
-    } = this.getProperties(
-      'isRelationInverted',
-      'innerRecords'
-    );
-    return isRelationInverted ? innerRecords : [];
-  }),
+  dataObjects: reads('innerRecords'),
 
   isExpandedObserver: observer(
     'isExpanded',
@@ -190,8 +134,6 @@ export default Component.extend(I18n, {
         elasticsearch,
         innerRecordsNumber,
         innerRecords,
-        innerRecordsQueryPath,
-        isRelationInverted,
         source,
         typeMapping,
         doParams,
@@ -199,8 +141,6 @@ export default Component.extend(I18n, {
         'elasticsearch',
         'innerRecordsNumber',
         'innerRecords',
-        'innerRecordsQueryPath',
-        'isRelationInverted',
         'source',
         'typeMapping',
         'doParams',
@@ -217,94 +157,77 @@ export default Component.extend(I18n, {
         'parsedYearFilter',
         'publisherFilter'
       );
-      let body = {};
-      let searchAfter = undefined;
-      if (isRelationInverted) {
-        if (innerRecordsNumber > 0) {
-          searchAfter = [get(innerRecords, 'lastObject._id')];
-        }
-        body = {
-          sort: {
-            _id: 'asc',
+
+      const body = {
+        sort: {
+          'data_object_payload.publication_year': 'asc',
+          '_id': 'asc',
+        },
+        size: 15,
+        query: {
+          bool: {
+            filter: [{
+              term: {
+                type: 'data_object',
+              },
+            }, {
+              terms: {
+                'data_object_payload.id': get(source, 'study_payload.linked_data_objects').mapBy('id'),
+              },
+            }],
           },
-          size: 10000,
-          query: {
-            terms: {
-              id: get(source, 'related_studies').mapBy('id'),
-            },
-          },
-        };
-      } else {
-        if (innerRecordsNumber > 0) {
-          searchAfter = [
-            get(innerRecords, 'lastObject._source.publication_year') || 0,
-            get(innerRecords, 'lastObject._id'),
-          ];
-        }
-        body = {
-          sort: {
-            publication_year: 'asc',
-            _id: 'asc',
-          },
-          size: 15,
-          query: {
-            bool: {
-              filter: [{
-                terms: {
-                  id: get(source, 'linked_data_objects').mapBy('id'),
-                },
-              }],
-            },
-          },
-        };
-        if (typeFilter && get(typeFilter, 'length')) {
-          body.query.bool.filter.push({
-            terms: {
-              'type.id': typeFilter.mapBy('id'),
-            },
-          });
-        }
-        if (accessTypeFilter && get(accessTypeFilter, 'length')) {
-          body.query.bool.filter.push({
-            terms: {
-              'access_type.id': accessTypeFilter.mapBy('id'),
-            },
-          });
-        }
-        if (parsedYearFilter && parsedYearFilter.length) {
-          body.query.bool = body.query.bool || {};
-          body.query.bool.filter = body.query.bool.filter || [];
-          const filter = {
-            bool: {
-              should: [],
-            },
-          };
-          parsedYearFilter.forEach(rangeOrNumber => {
-            if (typeof rangeOrNumber === 'number') {
-              filter.bool.should.push({
-                term: {
-                  publication_year: rangeOrNumber,
-                },
-              });
-            } else {
-              filter.bool.should.push({
-                range: {
-                  publication_year: {
-                    gte: rangeOrNumber.start,
-                    lte: rangeOrNumber.end,
-                  },
-                },
-              });
-            }
-          });
-          body.query.bool.filter.push(filter);       
-        }
+        },
+      };
+      if (innerRecordsNumber > 0) {
+        body.search_after = [
+          get(innerRecords, 'lastObject._source.data_object_payload.publication_year') || 0,
+          get(innerRecords, 'lastObject._id'),
+        ];
       }
-      if (searchAfter) {
-        body.search_after = searchAfter;
+      if (typeFilter && get(typeFilter, 'length')) {
+        body.query.bool.filter.push({
+          terms: {
+            'data_object_payload.type.id': typeFilter.mapBy('id'),
+          },
+        });
+      }
+      if (accessTypeFilter && get(accessTypeFilter, 'length')) {
+        body.query.bool.filter.push({
+          terms: {
+            'data_object_payload.access_type.id': accessTypeFilter.mapBy('id'),
+          },
+        });
+      }
+      if (parsedYearFilter && parsedYearFilter.length) {
+        body.query.bool = body.query.bool || {};
+        body.query.bool.filter = body.query.bool.filter || [];
+        const filter = {
+          bool: {
+            should: [],
+          },
+        };
+        parsedYearFilter.forEach(rangeOrNumber => {
+          if (typeof rangeOrNumber === 'number') {
+            filter.bool.should.push({
+              term: {
+                'data_object_payload.publication_year': rangeOrNumber,
+              },
+            });
+          } else {
+            filter.bool.should.push({
+              range: {
+                'data_object_payload.publication_year': {
+                  gte: rangeOrNumber.start,
+                  lte: rangeOrNumber.end,
+                },
+              },
+            });
+          }
+        });
+        body.query.bool.filter.push(filter);       
       }
       fetchInnerRecordsProxy = PromiseObject.create({
-        promise: elasticsearch.request('POST', innerRecordsQueryPath, body)
+        promise: elasticsearch.request('post', '_search', body)
           .then(results => {
             if (innerRecordsNumber === -1) {
               safeExec(this, () => {
@@ -312,15 +235,13 @@ export default Component.extend(I18n, {
               });
             }
             const hits = results.hits.hits;
-            if (!isRelationInverted) {
-              hits.forEach(({_source: { type }}) => {
-                const typeId = get(type, 'id');
-                const typeDef = typeMapping.findBy('id', typeId);
-                if (typeDef) {
-                  set(type, 'translatedName', get(typeDef, 'name'));
-                }
-              });
-            }
+            hits.forEach(({_source: { data_object_payload: { type } } }) => {
+              const typeId = get(type, 'id');
+              const typeDef = typeMapping.findBy('id', typeId);
+              if (typeDef) {
+                set(type, 'translatedName', get(typeDef, 'name'));
+              }
+            });
             innerRecords.pushObjects(hits);
           }),
       });
