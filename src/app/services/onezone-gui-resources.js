@@ -1,3 +1,13 @@
+/**
+ * Exposes Onezone GUI resources (available through
+ * window.parent.onezoneGuiResources)
+ *
+ * @module services/onezone-gui-resources
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Service from '@ember/service';
 import { reads } from '@ember/object/computed';
 // import { computed } from '@ember/object';

@@ -1,3 +1,12 @@
+/**
+ * Exposes configuration of this application
+ *
+ * @module services/configuration
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Service, { inject as service } from '@ember/service';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 import { reads } from '@ember/object/computed';

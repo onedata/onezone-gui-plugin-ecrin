@@ -227,7 +227,7 @@ export default Component.extend(I18n, {
         body.query.bool.filter.push(filter);       
       }
       fetchInnerRecordsProxy = PromiseObject.create({
-        promise: elasticsearch.request('post', '_search', body)
+        promise: elasticsearch.post('_search', body)
           .then(results => {
             if (innerRecordsNumber === -1) {
               safeExec(this, () => {

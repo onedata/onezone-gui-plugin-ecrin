@@ -1,3 +1,12 @@
+/**
+ * Exposes REST methods of Elasticsearch
+ *
+ * @module services/elasticsearch
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Service, { inject as service } from '@ember/service';
 
 export default Service.extend({
@@ -17,39 +26,20 @@ export default Service.extend({
 
   /**
    * Makes a GET request
-   * @param {string} url
+   * @param {string} path
    * @returns {Promise<any>}
    */
-  fetch(url) {
-    return this.request('get', url);
+  fetch(path) {
+    return this.request('get', path);
   },
 
   /**
-   * Makes a GET request
-   * @param {string} url
+   * Makes a POST request
+   * @param {string} path
    * @param {any} body
    * @returns {Promise<any>}
    */
-  post(url, body) {
-    return this.request('post', url, body);
-  },
-
-  /**
-   * Makes a GET request
-   * @param {string} url
-   * @param {any} body
-   * @returns {Promise<any>}
-   */
-  put(url, body) {
-    return this.request('put', url, body);
-  },
-
-  /**
-   * Makes a DELETE request
-   * @param {string} url
-   * @returns {Promise<any>}
-   */
-  delete(url) {
-    return this.request('delete', url);
+  post(path, body) {
+    return this.request('post', path, body);
   },
 });
