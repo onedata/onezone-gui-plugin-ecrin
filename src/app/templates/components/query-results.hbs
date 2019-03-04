@@ -1,12 +1,12 @@
 <div class="data-start-row" style={{firstRowStyle}}></div>
 {{#bs-accordion onChange=(action "resultExpanded") as |acc|}}
   {{#each results as |result|}}
-    <div class="data-row" data-row-id={{result._id}}>
-      {{#acc.item value=result._id as |accItem|}}
+    <div class="data-row" data-row-id={{result.index.id}}>
+      {{#acc.item value=result.index.id as |accItem|}}
         {{query-results/result
           item=accItem
           result=result
-          isExpanded=(eq result._id expandedResultId)
+          isExpanded=(eq result.index.id expandedResultId)
           queryParams=queryParams}}
       {{/acc.item}}
     </div>

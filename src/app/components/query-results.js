@@ -55,7 +55,7 @@ export default Component.extend(I18n, {
       return 0;
     } else {
       let height = _start * rowHeight;
-      if (sourceArray.slice(0, _start).mapBy('_id').includes(expandedResultId)) {
+      if (sourceArray.slice(0, _start).map(x => get(x, 'index.id')).includes(expandedResultId)) {
         height += expandedRowExtraHeight;
       }
       return height;
@@ -109,10 +109,10 @@ export default Component.extend(I18n, {
   onListScroll(items, headerVisible) {
     const resultsArray = this.get('results');
     const sourceArray = get(resultsArray, 'sourceArray');
-    const resultsArrayIds = sourceArray.mapBy('_id');
-    const firstId = items[0] && items[0].getAttribute('data-row-id') || null;
+    const resultsArrayIds = sourceArray.map(x => get(x, 'index.id'));
+    const firstId = items[0] && Number(items[0].getAttribute('data-row-id')) || null;
     const lastId = items[items.length - 1] &&
-      items[items.length - 1].getAttribute('data-row-id') || null;
+      Number(items[items.length - 1].getAttribute('data-row-id')) || null;
     let startIndex, endIndex;
     if (firstId === null && get(sourceArray, 'length') !== 0) {
       const rowHeight = this.get('rowHeight');

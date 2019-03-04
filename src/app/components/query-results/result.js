@@ -161,7 +161,7 @@ export default Component.extend(I18n, {
       const body = {
         sort: {
           'data_object_payload.publication_year': 'asc',
-          '_id': 'asc',
+          'data_object_payload.id': 'asc',
         },
         size: 15,
         query: {
