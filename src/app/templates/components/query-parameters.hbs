@@ -24,16 +24,14 @@
         {{studyIdType.name}}
       {{/power-select}}
     </div>
-    <div class="row">
-      <div class="col-xs-12 col-sm-6 form-group">
-        <label class="control-label" for="study-id-input">{{tt this "studyId"}}</label>
-        <input
-          id="study-id-input"
-          class="form-control"
-          type="text"
-          value={{queryParams.studyId}}
-          oninput={{action (action onChange "studyId") value="target.value"}}>
-      </div>
+    <div class="col-xs-12 col-sm-6 form-group">
+      <label class="control-label" for="study-id-input">{{tt this "studyId"}}</label>
+      <input
+        id="study-id-input"
+        class="form-control"
+        type="text"
+        value={{queryParams.studyId}}
+        oninput={{action (action onChange "studyId") value="target.value"}}>
     </div>
   </div>
 {{else if (eq queryParams.mode "studyCharact")}}

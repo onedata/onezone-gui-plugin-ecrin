@@ -21,7 +21,7 @@
             {{/if}}
           </td>
           <td class="do-year">{{or dataObject._source.data_object_payload.publication_year "-"}}</td>
-          <td class="do-status"><span class="do-status-icon {{or dataObject._source.data_object_payload.status "unknown"}}"></span></td>
+          <td class="do-status"><span class="do-status-icon {{or dataObject._source.data_object_payload.access_type.indicator "unknown"}}"></span></td>
         </tr>
       {{/each}}
     </table>

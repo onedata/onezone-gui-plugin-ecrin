@@ -48,6 +48,11 @@ export default Component.extend(I18n, {
   typeMapping: reads('configuration.typeMapping'),
 
   /**
+   * @type {Ember.ComputedProperty<Array<Object>>}
+   */
+  accessTypeMapping: reads('configuration.accessTypeMapping'),
+
+  /**
    * @type {Ember.ComputedProperty<Object>}
    */
   doParams: reads('queryParams.activeDoParams'),
@@ -136,6 +141,7 @@ export default Component.extend(I18n, {
         innerRecords,
         source,
         typeMapping,
+        accessTypeMapping,
         doParams,
       } = this.getProperties(
         'elasticsearch',
@@ -143,6 +149,7 @@ export default Component.extend(I18n, {
         'innerRecords',
         'source',
         'typeMapping',
+        'accessTypeMapping',
         'doParams',
       );
       const {
@@ -235,11 +242,16 @@ export default Component.extend(I18n, {
               });
             }
             const hits = results.hits.hits;
-            hits.forEach(({_source: { data_object_payload: { type } } }) => {
+            hits.forEach(({_source: { data_object_payload: { type, access_type } } }) => {
               const typeId = get(type, 'id');
               const typeDef = typeMapping.findBy('id', typeId);
               if (typeDef) {
                 set(type, 'translatedName', get(typeDef, 'name'));
+              }
+              const accessTypeId = get(access_type, 'id');
+              const accessTypeDef = accessTypeMapping.findBy('id', accessTypeId);
+              if (accessTypeDef) {
+                set(access_type, 'indicator', get(accessTypeDef, 'indicator'));
               }
             });
             innerRecords.pushObjects(hits);

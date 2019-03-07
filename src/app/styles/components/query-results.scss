@@ -98,10 +98,13 @@
     &.unknown {
       background-color: $main-text-light-color;
     }
-    &.warning {
+    &.red {
+      background-color: $color-one-danger;
+    }
+    &.yellow {
       background-color: $color-one-warning;
     }
-    &.success {
+    &.green {
       background-color: $color-one-success;
     }
   }
