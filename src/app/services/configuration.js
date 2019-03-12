@@ -9,10 +9,13 @@
 
 import Service, { inject as service } from '@ember/service';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
+import { get } from '@ember/object';
 import { reads } from '@ember/object/computed';
+import { Promise } from 'rsvp';
 
 export default Service.extend({
   onezoneGuiResources: service(),
+  elasticsearch: service(),
 
   /**
    * @type {Object|undefined}
@@ -36,8 +39,9 @@ export default Service.extend({
 
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
+   * Set by reloadAvailableEsValues()
    */
-  publisherMapping: reads('configuration.publisherMapping'),
+  publisherMapping: undefined,
 
   /**
    * (Re)loads configuration object
@@ -52,5 +56,45 @@ export default Service.extend({
       .catch(() => safeExec(this, () => {
         this.set('configuration', undefined);
       }));
+  },
+
+  /**
+   * (Re)loads available values stored in elasticsearch
+   * @returns {Promise}
+   */
+  reloadAvailableEsValues() {
+    const elasticsearch = this.get('elasticsearch');
+    const fetchPublishers = elasticsearch.post('_search', {
+      size: 0,
+      aggs: {
+        publishers: {
+          composite: {
+            sources: [{
+              name: {
+                terms: {
+                  field : 'data_object_payload.managing_organization.name',
+                },
+              },
+            }, {
+              id: {
+                terms: {
+                  field: 'data_object_payload.managing_organization.id',
+                },
+              },
+            }],
+            size: 9999,
+          },
+        },
+      },
+    });
+    return Promise.all([
+      fetchPublishers,
+    ]).then(([publishersResult]) => {
+      const publishers = get(
+        publishersResult,
+        'aggregations.publishers.buckets'
+      ).mapBy('key').uniqBy('id');
+      this.set('publisherMapping', publishers);
+    });
   },
 });

@@ -53,6 +53,11 @@ export default Component.extend(I18n, {
   accessTypeMapping: reads('configuration.accessTypeMapping'),
 
   /**
+   * @type {Ember.ComputedProperty<Array<Object>>}
+   */
+  publisherMapping: reads('configuration.publisherMapping'),
+
+  /**
    * @type {Ember.ComputedProperty<Object>}
    */
   doParams: reads('queryParams.activeDoParams'),
@@ -156,7 +161,7 @@ export default Component.extend(I18n, {
         typeFilter,
         accessTypeFilter,
         parsedYearFilter,
-        // publisherFilter,
+        publisherFilter,
       } = getProperties(
         doParams,
         'typeFilter',
@@ -232,6 +237,14 @@ export default Component.extend(I18n, {
           }
         });
         body.query.bool.filter.push(filter);       
+      }
+      if (publisherFilter && get(publisherFilter, 'length')) {
+        body.query.bool.filter.push({
+          terms: {
+            'data_object_payload.managing_organization.id':
+              publisherFilter.mapBy('id'),
+          },
+        });
       }
       fetchInnerRecordsProxy = PromiseObject.create({
         promise: elasticsearch.post('_search', body)
