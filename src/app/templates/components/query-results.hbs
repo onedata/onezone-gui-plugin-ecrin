@@ -1,3 +1,8 @@
+{{#unless (eq totalResultsNumber -1)}}
+  <div class="total-records-number">
+    {{tt this "results"}}: <span class="one-label">{{totalResultsNumber}}</span>
+  </div>
+{{/unless}}
 <div class="data-start-row" style={{firstRowStyle}}></div>
 {{#bs-accordion onChange=(action "resultExpanded") as |acc|}}
   {{#each results as |result|}}

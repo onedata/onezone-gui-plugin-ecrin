@@ -4,5 +4,8 @@
   onFind=(action "find")
   onClearAll=(action "clearAll")
   onFilter=(action "filter")}}
-{{query-results results=queryResults queryParams=queryParams}}
+{{query-results
+  totalResultsNumber=queryResultsNumber
+  results=queryResults
+  queryParams=queryParams}}
 {{yield}}

@@ -30,6 +30,13 @@ export default Component.extend(I18n, {
   mode: reads('queryParams.mode'),
 
   /**
+   * Number of records, that fulfills query conditions. -1 means, that results are
+   * not available.
+   * @type {number}
+   */
+  queryResultsNumber: -1,
+
+  /**
    * @type {Ember.ComputedProperty<Utils.ReplacingChunksArray>}
    */
   queryResults: computed(function queryResults() {
@@ -74,23 +81,15 @@ export default Component.extend(I18n, {
   extractResultsFromResponse(promise, startFromIndex) {
     return promise.then(results => {
       if (results) {
-        // if is an array of documents
-        if (results.hits !== undefined) {
-          results = results.hits.hits;
-          results.forEach((doc, i) => {
-            doc.index = {
-              index: (startFromIndex.index || 0) + i,
-              id: get(doc, '_source.' + get(doc, '_source.type') + '_payload.id'),
-            };
-          });
-          return results;
-        } else {
-          results.index = {
-            index: 0,
-            id: get(results, '_source.' + get(results, '_source.type') + '_payload.id'),
+        this.set('queryResultsNumber', get(results, 'total'));
+        results = get(results, 'results.hits.hits');
+        results.forEach((doc, i) => {
+          doc.index = {
+            index: (startFromIndex.index || 0) + i,
+            id: get(doc, '_source.' + get(doc, '_source.type') + '_payload.id'),
           };
-          return [results];
-        }
+        });
+        return results;
       }
        else {
         return [];
@@ -180,7 +179,10 @@ export default Component.extend(I18n, {
       });
     }
 
-    return elasticsearch.post('_search', body);
+    return elasticsearch.post('_search', body).then(results => ({
+      results,
+      total: get(results, 'hits.total'),
+    }));
   },
 
   fetchStudyCharact(startFromIndex, size) {
@@ -217,7 +219,10 @@ export default Component.extend(I18n, {
       }
     }
 
-    return elasticsearch.post('_search', body);
+    return elasticsearch.post('_search', body).then(results => ({
+      results,
+      total: get(results, 'hits.total'),
+    }));
   },
 
   fetchViaPubPaper(startFromIndex, size) {
@@ -297,7 +302,7 @@ export default Component.extend(I18n, {
               return this.fetchViaPubPaper({
                 index: (get(startFromIndex, 'index') || -1) + hitsNumber,
                 id: relatedStudiesIds[get(relatedStudiesIds, 'length') - 1],
-              }, size - hitsNumber).then(nextResults => {
+              }, size - hitsNumber).then(({results: nextResults}) => {
                 set(
                   results,
                   'hits.total',
@@ -309,7 +314,10 @@ export default Component.extend(I18n, {
             } else {
               return results;
             }
-          });
+          }).then(results => ({
+            results,
+            total: -1,
+          }));
         } else {
           return null;
         }
@@ -317,23 +325,26 @@ export default Component.extend(I18n, {
   },
 
   find() {
-    this.set('queryResults', ReplacingChunksArray.create({
-      fetch: (...fetchArgs) => this.fetchResults(...fetchArgs),
-      startIndex: 0,
-      endIndex: 50,
-      indexMargin: 24,
-      sortFun: (a, b) => {
-        const ai = get(a, 'index.index');
-        const bi = get(b, 'index.index');
-        if (ai < bi) {
-          return -1;
-        } else if (ai > bi) {
-          return 1;
-        } else {
-          return 0;
-        }
-      },
-    }));
+    this.setProperties({
+      queryResults: ReplacingChunksArray.create({
+        fetch: (...fetchArgs) => this.fetchResults(...fetchArgs),
+        startIndex: 0,
+        endIndex: 50,
+        indexMargin: 24,
+        sortFun: (a, b) => {
+          const ai = get(a, 'index.index');
+          const bi = get(b, 'index.index');
+          if (ai < bi) {
+            return -1;
+          } else if (ai > bi) {
+            return 1;
+          } else {
+            return 0;
+          }
+        },
+      }),
+      queryResultsNumber: -1,
+    });
   },
 
   actions: {

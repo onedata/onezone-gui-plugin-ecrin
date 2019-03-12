@@ -22,6 +22,12 @@ export default Component.extend(I18n, {
 
   /**
    * @virtual
+   * @type {number}
+   */
+  totalResultsNumber: undefined,
+
+  /**
+   * @virtual
    * @type {Utils.QueryParams}
    */
   queryParams: undefined,
