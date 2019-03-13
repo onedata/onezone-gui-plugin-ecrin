@@ -37,6 +37,11 @@ export default Component.extend(I18n, {
   queryParams: undefined,
 
   /**
+   * @type {boolean}
+   */
+  areDataObjectFiltersVisible: true,
+
+  /**
    * @type {Array<string>}
    */
   modeOptions: Object.freeze([
@@ -64,4 +69,10 @@ export default Component.extend(I18n, {
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   publisherFilterOptions: reads('configuration.publisherMapping'),
+
+  actions: {
+    toggleDataObjectFilters() {
+      this.toggleProperty('areDataObjectFiltersVisible');
+    },
+  },
 });

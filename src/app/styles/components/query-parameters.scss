@@ -2,4 +2,33 @@
   .form-group {
     margin-bottom: $padding-base-vertical;
   }
+  .data-object-filters-toggle {
+    cursor: pointer;
+  }
+  .data-object-filters {
+    margin-top: $padding-base-vertical;
+    transition: border-color 0.2s linear, margin-top 0.2s linear;
+    &.collapsed {
+      border-color: transparent;
+      box-shadow: none;
+      margin-top: 0;
+    }
+  }
+  @media (min-width: $screen-sm-min) {
+    .study-filters {
+      width: calc(100% - 105px);
+    }
+    .find-button {
+      position: absolute;
+      right: 0;
+      bottom: $padding-base-vertical;
+    }
+  }
+  @media (max-width: $screen-xs-max) {
+    .data-object-filters-toggle {
+      position: absolute;
+      bottom: 0;
+      left: ceil($grid-gutter-width / 2);
+    }
+  }
 }

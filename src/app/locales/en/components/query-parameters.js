@@ -1,4 +1,6 @@
 export default {
+  hideDataObjectFilters: 'Hide data object filters',
+  showDataObjectFilters: 'Show data object filters',
   search: 'Search',
   selectMode: 'Select mode',
   studyIdType: 'Study ID type',
