@@ -86,7 +86,7 @@ export default Component.extend(I18n, {
         results.forEach((doc, i) => {
           doc.index = {
             index: (startFromIndex.index || 0) + i,
-            id: get(doc, '_source.' + get(doc, '_source.type') + '_payload.id'),
+            id: get(doc, '_source.id'),
           };
         });
         return results;
@@ -113,10 +113,9 @@ export default Component.extend(I18n, {
     switch (type) {
       case 'study':
         _source = [
-          'type',
-          'study_payload.id',
-          'study_payload.scientific_title.title',
-          'study_payload.linked_data_objects',
+          'id',
+          'scientific_title.title',
+          'linked_data_objects',
         ];
         break;
     }
@@ -125,20 +124,16 @@ export default Component.extend(I18n, {
       _source,
       sort: [
         // FIXME sorting text fields does not work
-        { [type + '_payload.id']: 'asc' },
+        { id: 'asc' },
       ],
     });
-    if (type) {
-      set(body, 'query', {
-        bool: {
-          filter: [{
-            term: {
-              type,
-            },
-          }],
-        },
-      });
-    }
+    // if (type) {
+    //   set(body, 'query', {
+    //     bool: {
+    //       filter: [],
+    //     },
+    //   });
+    // }
     return body;
   },
 
@@ -159,27 +154,31 @@ export default Component.extend(I18n, {
         'studyId'
       );
 
-      get(body, 'query.bool.filter').push({
-        nested: {
-          path: 'study_payload.study_identifiers',
-          query: {
-            bool: {
-              must: [{
-                term: {
-                  'study_payload.study_identifiers.type.id': get(studyIdType, 'id'),
+      set(body, 'query', {
+        bool: {
+          filter: [{
+            nested: {
+              path: 'study_identifiers',
+              query: {
+                bool: {
+                  must: [{
+                    term: {
+                      'study_identifiers.type.id': get(studyIdType, 'id'),
+                    },
+                  }, {
+                    term: {
+                      'study_identifiers.value': studyId,
+                    },
+                  }],
                 },
-              }, {
-                term: {
-                  'study_payload.study_identifiers.value': studyId,
-                },
-              }],
+              },
             },
-          },
+          }],
         },
       });
     }
 
-    return elasticsearch.post('_search', body).then(results => ({
+    return elasticsearch.post('study', '_search', body).then(results => ({
       results,
       total: get(results, 'hits.total'),
     }));
@@ -193,6 +192,11 @@ export default Component.extend(I18n, {
     const body = this.constructQueryBodyBase('study', startFromIndex, size);
 
     if (get(queryParams, 'hasParams')) {
+      set(body, 'query', {
+        bool: {
+          filter: [],
+        },
+      });
       const {
         studyTitleContains,
         studyTopicsInclude,
@@ -205,7 +209,7 @@ export default Component.extend(I18n, {
         get(body, 'query.bool.filter').push({
           simple_query_string: {
             query: studyTitleContains,
-            fields: ['study_payload.scientific_title.title'],
+            fields: ['scientific_title.title'],
           },
         });
       }
@@ -213,13 +217,13 @@ export default Component.extend(I18n, {
         get(body, 'query.bool.filter').push({
           simple_query_string: {
             query: studyTopicsInclude,
-            fields: ['study_payload.study_topics.value'],
+            fields: ['study_topics.value'],
           },
         });
       }
     }
 
-    return elasticsearch.post('_search', body).then(results => ({
+    return elasticsearch.post('study', '_search', body).then(results => ({
       results,
       total: get(results, 'hits.total'),
     }));
@@ -241,7 +245,7 @@ export default Component.extend(I18n, {
             sources: [{
               id: {
                 terms: {
-                  field: 'data_object_payload.related_studies.id',
+                  field: 'related_studies.id',
                 },
               },
             }],
@@ -254,6 +258,11 @@ export default Component.extend(I18n, {
     }
 
     if (get(queryParams, 'hasParams')) {
+      set(dataObjectBody, 'query', {
+        bool: {
+          filter: [],
+        },
+      });
       const {
         doi,
         dataObjectTitle,
@@ -261,7 +270,7 @@ export default Component.extend(I18n, {
       if (doi) {
         get(dataObjectBody, 'query.bool.filter').push({
           term: {
-            'data_object_payload.DOI': doi,
+            DOI: doi,
           },
         });
       }
@@ -269,7 +278,7 @@ export default Component.extend(I18n, {
         get(dataObjectBody, 'query.bool.filter').push({
           simple_query_string: {
             query: dataObjectTitle,
-            fields: ['data_object_payload.data_object_title'],
+            fields: ['data_object_title'],
           },
         });
       }
@@ -277,7 +286,7 @@ export default Component.extend(I18n, {
       return resolve(null);
     }
     let noStudyIdsLeft = false;
-    return elasticsearch.post('_search', dataObjectBody)
+    return elasticsearch.post('data_object', '_search', dataObjectBody)
       .then(results => {
         let relatedStudiesIds = (get(
           results,
@@ -291,12 +300,16 @@ export default Component.extend(I18n, {
           relatedStudiesIds = _.uniq(relatedStudiesIds);
           const studyBody =
             this.constructQueryBodyBase('study', undefined, size);
-          get(studyBody, 'query.bool.filter').push({
-            terms: {
-              'study_payload.id': relatedStudiesIds,
+          set(studyBody, 'query', {
+            bool: {
+              filter: [{
+                terms: {
+                  id: relatedStudiesIds,
+                },
+              }],
             },
           });
-          return elasticsearch.post('_search', studyBody).then(results => {
+          return elasticsearch.post('study', '_search', studyBody).then(results => {
             const hitsNumber = get(results, 'hits.total');
             if (hitsNumber < size && !noStudyIdsLeft) {
               return this.fetchViaPubPaper({

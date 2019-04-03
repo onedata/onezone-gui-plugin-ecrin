@@ -64,7 +64,7 @@ export default Service.extend({
    */
   reloadAvailableEsValues() {
     const elasticsearch = this.get('elasticsearch');
-    const fetchPublishers = elasticsearch.post('_search', {
+    const fetchPublishers = elasticsearch.post('data_object', '_search', {
       size: 0,
       aggs: {
         publishers: {
@@ -72,13 +72,13 @@ export default Service.extend({
             sources: [{
               name: {
                 terms: {
-                  field : 'data_object_payload.managing_organization.name',
+                  field : 'managing_organization.name',
                 },
               },
             }, {
               id: {
                 terms: {
-                  field: 'data_object_payload.managing_organization.id',
+                  field: 'managing_organization.id',
                 },
               },
             }],

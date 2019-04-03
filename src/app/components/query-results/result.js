@@ -172,19 +172,15 @@ export default Component.extend(I18n, {
 
       const body = {
         sort: {
-          'data_object_payload.publication_year': 'asc',
-          'data_object_payload.id': 'asc',
+          publication_year: 'asc',
+          id: 'asc',
         },
         size: 15,
         query: {
           bool: {
             filter: [{
-              term: {
-                type: 'data_object',
-              },
-            }, {
               terms: {
-                'data_object_payload.id': get(source, 'study_payload.linked_data_objects').mapBy('id'),
+                id: get(source, 'linked_data_objects').mapBy('id'),
               },
             }],
           },
@@ -192,21 +188,21 @@ export default Component.extend(I18n, {
       };
       if (innerRecordsNumber > 0) {
         body.search_after = [
-          get(innerRecords, 'lastObject._source.data_object_payload.publication_year') || 0,
+          get(innerRecords, 'lastObject._source.publication_year') || 0,
           get(innerRecords, 'lastObject._id'),
         ];
       }
       if (typeFilter && get(typeFilter, 'length')) {
         body.query.bool.filter.push({
           terms: {
-            'data_object_payload.type.id': typeFilter.mapBy('id'),
+            'type.id': typeFilter.mapBy('id'),
           },
         });
       }
       if (accessTypeFilter && get(accessTypeFilter, 'length')) {
         body.query.bool.filter.push({
           terms: {
-            'data_object_payload.access_type.id': accessTypeFilter.mapBy('id'),
+            'access_type.id': accessTypeFilter.mapBy('id'),
           },
         });
       }
@@ -222,13 +218,13 @@ export default Component.extend(I18n, {
           if (typeof rangeOrNumber === 'number') {
             filter.bool.should.push({
               term: {
-                'data_object_payload.publication_year': rangeOrNumber,
+                publication_year: rangeOrNumber,
               },
             });
           } else {
             filter.bool.should.push({
               range: {
-                'data_object_payload.publication_year': {
+                publication_year: {
                   gte: rangeOrNumber.start,
                   lte: rangeOrNumber.end,
                 },
@@ -241,13 +237,13 @@ export default Component.extend(I18n, {
       if (publisherFilter && get(publisherFilter, 'length')) {
         body.query.bool.filter.push({
           terms: {
-            'data_object_payload.managing_organization.id':
+            'managing_organization.id':
               publisherFilter.mapBy('id'),
           },
         });
       }
       fetchInnerRecordsProxy = PromiseObject.create({
-        promise: elasticsearch.post('_search', body)
+        promise: elasticsearch.post('data_object', '_search', body)
           .then(results => {
             if (innerRecordsNumber === -1) {
               safeExec(this, () => {
@@ -255,7 +251,7 @@ export default Component.extend(I18n, {
               });
             }
             const hits = results.hits.hits;
-            hits.forEach(({_source: { data_object_payload: { type, access_type } } }) => {
+            hits.forEach(({_source: { type, access_type } }) => {
               const typeId = get(type, 'id');
               const typeDef = typeMapping.findBy('id', typeId);
               if (typeDef) {
