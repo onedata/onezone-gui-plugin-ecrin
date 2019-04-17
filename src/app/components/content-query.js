@@ -106,7 +106,7 @@ export default Component.extend(I18n, {
 
   constructQueryBodyBase(type, startFromIndex, size) {
     const body = {};
-    if (startFromIndex && get(startFromIndex, 'index')) {
+    if (startFromIndex && get(startFromIndex, 'index') !== undefined) {
       set(body, 'search_after', [ startFromIndex.id ]);
     }
     let _source;

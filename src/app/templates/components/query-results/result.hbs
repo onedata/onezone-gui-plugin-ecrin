@@ -11,17 +11,17 @@
     <table class="do-records table">
       {{#each dataObjects as |dataObject|}}
         <tr>
-          <td class="do-type">{{or dataObject._source.data_object_payload.type.translatedName dataObject._source.data_object_payload.type.name}}</td>
+          <td class="do-type">{{or dataObject._source.type.translatedName dataObject._source.type.name}}</td>
           <td class="do-description">
-            {{#if dataObject._source.data_object_payload.data_object_title}}
-              <p>{{dataObject._source.data_object_payload.data_object_title}}</p>
+            {{#if dataObject._source.data_object_title}}
+              <p>{{dataObject._source.data_object_title}}</p>
             {{/if}}
             {{#if dataObject._source.url}}
               <p>{{dataObject._source.url}}</p>
             {{/if}}
           </td>
-          <td class="do-year">{{or dataObject._source.data_object_payload.publication_year "-"}}</td>
-          <td class="do-status"><span class="do-status-icon {{or dataObject._source.data_object_payload.access_type.indicator "unknown"}}"></span></td>
+          <td class="do-year">{{or dataObject._source.publication_year "-"}}</td>
+          <td class="do-status"><span class="do-status-icon {{or dataObject._source.access_type.indicator "unknown"}}"></span></td>
         </tr>
       {{/each}}
     </table>
