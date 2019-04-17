@@ -16,6 +16,10 @@ export default {
   find: 'Find',
   clearAll: 'Clear all',
   filter: 'Filter',
+  studyTitleTopicOperatorOptions: {
+    and: 'AND',
+    or: 'OR',
+  },
   modes: {
     specificStudy: 'Specific study',
     studyCharact: 'Study characteristics',

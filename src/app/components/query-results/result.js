@@ -73,7 +73,7 @@ export default Component.extend(I18n, {
    */
   source: reads('result._source'),
 
-  studyPayload: reads('source.study_payload'),
+  studyPayload: reads('source'),
 
   /**
    * @type {Ember.ComputedProperty<string>}

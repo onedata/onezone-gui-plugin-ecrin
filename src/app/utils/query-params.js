@@ -32,6 +32,19 @@ export default EmberObject.extend({
   studyTopicsInclude: '',
 
   /**
+   * Only for mode === 'studyCharact'
+   * @type {string}
+   */
+  studyTitleTopicOperator: computed({
+    get() {
+      return 'and';
+    },
+    set(key, value) {
+      return ['and', 'or'].includes(value) ? value : 'and';
+    },
+  }),
+
+  /**
    * @type {string}
    */
   typeFilter: Object.freeze([]),
@@ -157,6 +170,7 @@ export default EmberObject.extend({
     'studyId',
     'studyTitleContains',
     'studyTopicsInclude',
+    'studyTitleTopicOperator',
     'doi',
     'dataObjectTitle',
     function queryParams() {
@@ -194,6 +208,7 @@ export default EmberObject.extend({
           [
             'studyTitleContains',
             'studyTopicsInclude',
+            'studyTitleTopicOperator',
           ].forEach(filterName => {
             const filter = this.get(filterName);
             if (filter) {

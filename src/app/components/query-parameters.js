@@ -53,6 +53,11 @@ export default Component.extend(I18n, {
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
+  studyTitleTopicOperatorOptions: Object.freeze(['and', 'or']),
+
+  /**
+   * @type {Ember.ComputedProperty<Array<Object>>}
+   */
   studyIdTypeMapping: reads('configuration.studyIdTypeMapping'),
 
   /**

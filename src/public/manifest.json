@@ -1,234 +1,203 @@
 {
   "onedata": {
     "version": "0.01",
-    "indices": [{
-      "name": "study",
-      "schema": {
-        "mappings": {
-          "_doc": {
-            "properties": {
-              "id": {
-                "type": "long"
-              },
-              "linked_data_objects": {
-                "properties": {
-                  "id": {
-                    "type": "long"
-                  }
+    "defaultGuiConfiguration": {
+      "studyIdTypeMapping": [
+        {
+          "id": 11,
+          "name": "Trial Registry ID"
+        }
+      ],
+      "typeMapping": [
+        {
+          "name": "Trial Registry entry",
+          "id": 13
+        }
+      ],
+      "accessTypeMapping": [
+        {
+          "name": "Public on-screen access (open)",
+          "id": 12
+        }
+      ]
+    },
+    "indices": [
+      {
+        "name": "study",
+        "schema": {
+          "settings": {
+            "index.mapping.ignore_malformed": true,
+            "index.number_of_shards": 1,
+            "index.auto_expand_replicas": "0-all",
+            "analysis": {
+              "analyzer": {
+                "index_default_analyzer": {
+                  "type": "standard",
+                  "tokenizer": "index_default_tokenizer",
+                  "stopwords": "_english_"
                 }
               },
-              "object_type": {
-                "type": "text",
-                "fields": {
-                  "keyword": {
-                    "type": "keyword",
-                    "ignore_above": 256
-                  }
+              "tokenizer": {
+                "index_default_tokenizer": {
+                  "type": "standard"
                 }
+              }
+            }
+          },
+          "mappings": {
+            "_doc": {
+              "dynamic": "strict",
+              "_source": {
+                "enabled": true
               },
-              "scientific_title": {
-                "properties": {
-                  "lang_code": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "linked_data_objects": {
+                  "type": "nested",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
                     }
-                  },
-                  "title": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
+                  }
+                },
+                "object_type": {
+                  "type": "text"
+                },
+                "scientific_title": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "text"
+                    },
+                    "lang_code": {
+                      "type": "text"
                     }
                   }
-                }
-              },
-              "study_identifiers": {
-                "type": "nested",
-                "properties": {
-                  "date": {
-                    "type": "text"
-                  },
-                  "id": {
-                    "type": "long"
-                  },
-                  "organization": {
-                    "properties": {
-                      "id": {
-                        "type": "long"
-                      },
-                      "name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
+                },
+                "study_identifiers": {
+                  "type": "nested",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "value": {
+                      "type": "text",
+                      "analyzer": "keyword"
+                    },
+                    "organization": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "text"
                         }
                       }
-                    }
-                  },
-                  "type": {
-                    "properties": {
-                      "id": {
-                        "type": "long"
-                      },
-                      "name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "value": {
-                    "type": "keyword"
-                  }
-                }
-              },
-              "study_other_titles": {
-                "properties": {
-                  "id": {
-                    "type": "long"
-                  },
-                  "lang_code": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "title_text": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "title_type": {
-                    "properties": {
-                      "id": {
-                        "type": "long"
-                      },
-                      "name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
+                    },
+                    "date": {
+                      "type": "date",
+                      "format": "YYYY-MM-DD"
+                    },
+                    "type": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "keyword"
                         }
                       }
                     }
                   }
-                }
-              },
-              "study_status": {
-                "properties": {
-                  "id": {
-                    "type": "long"
-                  },
-                  "name": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
+                },
+                "study_topics": {
+                  "type": "nested",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "topic_source_type": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "text"
+                        }
                       }
+                    },
+                    "value": {
+                      "type": "text"
+                    },
+                    "topic_ct": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "text"
+                        },
+                        "url": {
+                          "type": "text",
+                          "analyzer": "keyword"
+                        }
+                      }
+                    },
+                    "topic_ct_code": {
+                      "type": "text"
                     }
                   }
-                }
-              },
-              "study_topics": {
-                "properties": {
-                  "id": {
-                    "type": "long"
-                  },
-                  "topic_ct": {
-                    "properties": {
-                      "id": {
-                        "type": "long"
-                      },
-                      "name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      },
-                      "url": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "topic_ct_code": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "topic_source_type": {
-                    "properties": {
-                      "id": {
-                        "type": "long"
-                      },
-                      "name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "value": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
+                },
+                "study_status": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "text"
                     }
                   }
-                }
-              },
-              "study_type": {
-                "properties": {
-                  "id": {
-                    "type": "long"
-                  },
-                  "name": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
+                },
+                "study_type": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "study_other_titles": {
+                  "type": "nested",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "title_type": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "text"
+                        }
                       }
+                    },
+                    "title_text": {
+                      "type": "text"
+                    },
+                    "lang_code": {
+                      "type": "text"
                     }
                   }
                 }
@@ -236,497 +205,312 @@
             }
           }
         }
-      }
-    }, {
-      "name": "data_object",
-      "schema": {
-        "mappings": {
-          "_doc": {
-            "properties": {
-              "DOI": {
-                "type": "keyword"
-              },
-              "access_details": {
-                "type": "text",
-                "fields": {
-                  "keyword": {
-                    "type": "keyword",
-                    "ignore_above": 256
-                  }
+      },
+      {
+        "name": "data_object",
+        "schema": {
+          "settings": {
+            "index.mapping.ignore_malformed": true,
+            "index.mapper.dynamic": "strict",
+            "index.number_of_shards": 1,
+            "index.auto_expand_replicas": "0-all",
+            "analysis": {
+              "analyzer": {
+                "index_default_analyzer": {
+                  "type": "standard",
+                  "tokenizer": "index_default_tokenizer",
+                  "stopwords": "_english_"
                 }
               },
-              "access_details_url": {
-                "type": "text",
-                "fields": {
-                  "keyword": {
-                    "type": "keyword",
-                    "ignore_above": 256
-                  }
+              "tokenizer": {
+                "index_default_tokenizer": {
+                  "type": "standard"
                 }
+              }
+            }
+          },
+          "mappings": {
+            "_doc": {
+              "_source": {
+                "enabled": true
               },
-              "access_type": {
-                "properties": {
-                  "id": {
-                    "type": "long"
-                  },
-                  "name": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  }
-                }
-              },
-              "class": {
-                "properties": {
-                  "id": {
-                    "type": "long"
-                  },
-                  "name": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
+              "properties": {
+                "DOI": {
+                  "type": "text"
+                },
+                "access_details": {
+                  "type": "text"
+                },
+                "access_detail_url": {
+                  "type": "text"
+                },
+                "access_type": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "text"
                     }
                   }
-                }
-              },
-              "data_object_contributors": {
-                "properties": {
-                  "contribution_type": {
-                    "properties": {
-                      "id": {
-                        "type": "long"
-                      },
-                      "name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
+                },
+                "class": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "data_object_contributors": {
+                  "type": "nested",
+                  "properties": {
+                    "contribution_type": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "text"
                         }
                       }
-                    }
-                  },
-                  "id": {
-                    "type": "long"
-                  },
-                  "organization": {
-                    "properties": {
-                      "id": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      },
-                      "name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "person_data": {
-                    "properties": {
-                      "affiliation": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      },
-                      "email": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      },
-                      "first_name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      },
-                      "full_name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      },
-                      "id": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      },
-                      "last_name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "person_data": {
+                      "type": "object",
+                      "properties": {
+                        "affiliation": {
+                          "type": "text"
+                        },
+                        "email": {
+                          "type": "text"
+                        },
+                        "first_name": {
+                          "type": "text"
+                        },
+                        "full_name": {
+                          "type": "text"
+                        },
+                        "id": {
+                          "type": "integer"
+                        },
+                        "last_name": {
+                          "type": "text"
                         }
                       }
                     }
                   }
-                }
-              },
-              "data_object_dates": {
-                "properties": {
-                  "comments": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
+                },
+                "data_object_dates": {
+                  "type": "nested",
+                  "properties": {
+                    "comments": {
+                      "type": "text"
+                    },
+                    "date_type": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "text"
+                        }
                       }
+                    },
+                    "end_date": {
+                      "type": "date",
+                      "format": "YYYY-MM-DD"
+                    },
+                    "start_date": {
+                      "type": "date",
+                      "format": "YYYY-MM-DD"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "is_date_range": {
+                      "type": "boolean"
                     }
-                  },
-                  "date_type": {
-                    "properties": {
-                      "id": {
-                        "type": "long"
-                      },
-                      "name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
+                  }
+                },
+                "data_object_instances": {
+                  "type": "nested",
+                  "properties": {
+                    "file_type": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "text"
+                        }
+                      }
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "repository_org": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "text",
+                          "analyzer": "keyword"
+                        }
+                      }
+                    },
+                    "resource_size_unit": {
+                      "type": "text"
+                    },
+                    "size": {
+                      "type": "byte"
+                    },
+                    "url": {
+                      "type": "text",
+                      "analyzer": "keyword"
+                    },
+                    "url_direct_access": {
+                      "type": "boolean"
+                    },
+                    "url_last_checked": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "data_object_other_identifiers": {
+                  "type": "nested",
+                  "properties": {
+                    "date": {
+                      "type": "date",
+                      "format": "YYYY-MM-DD"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "text"
+                    },
+                    "type": {
+                      "type": "text"
+                    },
+                    "value": {
+                      "type": "text",
+                      "analyzer": "keyword"
+                    }
+                  }
+                },
+                "data_object_title": {
+                  "type": "text"
+                },
+                "dataset_consents": {
+                  "type": "object",
+                  "properties": {
+                    "details": {
+                      "type": "text"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "dataset_identifiers": {
+                  "type": "object",
+                  "properties": {
+                    "details": {
+                      "type": "text"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "dataset_record_keys": {
+                  "type": "object",
+                  "properties": {
+                    "details": {
+                      "type": "text"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "text"
+                    }
+                  }
+                },
+                "id": {
+                  "type": "integer"
+                },
+                "language_code": {
+                  "type": "text"
+                },
+                "managing_organization": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "text",
+                      "fields": {
+                        "raw": {
+                          "type": "keyword"
                         }
                       }
                     }
-                  },
-                  "end_date": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "id": {
-                    "type": "long"
-                  },
-                  "is_date_range": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "start_date": {
-                    "type": "date"
                   }
-                }
-              },
-              "data_object_instances": {
-                "properties": {
-                  "file_type": {
-                    "properties": {
-                      "id": {
-                        "type": "long"
-                      },
-                      "name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "id": {
-                    "type": "long"
-                  },
-                  "repository_org": {
-                    "properties": {
-                      "id": {
-                        "type": "long"
-                      },
-                      "name": {
-                        "type": "text",
-                        "fields": {
-                          "keyword": {
-                            "type": "keyword",
-                            "ignore_above": 256
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "resource_size_unit": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "size": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "url": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "url_direct_access": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "url_last_checked": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
+                },
+                "object_type": {
+                  "type": "text"
+                },
+                "publication_year": {
+                  "type": "date",
+                  "format": "YYYY"
+                },
+                "related_studies": {
+                  "type": "nested",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
                     }
                   }
-                }
-              },
-              "data_object_other_identifiers": {
-                "properties": {
-                  "date": {
-                    "type": "date"
-                  },
-                  "id": {
-                    "type": "long"
-                  },
-                  "name": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "type": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "value": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
+                },
+                "type": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "text"
                     }
                   }
-                }
-              },
-              "data_object_title": {
-                "type": "text",
-                "fields": {
-                  "keyword": {
-                    "type": "keyword",
-                    "ignore_above": 256
-                  }
-                }
-              },
-              "dataset_consents": {
-                "properties": {
-                  "details": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "id": {
-                    "type": "long"
-                  },
-                  "name": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  }
-                }
-              },
-              "dataset_identifiers": {
-                "properties": {
-                  "details": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "id": {
-                    "type": "long"
-                  },
-                  "name": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  }
-                }
-              },
-              "dataset_record_keys": {
-                "properties": {
-                  "details": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  },
-                  "id": {
-                    "type": "long"
-                  },
-                  "name": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  }
-                }
-              },
-              "id": {
-                "type": "long"
-              },
-              "language_code": {
-                "type": "text",
-                "fields": {
-                  "keyword": {
-                    "type": "keyword",
-                    "ignore_above": 256
-                  }
-                }
-              },
-              "managing_organization": {
-                "properties": {
-                  "id": {
-                    "type": "long"
-                  },
-                  "name": {
-                    "type": "keyword"
-                  }
-                }
-              },
-              "object_type": {
-                "type": "text",
-                "fields": {
-                  "keyword": {
-                    "type": "keyword",
-                    "ignore_above": 256
-                  }
-                }
-              },
-              "publication_year": {
-                "type": "long"
-              },
-              "related_studies": {
-                "properties": {
-                  "id": {
-                    "type": "long"
-                  }
-                }
-              },
-              "type": {
-                "properties": {
-                  "id": {
-                    "type": "long"
-                  },
-                  "name": {
-                    "type": "text",
-                    "fields": {
-                      "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                      }
-                    }
-                  }
-                }
-              },
-              "version": {
-                "type": "text",
-                "fields": {
-                  "keyword": {
-                    "type": "keyword",
-                    "ignore_above": 256
-                  }
+                },
+                "version": {
+                  "type": "text"
                 }
               }
             }
           }
         }
       }
-    }]
+    ]
   }
 }

@@ -12,6 +12,7 @@ export default Route.extend({
     studyId: { refreshModel: true },
     studyTitleContains: { refreshModel: true },
     studyTopicsInclude: { refreshModel: true },
+    studyTitleTopicOperator: { refreshModel: true },
     doi: { refreshModel: true },
     dataObjectTitle: { refreshModel: true },
     yearFilter: { refreshModel: false },
@@ -21,13 +22,14 @@ export default Route.extend({
   },
 
   model(params, transition) {
-    const queryParams = get(transition, 'queryParams');
+    const queryParams = get(transition, 'to.queryParams');
     const queryParamsObject = QueryParams.create();
     [
       'mode',
       'studyId',
       'studyTitleContains',
       'studyTopicsInclude',
+      'studyTitleTopicOperator',
       'yearFilter',
       'doi',
       'dataObjectTitle',

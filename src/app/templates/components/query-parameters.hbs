@@ -33,7 +33,7 @@
           oninput={{action (action onChange "studyId") value="target.value"}}>
       </div>
     {{else if (eq queryParams.mode "studyCharact")}}
-      <div class="col-xs-12 col-sm-4 form-group">
+      <div class="col-xs-12 col-sm-3 form-group">
         <label class="control-label" for="study-title-contains-input">{{tt this "studyTitleContains"}}</label>
         <input
           id="study-title-contains-input"
@@ -42,7 +42,18 @@
           value={{queryParams.studyTitleContains}}
           oninput={{action (action onChange "studyTitleContains") value="target.value"}}>
       </div>
-      <div class="col-xs-12 col-sm-4 form-group">
+      <div class="col-xs-12 col-sm-2 form-group">
+          <label class="control-label hidden-xs">&nbsp;</label>
+          {{#power-select
+            options=studyTitleTopicOperatorOptions
+            selected=queryParams.studyTitleTopicOperator
+            onchange=(action onChange "studyTitleTopicOperator")
+            searchEnabled=false
+            as |studyTitleTopicOperator|}}
+            {{tt this (concat "studyTitleTopicOperatorOptions." studyTitleTopicOperator)}}
+          {{/power-select}}
+        </div>
+      <div class="col-xs-12 col-sm-3 form-group">
         <label class="control-label" for="study-topics-include-input">{{tt this "studyTopicsInclude"}}</label>
         <input
           id="study-topics-include-input"

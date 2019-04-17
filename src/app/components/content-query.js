@@ -192,21 +192,19 @@ export default Component.extend(I18n, {
     const body = this.constructQueryBodyBase('study', startFromIndex, size);
 
     if (get(queryParams, 'hasParams')) {
-      set(body, 'query', {
-        bool: {
-          filter: [],
-        },
-      });
       const {
         studyTitleContains,
         studyTopicsInclude,
+        studyTitleTopicOperator,
       } = getProperties(
         queryParams,
         'studyTitleContains',
         'studyTopicsInclude',
+        'studyTitleTopicOperator',
       );
+      const filtersArray = [];
       if (studyTitleContains) {
-        get(body, 'query.bool.filter').push({
+        filtersArray.push({
           simple_query_string: {
             query: studyTitleContains,
             fields: ['scientific_title.title'],
@@ -214,10 +212,28 @@ export default Component.extend(I18n, {
         });
       }
       if (studyTopicsInclude) {
-        get(body, 'query.bool.filter').push({
-          simple_query_string: {
-            query: studyTopicsInclude,
-            fields: ['study_topics.value'],
+        filtersArray.push({
+          nested: {
+            path: 'study_topics',
+            query: {
+              simple_query_string: {
+                query: studyTopicsInclude,
+                fields: ['study_topics.value'],
+              },
+            },
+          },
+        });
+      }
+      if (studyTitleTopicOperator === 'or') {
+        set(body, 'query', {
+          bool: {
+            should: filtersArray,
+          },
+        });
+      } else {
+        set(body, 'query', {
+          bool: {
+            filter: filtersArray,
           },
         });
       }

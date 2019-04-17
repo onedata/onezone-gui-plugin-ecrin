@@ -72,7 +72,7 @@ export default Service.extend({
             sources: [{
               name: {
                 terms: {
-                  field : 'managing_organization.name',
+                  field : 'managing_organization.name.raw',
                 },
               },
             }, {
