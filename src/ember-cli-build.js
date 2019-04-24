@@ -37,5 +37,11 @@ module.exports = function(defaults) {
   // please specify an object with the list of modules as keys
   // along with the exports of each module as its value.
 
+  const NODE_ASSETS = [
+    'dexie/dist/dexie.min.js',
+  ];
+
+  NODE_ASSETS.forEach(path => app.import(`node_modules/${path}`));
+
   return app.toTree();
 };

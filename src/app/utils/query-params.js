@@ -308,4 +308,55 @@ export default EmberObject.extend({
       dataObjectTitle: '',
     });
   },
+
+  consumeQueryParams(queryParams, configuration) {
+    [
+      'mode',
+      'studyId',
+      'studyTitleContains',
+      'studyTopicsInclude',
+      'studyTitleTopicOperator',
+      'yearFilter',
+      'doi',
+      'dataObjectTitle',
+    ].forEach(filterName => {
+      if (queryParams[filterName]) {
+        this.set(filterName, queryParams[filterName]);
+      }
+    });
+
+    if (queryParams.studyIdType) {
+      const studyIdTypeMapping = get(configuration, 'studyIdTypeMapping');
+      const studyIdType = studyIdTypeMapping.filter(({ id }) => id == queryParams.studyIdType)[0];
+      if (studyIdType) {
+        this.set('studyIdType', studyIdType);
+      }
+    }
+
+    [
+      ['typeFilter', 'typeMapping'],
+      ['accessTypeFilter', 'accessTypeMapping'],
+      ['publisherFilter', 'publisherMapping'],
+    ].forEach(([filterName, mappingName]) => {
+      let filters = queryParams[filterName];
+      try {
+        filters = JSON.parse(queryParams[filterName]);
+      } catch (e) {
+        filters = [];
+      }
+      if (filters && filters.length) {
+        const mapping = get(configuration, mappingName);
+        filters = filters
+          .reduce((arr, filterId) => {
+            const filter = mapping.findBy('id', filterId);
+            if (filter) {
+              arr.push(filter);
+            }
+            return arr;
+          }, []);
+        this.set(filterName, filters);
+      }
+    });
+    this.applyDoParams();
+  },
 });

@@ -144,3 +144,11 @@
     {{/accItem.body}}
   {{/acc.item}}
 {{/bs-accordion}}
+{{one-icon icon="folder" click=(action "toggleLoadPreset")}}
+{{#power-select
+  options=queryHistory.queryPresetsProxy.content
+  onchange=(action (mut bla))
+  triggerClass="presets-list-trigger"
+  as |preset|}}
+  {{preset.name}}
+{{/power-select}}
