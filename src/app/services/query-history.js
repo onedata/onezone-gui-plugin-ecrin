@@ -1,3 +1,12 @@
+/**
+ * A service, which allows to manage queries history stored in IndexedDB
+ *
+ * @module services/qyery-history
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Service from '@ember/service';
 import { computed, get, set } from '@ember/object';
 import { promise } from 'ember-awesome-macros';

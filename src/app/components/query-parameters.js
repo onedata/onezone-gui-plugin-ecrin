@@ -85,8 +85,5 @@ export default Component.extend(I18n, {
     toggleDataObjectFilters() {
       this.toggleProperty('areDataObjectFiltersVisible');
     },
-    toggleLoadPreset() {
-      this.$('.presets-list-trigger').click();
-    },
   },
 });

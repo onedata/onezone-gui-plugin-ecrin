@@ -36,6 +36,9 @@ export default Component.extend(I18n, {
    */
   queryResultsNumber: -1,
 
+  activeFindParams: reads('queryParams.activeFindParams'),
+  hasActiveFindParams: reads('queryParams.hasActiveFindParams'),
+
   /**
    * @type {Ember.ComputedProperty<Utils.ReplacingChunksArray>}
    */
@@ -85,6 +88,7 @@ export default Component.extend(I18n, {
         results = get(results, 'results.hits.hits');
         results.forEach((doc, i) => {
           doc.index = {
+            name: get(doc, '_source.scientific_title.title'),
             index: (startFromIndex.index || 0) + i,
             id: get(doc, '_source.id'),
           };
@@ -107,49 +111,45 @@ export default Component.extend(I18n, {
   constructQueryBodyBase(type, startFromIndex, size) {
     const body = {};
     if (startFromIndex && get(startFromIndex, 'index') !== undefined) {
-      set(body, 'search_after', [ startFromIndex.id ]);
+      set(body, 'search_after', [ startFromIndex.name, startFromIndex.id ]);
     }
     let _source;
-    switch (type) {
-      case 'study':
-        _source = [
-          'id',
-          'scientific_title.title',
-          'linked_data_objects',
-        ];
-        break;
+    if (type === 'study') {
+      _source = [
+        'id',
+        'scientific_title.title',
+        'linked_data_objects',
+      ];
+      body.sort = [
+        { 'scientific_title.title.raw': { order: 'asc' } },
+        { id: { order: 'asc' } },
+      ];
     }
     setProperties(body, {
       size,
       _source,
-      sort: [
-        // FIXME sorting text fields does not work
-        { id: 'asc' },
-      ],
     });
-    // if (type) {
-    //   set(body, 'query', {
-    //     bool: {
-    //       filter: [],
-    //     },
-    //   });
-    // }
     return body;
   },
 
   fetchSpecificStudy(startFromIndex, size) {
     const {
       elasticsearch,
-      queryParams,
-    } = this.getProperties('elasticsearch', 'queryParams');
+      activeFindParams,
+      hasActiveFindParams,
+    } = this.getProperties(
+      'elasticsearch',
+      'activeFindParams',
+      'hasActiveFindParams'
+    );
     const body = this.constructQueryBodyBase('study', startFromIndex, size);
 
-    if (get(queryParams, 'hasParams')) {
+    if (hasActiveFindParams) {
       const {
         studyIdType,
         studyId,
       } = getProperties(
-        queryParams,
+        activeFindParams,
         'studyIdType',
         'studyId'
       );
@@ -187,17 +187,22 @@ export default Component.extend(I18n, {
   fetchStudyCharact(startFromIndex, size) {
     const {
       elasticsearch,
-      queryParams,
-    } = this.getProperties('elasticsearch', 'queryParams');
+      activeFindParams,
+      hasActiveFindParams,
+    } = this.getProperties(
+      'elasticsearch',
+      'activeFindParams',
+      'hasActiveFindParams'
+    );
     const body = this.constructQueryBodyBase('study', startFromIndex, size);
 
-    if (get(queryParams, 'hasParams')) {
+    if (hasActiveFindParams) {
       const {
         studyTitleContains,
         studyTopicsInclude,
         studyTitleTopicOperator,
       } = getProperties(
-        queryParams,
+        activeFindParams,
         'studyTitleContains',
         'studyTopicsInclude',
         'studyTitleTopicOperator',
@@ -248,8 +253,13 @@ export default Component.extend(I18n, {
   fetchViaPubPaper(startFromIndex, size) {
     const {
       elasticsearch,
-      queryParams,
-    } = this.getProperties('elasticsearch', 'queryParams');
+      activeFindParams,
+      hasActiveFindParams,
+    } = this.getProperties(
+      'elasticsearch',
+      'activeFindParams',
+      'hasActiveFindParams'
+    );
     const dataObjectBody = this.constructQueryBodyBase('data_object', undefined, size);
 
     setProperties(dataObjectBody, {
@@ -273,7 +283,7 @@ export default Component.extend(I18n, {
       set(dataObjectBody, 'aggs.related_studies_ids.composite.after', {id: get(startFromIndex, 'id')});
     }
 
-    if (get(queryParams, 'hasParams')) {
+    if (hasActiveFindParams) {
       set(dataObjectBody, 'query', {
         bool: {
           filter: [],
@@ -282,7 +292,7 @@ export default Component.extend(I18n, {
       const {
         doi,
         dataObjectTitle,
-      } = getProperties(queryParams, 'doi', 'dataObjectTitle');
+      } = getProperties(activeFindParams, 'doi', 'dataObjectTitle');
       if (doi) {
         get(dataObjectBody, 'query.bool.filter').push({
           term: {
@@ -382,16 +392,16 @@ export default Component.extend(I18n, {
     },
     find() {
       this.get('router').transitionTo({
-        queryParams: this.get('queryParams.queryParams'),
+        queryParams: this.get('queryParams.findQueryParams'),
       });
     },
     clearAll() {
       this.get('queryParams').clear();
     },
     filter() {
-      this.get('queryParams').applyDoParams();
+      this.get('queryParams').applyFilterParams();
       this.get('router').transitionTo({
-        queryParams: this.get('queryParams.doQueryParams'),
+        queryParams: this.get('queryParams.filterQueryParams'),
       });
     },
   },

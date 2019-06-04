@@ -1,6 +1,25 @@
 import EmberObject, { computed, get } from '@ember/object';
 import rangeToNumbers from 'onezone-gui-plugin-ecrin/utils/range-to-numbers';
 
+const findParamNames = [
+  'mode',
+  'studyIdType',
+  'studyId',
+  'studyTitleContains',
+  'studyTopicsInclude',
+  'studyTitleTopicOperator',
+  'doi',
+  'dataObjectTitle',
+];
+
+const filterParamNames = [
+  'typeFilter',
+  'accessTypeFilter',
+  'yearFilter',
+  'parsedYearFilter',
+  'publisherFilter',
+];
+
 export default EmberObject.extend({
   /**
    * One of 'specificStudy', 'studyCharact', 'viaPubPaper'
@@ -77,16 +96,28 @@ export default EmberObject.extend({
   dataObjectTitle: '',
 
   /**
-   * Set by applyDoParams()
+   * Set by applyFindParams()
    * @type {boolean}
    */
-  hasActiveDoParams: false,
+  hasActiveFindParams: false,
 
   /**
-   * Set by applyDoParams()
+   * Set by applyFindParams()
    * @type {Object}
    */
-  activeDoParams: Object.freeze({}),
+  activeFindParams: Object.freeze({}),
+
+  /**
+   * Set by applyFilterParams()
+   * @type {boolean}
+   */
+  hasActiveFilterParams: false,
+
+  /**
+   * Set by applyFilterParams()
+   * @type {Object}
+   */
+  activeFilterParams: Object.freeze({}),
 
   /**
    * @type {Ember.ComputedProperty<Array<number|Object>>}
@@ -98,146 +129,104 @@ export default EmberObject.extend({
   /**
    * @type {Ember.ComputedProperty<boolean>}
    */
-  hasParams: computed(
-    'mode',
-    'studyIdType',
-    'studyId',
-    'studyTitleContains',
-    'studyTopicsInclude',
-    // 'typeFilter',
-    // 'accessTypeFilter',
-    // 'parsedYearFilter',
-    // 'publisherFilter',
-    'doi',
-    'dataObjectTitle',
-    function hasParams() {
-      const {
-        mode,
-        studyIdType,
-        studyId,
-        studyTitleContains,
-        studyTopicsInclude,
-        doi,
-        dataObjectTitle,
-      } = this.getProperties(
-        'mode',
-        'studyIdType',
-        'studyId',
-        'studyTitleContains',
-        'studyTopicsInclude',
-        'doi',
-        'dataObjectTitle'
-      );
-      switch (mode) {
-        case 'specificStudy':
-          return !!studyIdType && !!studyId;
-        case 'studyCharact':
-          return !!studyTitleContains || !!studyTopicsInclude;
-        case 'viaPubPaper':
-          return !!doi || !!dataObjectTitle;
-      }
+  hasFindParams: computed(...findParamNames, function hasFindParams() {
+    const {
+      mode,
+      studyIdType,
+      studyId,
+      studyTitleContains,
+      studyTopicsInclude,
+      doi,
+      dataObjectTitle,
+    } = this.getProperties(...findParamNames);
+    switch (mode) {
+      case 'specificStudy':
+        return Boolean(studyIdType && studyId);
+      case 'studyCharact':
+        return Boolean(studyTitleContains || studyTopicsInclude);
+      case 'viaPubPaper':
+        return Boolean(doi || dataObjectTitle);
     }
-  ),
+  }),
 
-  hasDoParams: computed(
-    'typeFilter',
-    'accessTypeFilter',
-    'parsedYearFilter',
-    'publisherFilter',
-    function hasDoParams() {
-      const {
-        typeFilter,
-        accessTypeFilter,
-        parsedYearFilter,
-        publisherFilter,
-      } = this.getProperties(
-        'typeFilter',
-        'accessTypeFilter',
-        'parsedYearFilter',
-        'publisherFilter',
-      );
-      return !!typeFilter.length || !!accessTypeFilter.length ||
-        !!parsedYearFilter.length || !!publisherFilter.length;
-    },
-  ),
+  hasFilterParams: computed(...filterParamNames, function hasFilterParams() {
+    const {
+      typeFilter,
+      accessTypeFilter,
+      parsedYearFilter,
+      publisherFilter,
+    } = this.getProperties(...filterParamNames);
+    return !!typeFilter.length || !!accessTypeFilter.length ||
+      !!parsedYearFilter.length || !!publisherFilter.length;
+  }),
 
   /**
    * @type {Ember.ComputedProperty<Object>}
    */
-  queryParams: computed(
-    'mode',
-    'studyIdType',
-    'studyId',
-    'studyTitleContains',
-    'studyTopicsInclude',
-    'studyTitleTopicOperator',
-    'doi',
-    'dataObjectTitle',
-    function queryParams() {
-      const {
-        mode,
-        studyIdType,
-        studyId,
-        doi,
-        dataObjectTitle,
-      } = this.getProperties(
-        'mode',
-        'studyIdType',
-        'studyId',
-        'doi',
-        'dataObjectTitle'
-      );
-      const params = {
-        mode,
-        studyId: null,
-        studyTitleContains: null,
-        studyTopicsInclude: null,
-        doi: null,
-        dataObjectTitle: null,
-      };
-      switch (mode) {
-        case 'specificStudy':
-          if (studyIdType) {
-            params.studyIdType = get(studyIdType, 'id');
+  findQueryParams: computed(...findParamNames, function findQueryParams() {
+    const {
+      mode,
+      studyIdType,
+      studyId,
+      doi,
+      dataObjectTitle,
+    } = this.getProperties(
+      'mode',
+      'studyIdType',
+      'studyId',
+      'doi',
+      'dataObjectTitle'
+    );
+    const params = {
+      mode,
+      studyId: null,
+      studyTitleContains: null,
+      studyTopicsInclude: null,
+      doi: null,
+      dataObjectTitle: null,
+    };
+    switch (mode) {
+      case 'specificStudy':
+        if (studyIdType) {
+          params.studyIdType = get(studyIdType, 'id');
+        }
+        if (studyId) {
+          params.studyId = studyId;
+        }
+        break;
+      case 'studyCharact':
+        [
+          'studyTitleContains',
+          'studyTopicsInclude',
+          'studyTitleTopicOperator',
+        ].forEach(filterName => {
+          const filter = this.get(filterName);
+          if (filter) {
+            params[filterName] = filter;
           }
-          if (studyId) {
-            params.studyId = studyId;
-          }
-          break;
-        case 'studyCharact':
-          [
-            'studyTitleContains',
-            'studyTopicsInclude',
-            'studyTitleTopicOperator',
-          ].forEach(filterName => {
-            const filter = this.get(filterName);
-            if (filter) {
-              params[filterName] = filter;
-            }
-          });
-          break;
-        case 'viaPubPaper':
-          if (doi) {
-            params.doi = doi;
-          } else if (dataObjectTitle) {
-            params.dataObjectTitle = dataObjectTitle;
-          }
-          break;
-      }
-      return params;
+        });
+        break;
+      case 'viaPubPaper':
+        if (doi) {
+          params.doi = doi;
+        } else if (dataObjectTitle) {
+          params.dataObjectTitle = dataObjectTitle;
+        }
+        break;
     }
-  ),
+    return params;
+  }),
 
-  doQueryParams: computed(
-    'hasActiveDoParams',
-    'activeDoParams',
-    function doQueryParams() {
+  filterQueryParams: computed(
+    'hasActiveFilterParams',
+    'activeFilterParams',
+    function filterQueryParams() {
       const {
-        hasActiveDoParams,
-        activeDoParams,
+        hasActiveFilterParams,
+        activeFilterParams,
       } = this.getProperties(
-        'hasActiveDoParams',
-        'activeDoParams',
+        'hasActiveFilterParams',
+        'activeFilterParams',
       );
       const params = {
         typeFilter: null,
@@ -245,8 +234,8 @@ export default EmberObject.extend({
         yearFilter: null,
         publisherFilter: null,
       };
-      if (hasActiveDoParams) {
-        const yearFilter = get(activeDoParams, 'yearFilter');
+      if (hasActiveFilterParams) {
+        const yearFilter = get(activeFilterParams, 'yearFilter');
         if (yearFilter) {
           params['yearFilter'] = yearFilter;
         }
@@ -255,7 +244,7 @@ export default EmberObject.extend({
           'accessTypeFilter',
           'publisherFilter',
         ].forEach(filterName => {
-          const filter = get(activeDoParams, filterName);
+          const filter = get(activeFilterParams, filterName);
           if (filter && filter.length) {
             params[filterName] = JSON.stringify(filter.mapBy('id'));
           }
@@ -265,29 +254,28 @@ export default EmberObject.extend({
     }
   ),
 
-  applyDoParams() {
-    let activeDoParams = {}, hasActiveDoParams = false;
-    if (this.get('hasDoParams')) {
-      [
-        'typeFilter',
-        'accessTypeFilter',
-        'parsedYearFilter',
-        'publisherFilter',
-      ].forEach(filterName => {
+  applyFindParams() {
+    this.applyNamespacedParams('Find', findParamNames);
+  },
+
+  applyFilterParams() {
+    this.applyNamespacedParams('Filter', filterParamNames);
+  },
+
+  applyNamespacedParams(paramNamespace, paramNames) {
+    let activeParams = {}, hasActiveParams = false;
+    if (this.get(`has${paramNamespace}Params`)) {
+      paramNames.forEach(filterName => {
         const filter = this.get(filterName);
         if (filter && filter.length) {
-          activeDoParams[filterName] = filter;
+          activeParams[filterName] = filter;
         }
       });
-      const yearFilter = this.get('yearFilter');
-      if (yearFilter) {
-        activeDoParams['yearFilter'] = yearFilter;
-      }
-      hasActiveDoParams = true;
+      hasActiveParams = true;
     }
     this.setProperties({
-      activeDoParams,
-      hasActiveDoParams,
+      [`active${paramNamespace}Params`]: activeParams,
+      [`hasActive${paramNamespace}Params`]: hasActiveParams,
     });
   },
 
@@ -357,6 +345,7 @@ export default EmberObject.extend({
         this.set(filterName, filters);
       }
     });
-    this.applyDoParams();
+    this.applyFindParams();
+    this.applyFilterParams();
   },
 });

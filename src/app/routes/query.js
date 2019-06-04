@@ -1,6 +1,6 @@
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
-import { get, set } from '@ember/object';
+import { get } from '@ember/object';
 import QueryParams from 'onezone-gui-plugin-ecrin/utils/query-params';
 
 export default Route.extend({
@@ -22,56 +22,11 @@ export default Route.extend({
   },
 
   model(params, transition) {
-    const queryParams = get(transition, 'to.queryParams');
-    const queryParamsObject = QueryParams.create();
-    [
-      'mode',
-      'studyId',
-      'studyTitleContains',
-      'studyTopicsInclude',
-      'studyTitleTopicOperator',
-      'yearFilter',
-      'doi',
-      'dataObjectTitle',
-    ].forEach(filterName => {
-      if (queryParams[filterName]) {
-        set(queryParamsObject, filterName, queryParams[filterName]);
-      }
-    });
+    const rawQueryParams = get(transition, 'to.queryParams');
 
-    if (queryParams.studyIdType) {
-      const studyIdTypeMapping = this.get('configuration.studyIdTypeMapping');
-      const studyIdType = studyIdTypeMapping.filter(({ id }) => id == queryParams.studyIdType)[0];
-      if (studyIdType) {
-        set(queryParamsObject, 'studyIdType', studyIdType);
-      }
-    }
+    const queryParams = QueryParams.create();
+    queryParams.consumeQueryParams(rawQueryParams);
 
-    [
-      ['typeFilter', 'typeMapping'],
-      ['accessTypeFilter', 'accessTypeMapping'],
-      ['publisherFilter', 'publisherMapping'],
-    ].forEach(([filterName, mappingName]) => {
-      let filters = queryParams[filterName];
-      try {
-        filters = JSON.parse(queryParams[filterName]);
-      } catch (e) {
-        filters = [];
-      }
-      if (filters && filters.length) {
-        const mapping = this.get(`configuration.${mappingName}`);
-        filters = filters
-          .reduce((arr, filterId) => {
-            const filter = mapping.findBy('id', filterId);
-            if (filter) {
-              arr.push(filter);
-            }
-            return arr;
-          }, []);
-        set(queryParamsObject, filterName, filters);
-      }
-    });
-    queryParamsObject.applyDoParams();
-    return queryParamsObject;
+    return queryParams;
   },
 });

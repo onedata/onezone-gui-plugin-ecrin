@@ -1,11 +1,11 @@
 {{#item.title}}
-  {{#truncated-string}}{{or studyPayload.scientific_title.title "Untitled"}}{{/truncated-string}}
+  {{#truncated-string}}{{or study.scientific_title.title "Untitled"}}{{/truncated-string}}
 {{/item.title}}
-<ul class="result-actions">
+{{!-- <ul class="result-actions">
   <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
   <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
   <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
-</ul>
+</ul> --}}
 {{#item.body}}
   {{#if dataObjects.length}}
     <table class="do-records table">
@@ -26,7 +26,7 @@
       {{/each}}
     </table>
   {{/if}}
-  {{#unless (eq innerRecordsNumber innerRecords.length)}}
+  {{#unless (eq dataObjectsNumber dataObjects.length)}}
     {{#if fetchInnerRecordsProxy.isPending}}
       {{spin-spinner-block sizeClass="xs" class="loading-inner-spinner"}} <span>{{tt this "loading"}}</span>
     {{else}}

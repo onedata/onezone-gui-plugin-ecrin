@@ -60,9 +60,9 @@ export default Component.extend(I18n, {
   /**
    * @type {Ember.ComputedProperty<Object>}
    */
-  doParams: reads('queryParams.activeDoParams'),
+  filterParams: reads('queryParams.activeFilterParams'),
 
-  fetchInnerRecordsProxy: computed(function () {
+  fetchDataObjectsProxy: computed(function fetchInnerRecordsProxy() {
     return PromiseObject.create({
       promise: resolve(),
     });
@@ -71,91 +71,78 @@ export default Component.extend(I18n, {
   /**
    * @type {Ember.ComputedProperty<Object>}
    */
-  source: reads('result._source'),
-
-  studyPayload: reads('source'),
-
-  /**
-   * @type {Ember.ComputedProperty<string>}
-   */
-  id: reads('result._id'),
+  study: reads('result._source'),
 
   /**
    * @type {Ember.ComputedProperty<Ember.A<Object>>}
    */
-  innerRecords: alias('result.innerRecord'),
+  dataObjects: alias('result.dataObjects'),
 
   /**
-   * Is different than -1 if inner records have been fetched at least once
+   * Is different than -1 if data objects have been fetched at least once
    * @type {Ember.ComputedProperty<number>}
    */
-  innerRecordsNumber: alias('result.innerRecordsNumber'),
-
-  /**
-   * @type {Ember.ComputedProperty<Array<Object>>}
-   */
-  dataObjects: reads('innerRecords'),
+  dataObjectsNumber: alias('result.dataObjectsNumber'),
 
   isExpandedObserver: observer(
     'isExpanded',
     function isExpandedObserver() {
       const {
         isExpanded,
-        innerRecordsNumber,
-      } = this.getProperties('isExpanded', 'innerRecordsNumber');
-      if (isExpanded && innerRecordsNumber === -1) {
-        this.fetchNextInnerRecords();
+        dataObjectsNumber,
+      } = this.getProperties('isExpanded', 'dataObjectsNumber');
+      if (isExpanded && dataObjectsNumber === -1) {
+        this.fetchNextDataObjects();
       }
     }
   ),
 
-  doParamsObserver: observer('doParams', function doParamsObserver() {
-    this.resetInnerRecords();
+  filterParamsObserver: observer('filterParams', function filterParamsObserver() {
+    this.clearDataObjects();
     if (this.get('isExpanded')) {
-      this.fetchNextInnerRecords();
+      this.fetchNextDataObjects();
     }
   }),
 
   init() {
     this._super(...arguments);
 
-    const innerRecordsNumber = this.get('innerRecordsNumber');
-
-    if (innerRecordsNumber === undefined) {
-      this.resetInnerRecords();
+    const dataObjectsNumber = this.get('dataObjectsNumber');
+    if (dataObjectsNumber === undefined) {
+      this.clearDataObjects();
     }
 
     this.isExpandedObserver();
   },
 
-  resetInnerRecords() {
+  clearDataObjects() {
     this.setProperties({
-      innerRecords: A(),
-      innerRecordsNumber: -1,
+      dataObjects: A(),
+      dataObjectsNumber: -1,
     });
   },
 
-  fetchNextInnerRecords() {
-    let fetchInnerRecordsProxy = this.get('fetchInnerRecordsProxy');
-    if (get(fetchInnerRecordsProxy, 'isLoading')) {
-      return fetchInnerRecordsProxy;
+  fetchNextDataObjects() {
+    let fetchDataObjectsProxy = this.get('fetchDataObjectsProxy');
+    if (get(fetchDataObjectsProxy, 'isLoading')) {
+      return fetchDataObjectsProxy;
     } else {
       const {
         elasticsearch,
-        innerRecordsNumber,
-        innerRecords,
-        source,
+        dataObjectsNumber,
+        dataObjects,
+        study,
         typeMapping,
         accessTypeMapping,
-        doParams,
+        filterParams,
       } = this.getProperties(
         'elasticsearch',
-        'innerRecordsNumber',
-        'innerRecords',
-        'source',
+        'dataObjectsNumber',
+        'dataObjects',
+        'study',
         'typeMapping',
         'accessTypeMapping',
-        'doParams',
+        'filterParams',
       );
       const {
         typeFilter,
@@ -163,7 +150,7 @@ export default Component.extend(I18n, {
         parsedYearFilter,
         publisherFilter,
       } = getProperties(
-        doParams,
+        filterParams,
         'typeFilter',
         'accessTypeFilter',
         'parsedYearFilter',
@@ -171,26 +158,23 @@ export default Component.extend(I18n, {
       );
 
       const body = {
-        sort: {
-          publication_year: 'asc',
-          id: 'asc',
-        },
+        sort: [
+          { publication_year: { order: 'desc' } },
+          { id: { order: 'asc' } },
+        ],
         size: 15,
         query: {
           bool: {
             filter: [{
               terms: {
-                id: get(source, 'linked_data_objects').mapBy('id'),
+                id: get(study, 'linked_data_objects').mapBy('id'),
               },
             }],
           },
         },
       };
-      if (innerRecordsNumber > 0) {
-        body.search_after = [
-          get(innerRecords, 'lastObject._source.publication_year') || 0,
-          get(innerRecords, 'lastObject._id'),
-        ];
+      if (dataObjectsNumber > 0) {
+        body.search_after = get(dataObjects, 'lastObject.sort');
       }
       if (typeFilter && get(typeFilter, 'length')) {
         body.query.bool.filter.push({
@@ -237,17 +221,16 @@ export default Component.extend(I18n, {
       if (publisherFilter && get(publisherFilter, 'length')) {
         body.query.bool.filter.push({
           terms: {
-            'managing_organization.id':
-              publisherFilter.mapBy('id'),
+            'managing_organization.id': publisherFilter.mapBy('id'),
           },
         });
       }
-      fetchInnerRecordsProxy = PromiseObject.create({
+      fetchDataObjectsProxy = PromiseObject.create({
         promise: elasticsearch.post('data_object', '_search', body)
           .then(results => {
-            if (innerRecordsNumber === -1) {
+            if (dataObjectsNumber === -1) {
               safeExec(this, () => {
-                this.set('innerRecordsNumber', results.hits.total);
+                this.set('dataObjectsNumber', results.hits.total);
               });
             }
             const hits = results.hits.hits;
@@ -263,19 +246,16 @@ export default Component.extend(I18n, {
                 set(access_type, 'indicator', get(accessTypeDef, 'indicator'));
               }
             });
-            innerRecords.pushObjects(hits);
+            dataObjects.pushObjects(hits);
           }),
       });
-      return this.set('fetchInnerRecordsProxy', fetchInnerRecordsProxy);
+      return this.set('fetchDataObjectsProxy', fetchDataObjectsProxy);
     }
   },
 
   actions: {
-    resultAction() {
-      console.log('result action!');
-    },
     loadMore() {
-      this.fetchNextInnerRecords();
+      this.fetchNextDataObjects();
     },
   },
 });

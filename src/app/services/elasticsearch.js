@@ -10,7 +10,7 @@
 import Service, { inject as service } from '@ember/service';
 
 export default Service.extend({
-  onezoneGuiResources: service(),
+  appProxy: service(),
 
   /**
    * Performs request to Elasticsearch.
@@ -21,8 +21,8 @@ export default Service.extend({
    * @returns {Promise<any>} request result
    */
   request(method, indexName, path, body) {
-    const esRequest = this.get('onezoneGuiResources.esRequest');
-    return esRequest({
+    const dataRequest = this.get('appProxy.dataRequest');
+    return dataRequest({
       method,
       indexName,
       path,

@@ -17,7 +17,8 @@
       "accessTypeMapping": [
         {
           "name": "Public on-screen access (open)",
-          "id": 12
+          "id": 12,
+          "indicator": "green"
         }
       ]
     },
@@ -69,7 +70,12 @@
                   "type": "object",
                   "properties": {
                     "title": {
-                      "type": "text"
+                      "type": "text",
+                      "fields": {
+                        "raw": {
+                          "type": "keyword"
+                        }
+                      }
                     },
                     "lang_code": {
                       "type": "text"
@@ -422,7 +428,12 @@
                   }
                 },
                 "data_object_title": {
-                  "type": "text"
+                  "type": "text",
+                  "fields": {
+                    "raw": {
+                      "type": "keyword"
+                    }
+                  }
                 },
                 "dataset_consents": {
                   "type": "object",

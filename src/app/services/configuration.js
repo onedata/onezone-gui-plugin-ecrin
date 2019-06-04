@@ -14,7 +14,7 @@ import { reads } from '@ember/object/computed';
 import { Promise } from 'rsvp';
 
 export default Service.extend({
-  onezoneGuiResources: service(),
+  appProxy: service(),
   elasticsearch: service(),
 
   /**
@@ -48,8 +48,8 @@ export default Service.extend({
    * @returns {Promise}
    */
   reloadConfiguration() {
-    const onezoneGuiResources = this.get('onezoneGuiResources');
-    return onezoneGuiResources.configRequest()
+    const appProxy = this.get('appProxy');
+    return appProxy.configRequest()
       .then(config => safeExec(this, () => {
         this.set('configuration', config);
       }))

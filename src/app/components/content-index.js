@@ -55,7 +55,7 @@ export default Component.extend(I18n, {
   actions: {
     find() {
       this.get('router').transitionTo('query', {
-        queryParams: this.get('queryParams.queryParams'),
+        queryParams: this.get('queryParams.findQueryParams'),
       });
     },
   },
