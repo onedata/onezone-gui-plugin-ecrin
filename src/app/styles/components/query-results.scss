@@ -70,10 +70,15 @@
 
   .do-type {
     width: 10em;
+    @media (max-width: $screen-xs-max) {
+      width: 7em;
+    }
   }
 
   .do-description {
     color: $main-text-light-color;
+    padding-left: $padding-small-horizontal;
+    padding-right: $padding-small-horizontal;
     p {
       margin-bottom: $padding-small-vertical;
     }
@@ -82,6 +87,9 @@
   .do-year {
     width: 4em;
     color: $main-text-light-color;
+    @media (max-width: $screen-xs-max) {
+      width: 3em;
+    }
   }
 
   .do-status {

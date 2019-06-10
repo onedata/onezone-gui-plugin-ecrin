@@ -9,7 +9,11 @@
  */
 
 import Service from '@ember/service';
+import { computed } from '@ember/object';
 import { reads } from '@ember/object/computed';
+import { later } from '@ember/runloop';
+import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
+import { Promise, resolve } from 'rsvp';
 
 export default Service.extend({
   /**
@@ -18,9 +22,9 @@ export default Service.extend({
   _window: window,
 
   /**
-   * @type {Ember.ComputedProperty<Object>}
+   * @type {Object}
    */
-  appProxy: reads('_window.frameElement.appProxy'),
+  appProxy: undefined,
 
   /**
    * Elasticsearch request function.
@@ -39,4 +43,45 @@ export default Service.extend({
    * @returns {Promise<Object>}
    */
   configRequest: reads('appProxy.configRequest'),
+
+  /**
+   * @type {Ember.ComputedProperty<Promise>}
+   */
+  appProxyLoadingPromise: computed(function appProxyLoadingPromise() {
+    return resolve();
+  }),
+
+  init() {
+    this._super(...arguments);
+    
+    this.loadAppProxy();
+    if (!this.get('appProxy')) {
+      this.set('appProxyLoadingPromise', this.scheduleLoadAppProxy());
+    }
+  },
+
+  /**
+   * @returns {Object}
+   */
+  loadAppProxy() {
+    return safeExec(
+      this,
+      () => this.set('appProxy', this.get('_window.frameElement.appProxy'))
+    );
+  },
+
+  /**
+   * @returns {Promise}
+   */
+  scheduleLoadAppProxy() {
+    return new Promise(resolve => {
+      later(this, () => {
+        if (!this.loadAppProxy()) {
+          this.scheduleLoadAppProxy().then(resolve);
+        } else {
+          resolve();
+        }
+      }, 20);
+    });
+  },
 });

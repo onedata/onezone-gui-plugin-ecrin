@@ -30,6 +30,7 @@
           class="form-control"
           type="text"
           value={{queryParams.studyId}}
+          onkeydown={{invoke-on-enter onFind}}
           oninput={{action (action onChange "studyId") value="target.value"}}>
       </div>
     {{else if (eq queryParams.mode "studyCharact")}}
@@ -40,6 +41,7 @@
           class="form-control"
           type="text"
           value={{queryParams.studyTitleContains}}
+          onkeydown={{invoke-on-enter onFind}}
           oninput={{action (action onChange "studyTitleContains") value="target.value"}}>
       </div>
       <div class="col-xs-12 col-sm-2 form-group">
@@ -60,6 +62,7 @@
           class="form-control"
           type="text"
           value={{queryParams.studyTopicsInclude}}
+          onkeydown={{invoke-on-enter onFind}}
           oninput={{action (action onChange "studyTopicsInclude") value="target.value"}}>
       </div>
     {{else if (eq queryParams.mode "viaPubPaper")}}
@@ -70,6 +73,7 @@
           class="form-control"
           type="text"
           value={{queryParams.doi}}
+          onkeydown={{invoke-on-enter onFind}}
           oninput={{action (action onChange "doi") value="target.value"}}>
       </div>
       <div class="col-xs-12 col-sm-4 form-group">
@@ -79,6 +83,7 @@
           class="form-control"
           type="text"
           value={{queryParams.dataObjectTitle}}
+          onkeydown={{invoke-on-enter onFind}}
           oninput={{action (action onChange "dataObjectTitle") value="target.value"}}>
       </div>
     {{/if}}
@@ -92,7 +97,6 @@
   </a>
   </div>
 </div>
-{{!-- {{#bs-button type="default" onClick=onClearAll}}{{tt this "clearAll"}}{{/bs-button}} --}}
 {{#bs-accordion selected=areDataObjectFiltersVisible as |acc|}}
   {{#acc.item class=(concat "data-object-filters" (if areDataObjectFiltersVisible " expanded" " collapsed"))  value=true as |accItem|}}
     {{#accItem.body}}
