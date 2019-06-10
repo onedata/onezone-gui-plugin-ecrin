@@ -82,7 +82,7 @@ export default EmberObject.extend({
    * @type {string}
    */
   publisherFilter: Object.freeze([]),
-  
+
   /**
    * Only for mode === 'viaPubPaper'
    * @type {string}
@@ -263,7 +263,8 @@ export default EmberObject.extend({
   },
 
   applyNamespacedParams(paramNamespace, paramNames) {
-    let activeParams = {}, hasActiveParams = false;
+    const activeParams = {};
+    let hasActiveParams = false;
     if (this.get(`has${paramNamespace}Params`)) {
       paramNames.forEach(filterName => {
         const filter = this.get(filterName);
@@ -315,7 +316,8 @@ export default EmberObject.extend({
 
     if (queryParams.studyIdType) {
       const studyIdTypeMapping = get(configuration, 'studyIdTypeMapping');
-      const studyIdType = studyIdTypeMapping.filter(({ id }) => id == queryParams.studyIdType)[0];
+      const studyIdType = studyIdTypeMapping
+        .filter(({ id }) => id == queryParams.studyIdType)[0];
       if (studyIdType) {
         this.set('studyIdType', studyIdType);
       }

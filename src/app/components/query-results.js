@@ -1,3 +1,12 @@
+/**
+ * Renders a list of results (studies) obtained from elasticsearch
+ * 
+ * @module components/query-result
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Component from '@ember/component';
 import { get, getProperties, computed, observer } from '@ember/object';
 import { htmlSafe } from '@ember/string';
@@ -46,13 +55,21 @@ export default Component.extend(I18n, {
    */
   expandedResultId: undefined,
 
+  /**
+   * @type {Ember.ComputedProperty<number>}
+   */
   firstRowHeight: computed('rowHeight', 'results._start', function firstRowHeight() {
     const {
       expandedResultId,
       results,
       rowHeight,
       expandedRowExtraHeight,
-    } = this.getProperties('expandedResultId', 'results', 'rowHeight', 'expandedRowExtraHeight');
+    } = this.getProperties(
+      'expandedResultId',
+      'results',
+      'rowHeight',
+      'expandedRowExtraHeight'
+    );
     const {
       _start,
       sourceArray,
@@ -61,13 +78,17 @@ export default Component.extend(I18n, {
       return 0;
     } else {
       let height = _start * rowHeight;
-      if (sourceArray.slice(0, _start).map(x => get(x, 'index.id')).includes(expandedResultId)) {
+      if (sourceArray.slice(0, _start).map(x => get(x, 'index.id'))
+        .includes(expandedResultId)) {
         height += expandedRowExtraHeight;
       }
       return height;
     }
   }),
 
+  /**
+   * @type {Ember.ComputedProperty<HTMLSafe>}
+   */
   firstRowStyle: computed('firstRowHeight', function firstRowStyle() {
     return htmlSafe(`height: ${this.get('firstRowHeight')}px;`);
   }),

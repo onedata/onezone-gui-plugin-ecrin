@@ -1,3 +1,12 @@
+/**
+ * A component, which shows whole layout of query parameters and results
+ * 
+ * @module components/content-query
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Component from '@ember/component';
 import { computed, observer, get, getProperties, set, setProperties } from '@ember/object';
 import { reads } from '@ember/object/computed';
@@ -25,18 +34,25 @@ export default Component.extend(I18n, {
   queryParams: undefined,
 
   /**
-   * @type {Ember.ComputedProperty<string>}
-   */
-  mode: reads('queryParams.mode'),
-
-  /**
    * Number of records, that fulfills query conditions. -1 means, that results are
    * not available.
    * @type {number}
    */
   queryResultsNumber: -1,
 
+  /**
+   * @type {Ember.ComputedProperty<string>}
+   */
+  mode: reads('queryParams.mode'),
+
+  /**
+   * @type {Ember.ComputedProperty<Object>}
+   */
   activeFindParams: reads('queryParams.activeFindParams'),
+
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
   hasActiveFindParams: reads('queryParams.hasActiveFindParams'),
 
   /**
@@ -60,7 +76,7 @@ export default Component.extend(I18n, {
     this.queryParamsObserver();
   },
 
-  fetchResults(startFromIndex, size /*, offset */) {
+  fetchResults(startFromIndex, size /*, offset */ ) {
     const mode = this.get('mode');
     if (startFromIndex === undefined) {
       startFromIndex = {};
@@ -81,37 +97,48 @@ export default Component.extend(I18n, {
     return this.extractResultsFromResponse(promise, startFromIndex);
   },
 
+  /**
+   * @param {Promise} promise 
+   * @param {Object} startFromIndex 
+   * @returns {Promise}
+   */
   extractResultsFromResponse(promise, startFromIndex) {
     return promise.then(results => {
-      if (results) {
-        this.set('queryResultsNumber', get(results, 'total'));
-        results = get(results, 'results.hits.hits');
-        results.forEach((doc, i) => {
-          doc.index = {
-            name: get(doc, '_source.scientific_title.title'),
-            index: (startFromIndex.index || 0) + i,
-            id: get(doc, '_source.id'),
-          };
-        });
-        return results;
-      }
-       else {
-        return [];
-      }
-    })
-    .catch(error => {
-      if (get(error, 'status') === 404) {
-        return [];
-      } else {
-        throw error;
-      }
-    });
+        if (results) {
+          this.set('queryResultsNumber', get(results, 'total'));
+          results = get(results, 'results.hits.hits');
+          results.forEach((doc, i) => {
+            doc.index = {
+              name: get(doc, '_source.scientific_title.title'),
+              index: (startFromIndex.index || 0) + i,
+              id: get(doc, '_source.id'),
+            };
+          });
+          return results;
+        } else {
+          return [];
+        }
+      })
+      .catch(error => {
+        if (get(error, 'status') === 404) {
+          return [];
+        } else {
+          throw error;
+        }
+      });
   },
 
+  /**
+   * Generates body base object for Elastisearch query
+   * @param {string} type `study` or `data_object`
+   * @param {Object} startFromIndex index from ReplacingChunksArray
+   * @param {number} size expected results size
+   * @returns {Object}
+   */
   constructQueryBodyBase(type, startFromIndex, size) {
     const body = {};
     if (startFromIndex && get(startFromIndex, 'index') !== undefined) {
-      set(body, 'search_after', [ startFromIndex.name, startFromIndex.id ]);
+      set(body, 'search_after', [startFromIndex.name, startFromIndex.id]);
     }
     let _source;
     if (type === 'study') {
@@ -132,6 +159,12 @@ export default Component.extend(I18n, {
     return body;
   },
 
+  /**
+   * Loads studies according to study identifier
+   * @param {Object} startFromIndex index from ReplacingChunksArray
+   * @param {number} size expected results size
+   * @returns {Promise}
+   */
   fetchSpecificStudy(startFromIndex, size) {
     const {
       elasticsearch,
@@ -184,6 +217,12 @@ export default Component.extend(I18n, {
     }));
   },
 
+  /**
+   * Loads studies according to study parameters
+   * @param {Object} startFromIndex index from ReplacingChunksArray
+   * @param {number} size expected results size
+   * @returns {Promise}
+   */
   fetchStudyCharact(startFromIndex, size) {
     const {
       elasticsearch,
@@ -250,6 +289,12 @@ export default Component.extend(I18n, {
     }));
   },
 
+  /**
+   * Loads studies according to related paper
+   * @param {Object} startFromIndex index from ReplacingChunksArray
+   * @param {number} size expected results size
+   * @returns {Promise}
+   */
   fetchViaPubPaper(startFromIndex, size) {
     const {
       elasticsearch,
@@ -280,7 +325,12 @@ export default Component.extend(I18n, {
       },
     });
     if (get(startFromIndex, 'id') !== undefined) {
-      set(dataObjectBody, 'aggs.related_studies_ids.composite.after', {id: get(startFromIndex, 'id')});
+      set(
+        dataObjectBody,
+        'aggs.related_studies_ids.composite.after', {
+          id: get(startFromIndex, 'id'),
+        }
+      );
     }
 
     if (hasActiveFindParams) {
@@ -299,8 +349,7 @@ export default Component.extend(I18n, {
             DOI: doi,
           },
         });
-      }
-      else {
+      } else {
         get(dataObjectBody, 'query.bool.filter').push({
           simple_query_string: {
             query: dataObjectTitle,
@@ -314,6 +363,7 @@ export default Component.extend(I18n, {
     let noStudyIdsLeft = false;
     return elasticsearch.post('data_object', '_search', dataObjectBody)
       .then(results => {
+        // extract studies from data objects
         let relatedStudiesIds = (get(
           results,
           'aggregations.related_studies_ids.buckets'
@@ -335,19 +385,23 @@ export default Component.extend(I18n, {
               }],
             },
           });
+          // fetch studies
           return elasticsearch.post('study', '_search', studyBody).then(results => {
             const hitsNumber = get(results, 'hits.total');
             if (hitsNumber < size && !noStudyIdsLeft) {
+              // if found studies are not enough, perform next query
               return this.fetchViaPubPaper({
                 index: (get(startFromIndex, 'index') || -1) + hitsNumber,
                 id: relatedStudiesIds[get(relatedStudiesIds, 'length') - 1],
-              }, size - hitsNumber).then(({results: nextResults}) => {
+              }, size - hitsNumber).then(({ results: nextResults }) => {
+                // append results from subsequent query to the first result
                 set(
                   results,
                   'hits.total',
                   hitsNumber + get(nextResults, 'hits.total')
                 );
-                get(results, 'hits.hits').push(...get(nextResults, 'hits.hits'));
+                get(results, 'hits.hits')
+                  .push(...get(nextResults, 'hits.hits'));
                 return results;
               });
             } else {
@@ -363,6 +417,10 @@ export default Component.extend(I18n, {
       });
   },
 
+  /**
+   * Creates new dynamic array with find query results
+   * @returns {undefined}
+   */
   find() {
     this.setProperties({
       queryResults: ReplacingChunksArray.create({

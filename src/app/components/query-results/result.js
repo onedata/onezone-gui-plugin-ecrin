@@ -1,9 +1,18 @@
+/**
+ * A component used internally by query-result component, that shows
+ * one record of query results (one study).
+ * 
+ * @module components/query-reslts/result
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Component from '@ember/component';
-import { observer, computed, get, set, getProperties } from '@ember/object';
+import { observer, get, set, getProperties } from '@ember/object';
 import { reads, alias } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
-import { resolve } from 'rsvp';
 import { A } from '@ember/array';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
@@ -43,6 +52,12 @@ export default Component.extend(I18n, {
   isExpanded: false,
 
   /**
+   * @type {PromiseProxy}
+   * Set by `fetchNextDataObjects` method
+   */
+  fetchDataObjectsProxy: undefined,
+
+  /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   typeMapping: reads('configuration.typeMapping'),
@@ -61,12 +76,6 @@ export default Component.extend(I18n, {
    * @type {Ember.ComputedProperty<Object>}
    */
   filterParams: reads('queryParams.activeFilterParams'),
-
-  fetchDataObjectsProxy: computed(function fetchInnerRecordsProxy() {
-    return PromiseObject.create({
-      promise: resolve(),
-    });
-  }),
 
   /**
    * @type {Ember.ComputedProperty<Object>}
@@ -115,6 +124,10 @@ export default Component.extend(I18n, {
     this.isExpandedObserver();
   },
 
+  /**
+   * Clears state of data objects fetch
+   * @returns {undefined}
+   */
   clearDataObjects() {
     this.setProperties({
       dataObjects: A(),
@@ -122,9 +135,13 @@ export default Component.extend(I18n, {
     });
   },
 
+  /**
+   * Loads next data object records related to study
+   * @returns {PromiseObject}
+   */
   fetchNextDataObjects() {
     let fetchDataObjectsProxy = this.get('fetchDataObjectsProxy');
-    if (get(fetchDataObjectsProxy, 'isLoading')) {
+    if (fetchDataObjectsProxy && get(fetchDataObjectsProxy, 'isLoading')) {
       return fetchDataObjectsProxy;
     } else {
       const {
@@ -216,7 +233,7 @@ export default Component.extend(I18n, {
             });
           }
         });
-        body.query.bool.filter.push(filter);       
+        body.query.bool.filter.push(filter);
       }
       if (publisherFilter && get(publisherFilter, 'length')) {
         body.query.bool.filter.push({
@@ -234,14 +251,15 @@ export default Component.extend(I18n, {
               });
             }
             const hits = results.hits.hits;
-            hits.forEach(({_source: { type, access_type } }) => {
+            hits.forEach(({ _source: { type, access_type } }) => {
               const typeId = get(type, 'id');
               const typeDef = typeMapping.findBy('id', typeId);
               if (typeDef) {
                 set(type, 'translatedName', get(typeDef, 'name'));
               }
               const accessTypeId = get(access_type, 'id');
-              const accessTypeDef = accessTypeMapping.findBy('id', accessTypeId);
+              const accessTypeDef =
+                accessTypeMapping.findBy('id', accessTypeId);
               if (accessTypeDef) {
                 set(access_type, 'indicator', get(accessTypeDef, 'indicator'));
               }

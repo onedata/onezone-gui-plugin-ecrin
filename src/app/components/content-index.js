@@ -1,3 +1,12 @@
+/**
+ * A component, which shows start page with simplified query parameters form.
+ * 
+ * @module components/content-index
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
@@ -16,7 +25,7 @@ export default Component.extend(I18n, {
    */
   i18nPrefix: 'components.contentIndex',
 
-    /**
+  /**
    * @type {Array<string>}
    */
   modeOptions: Object.freeze([

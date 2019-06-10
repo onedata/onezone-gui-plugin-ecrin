@@ -22,7 +22,7 @@ export default function getErrorDescription(error) {
   let message;
   let errorJson;
 
-   if (typeof error === 'object' && error.message) {
+  if (typeof error === 'object' && error.message) {
     message = error.message;
   } else if (isHTMLSafe(error)) {
     message = error;

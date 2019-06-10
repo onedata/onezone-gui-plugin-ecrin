@@ -5,13 +5,13 @@ const defineSassBreakpoints = require('./app/utils/define-sass-breakpoints');
 const breakpointValues = require('./app/breakpoint-values').default;
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
-module.exports = function(defaults) {
+module.exports = function (defaults) {
   let app = new EmberApp(defaults, {
     'eslint': {
       testGenerator: 'mocha',
     },
     'sassOptions': {
-      includePaths: [ 'app/styles' ],
+      includePaths: ['app/styles'],
       onlyIncluded: false,
     },
     'ember-bootstrap': {

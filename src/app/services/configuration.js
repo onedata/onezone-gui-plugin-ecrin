@@ -10,8 +10,8 @@
 import Service, { inject as service } from '@ember/service';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 import { get } from '@ember/object';
-import { reads } from '@ember/object/computed';
 import { Promise } from 'rsvp';
+import { or, raw } from 'ember-awesome-macros';
 
 export default Service.extend({
   appProxy: service(),
@@ -25,17 +25,17 @@ export default Service.extend({
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  studyIdTypeMapping: reads('configuration.studyIdTypeMapping'),
+  studyIdTypeMapping: or('configuration.studyIdTypeMapping', raw([])),
 
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  typeMapping: reads('configuration.typeMapping'),
+  typeMapping: or('configuration.typeMapping', raw([])),
 
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  accessTypeMapping: reads('configuration.accessTypeMapping'),
+  accessTypeMapping: or('configuration.accessTypeMapping', raw([])),
 
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
@@ -72,7 +72,7 @@ export default Service.extend({
             sources: [{
               name: {
                 terms: {
-                  field : 'managing_organization.name.raw',
+                  field: 'managing_organization.name.raw',
                 },
               },
             }, {
