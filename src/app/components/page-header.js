@@ -1,5 +1,5 @@
 /**
- * A component, which shows content header wth optional logo.
+ * A component, which shows content header with optional logo.
  * 
  * @module components/page-header
  * @author Michał Borzęcki
@@ -25,7 +25,7 @@ export default Component.extend(I18n, {
   /**
    * @type {Ember.ComputedProperty<boolean>}
    */
-  isLogoVisible: computed('router.currentRouteName', function showLogo() {
+  isLogoVisible: computed('router.currentRouteName', function isLogoVisible() {
     const currentRouteName = this.get('router.currentRouteName');
     return currentRouteName !== 'index';
   }),

@@ -14,7 +14,6 @@ export default {
   doi: 'DOI',
   dataObjectTitle: 'Title',
   find: 'Find',
-  clearAll: 'Clear all',
   filter: 'Filter',
   studyTitleTopicOperatorOptions: {
     and: 'AND',

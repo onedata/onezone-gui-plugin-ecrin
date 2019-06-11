@@ -1,4 +1,17 @@
-import EmberObject, { computed, get } from '@ember/object';
+/**
+ * Represents both active and modified query params describing finding and
+ * filtering conditions.
+ * 
+ * Find params are related to studies (or data objects in searching via
+ * published paper), filter params are related to data objects inside studies.
+ *
+ * @module utils/query-params
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
+import EmberObject, { computed, get, getProperties } from '@ember/object';
 import rangeToNumbers from 'onezone-gui-plugin-ecrin/utils/range-to-numbers';
 
 const findParamNames = [
@@ -28,6 +41,7 @@ export default EmberObject.extend({
   mode: 'studyCharact',
 
   /**
+   * Only for mode === 'specificStudy'
    * @type {string}
    */
   studyIdType: undefined,
@@ -51,17 +65,16 @@ export default EmberObject.extend({
   studyTopicsInclude: '',
 
   /**
-   * Only for mode === 'studyCharact'
+   * Only for mode === 'viaPubPaper'
    * @type {string}
    */
-  studyTitleTopicOperator: computed({
-    get() {
-      return 'and';
-    },
-    set(key, value) {
-      return ['and', 'or'].includes(value) ? value : 'and';
-    },
-  }),
+  doi: '',
+
+  /**
+   * Only for mode === 'viaPubPaper'
+   * @type {string}
+   */
+  dataObjectTitle: '',
 
   /**
    * @type {string}
@@ -82,18 +95,6 @@ export default EmberObject.extend({
    * @type {string}
    */
   publisherFilter: Object.freeze([]),
-
-  /**
-   * Only for mode === 'viaPubPaper'
-   * @type {string}
-   */
-  doi: '',
-
-  /**
-   * Only for mode === 'viaPubPaper'
-   * @type {string}
-   */
-  dataObjectTitle: '',
 
   /**
    * Set by applyFindParams()
@@ -118,6 +119,19 @@ export default EmberObject.extend({
    * @type {Object}
    */
   activeFilterParams: Object.freeze({}),
+
+  /**
+   * Only for mode === 'studyCharact'
+   * @type {Ember.ComputedProperty<string>}
+   */
+  studyTitleTopicOperator: computed({
+    get() {
+      return 'and';
+    },
+    set(key, value) {
+      return ['and', 'or'].includes(value) ? value : 'and';
+    },
+  }),
 
   /**
    * @type {Ember.ComputedProperty<Array<number|Object>>}
@@ -149,6 +163,9 @@ export default EmberObject.extend({
     }
   }),
 
+  /**
+   * @type {Ember.ComputedProperty<boolean>}
+   */
   hasFilterParams: computed(...filterParamNames, function hasFilterParams() {
     const {
       typeFilter,
@@ -165,12 +182,20 @@ export default EmberObject.extend({
    */
   findQueryParams: computed(...findParamNames, function findQueryParams() {
     const {
+      hasActiveFindParams,
+      activeFindParams,
+    } = this.getProperties(
+      'hasActiveFindParams',
+      'activeFindParams',
+    );
+    const {
       mode,
       studyIdType,
       studyId,
       doi,
       dataObjectTitle,
-    } = this.getProperties(
+    } = getProperties(
+      activeFindParams,
       'mode',
       'studyIdType',
       'studyId',
@@ -185,38 +210,43 @@ export default EmberObject.extend({
       doi: null,
       dataObjectTitle: null,
     };
-    switch (mode) {
-      case 'specificStudy':
-        if (studyIdType) {
-          params.studyIdType = get(studyIdType, 'id');
-        }
-        if (studyId) {
-          params.studyId = studyId;
-        }
-        break;
-      case 'studyCharact':
-        [
-          'studyTitleContains',
-          'studyTopicsInclude',
-          'studyTitleTopicOperator',
-        ].forEach(filterName => {
-          const filter = this.get(filterName);
-          if (filter) {
-            params[filterName] = filter;
+    if (hasActiveFindParams) {
+      switch (mode) {
+        case 'specificStudy':
+          if (studyIdType) {
+            params.studyIdType = get(studyIdType, 'id');
           }
-        });
-        break;
-      case 'viaPubPaper':
-        if (doi) {
-          params.doi = doi;
-        } else if (dataObjectTitle) {
-          params.dataObjectTitle = dataObjectTitle;
-        }
-        break;
+          if (studyId) {
+            params.studyId = studyId;
+          }
+          break;
+        case 'studyCharact':
+          [
+            'studyTitleContains',
+            'studyTopicsInclude',
+            'studyTitleTopicOperator',
+          ].forEach(filterName => {
+            const filter = get(activeFindParams, filterName);
+            if (filter) {
+              params[filterName] = filter;
+            }
+          });
+          break;
+        case 'viaPubPaper':
+          if (doi) {
+            params.doi = doi;
+          } else if (dataObjectTitle) {
+            params.dataObjectTitle = dataObjectTitle;
+          }
+          break;
+      }
     }
     return params;
   }),
 
+  /**
+   * @type {Ember.ComputedProperty<Object>}
+   */
   filterQueryParams: computed(
     'hasActiveFilterParams',
     'activeFilterParams',
@@ -254,21 +284,32 @@ export default EmberObject.extend({
     }
   ),
 
+  /**
+   * @returns {undefined}
+   */
   applyFindParams() {
     this.applyNamespacedParams('Find', findParamNames);
   },
 
+  /**
+   * @returns {undefined}
+   */
   applyFilterParams() {
     this.applyNamespacedParams('Filter', filterParamNames);
   },
 
+  /**
+   * @param {string} paramNamespace
+   * @param {Array<string>} paramNames
+   * @returns {undefined}
+   */
   applyNamespacedParams(paramNamespace, paramNames) {
     const activeParams = {};
     let hasActiveParams = false;
     if (this.get(`has${paramNamespace}Params`)) {
       paramNames.forEach(filterName => {
         const filter = this.get(filterName);
-        if (filter && filter.length) {
+        if (filter) {
           activeParams[filterName] = filter;
         }
       });
@@ -298,6 +339,12 @@ export default EmberObject.extend({
     });
   },
 
+  /**
+   * Assigns values from passed raw query params object to local fields
+   * @param {Object} queryParams 
+   * @param {services.Configuration} configuration 
+   * @returns {undefined}
+   */
   consumeQueryParams(queryParams, configuration) {
     [
       'mode',

@@ -1,3 +1,12 @@
+/**
+ * Main application route. Loads appProxy and configuration.
+ * 
+ * @module routes/application
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import { get } from '@ember/object';

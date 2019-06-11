@@ -17,7 +17,6 @@ export default Component.extend(I18n, {
   classNames: ['query-parameters', 'form'],
 
   configuration: service(),
-  queryHistory: service(),
 
   /**
    * @override
@@ -84,11 +83,6 @@ export default Component.extend(I18n, {
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   publisherFilterOptions: reads('configuration.publisherMapping'),
-
-  init() {
-    this._super(...arguments);
-    this.set('queryPresetsProxy', this.get('queryHistory').getQueries());
-  },
 
   actions: {
     toggleDataObjectFilters() {

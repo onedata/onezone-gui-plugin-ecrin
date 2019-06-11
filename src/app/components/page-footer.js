@@ -26,7 +26,7 @@ export default Component.extend(I18n, {
   /**
    * @type {Ember.ComputedProperty<boolean>}
    */
-  isVisible: computed('router.currentRouteName', function showLogo() {
+  isVisible: computed('router.currentRouteName', function isVisible() {
     const currentRouteName = this.get('router.currentRouteName');
     return currentRouteName !== 'index';
   }),

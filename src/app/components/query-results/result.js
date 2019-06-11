@@ -174,6 +174,11 @@ export default Component.extend(I18n, {
         'publisherFilter'
       );
 
+      const filters = [{
+        terms: {
+          id: get(study, 'linked_data_objects').mapBy('id'),
+        },
+      }];
       const body = {
         sort: [
           { publication_year: { order: 'desc' } },
@@ -182,11 +187,7 @@ export default Component.extend(I18n, {
         size: 15,
         query: {
           bool: {
-            filter: [{
-              terms: {
-                id: get(study, 'linked_data_objects').mapBy('id'),
-              },
-            }],
+            filter: filters,
           },
         },
       };
@@ -194,36 +195,34 @@ export default Component.extend(I18n, {
         body.search_after = get(dataObjects, 'lastObject.sort');
       }
       if (typeFilter && get(typeFilter, 'length')) {
-        body.query.bool.filter.push({
+        filters.push({
           terms: {
             'type.id': typeFilter.mapBy('id'),
           },
         });
       }
       if (accessTypeFilter && get(accessTypeFilter, 'length')) {
-        body.query.bool.filter.push({
+        filters.push({
           terms: {
             'access_type.id': accessTypeFilter.mapBy('id'),
           },
         });
       }
       if (parsedYearFilter && parsedYearFilter.length) {
-        body.query.bool = body.query.bool || {};
-        body.query.bool.filter = body.query.bool.filter || [];
-        const filter = {
+        const yearFilter = {
           bool: {
             should: [],
           },
         };
         parsedYearFilter.forEach(rangeOrNumber => {
           if (typeof rangeOrNumber === 'number') {
-            filter.bool.should.push({
+            yearFilter.bool.should.push({
               term: {
                 publication_year: rangeOrNumber,
               },
             });
           } else {
-            filter.bool.should.push({
+            yearFilter.bool.should.push({
               range: {
                 publication_year: {
                   gte: rangeOrNumber.start,
@@ -233,10 +232,10 @@ export default Component.extend(I18n, {
             });
           }
         });
-        body.query.bool.filter.push(filter);
+        filters.push(yearFilter);
       }
       if (publisherFilter && get(publisherFilter, 'length')) {
-        body.query.bool.filter.push({
+        filters.push({
           terms: {
             'managing_organization.id': publisherFilter.mapBy('id'),
           },

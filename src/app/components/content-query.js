@@ -8,7 +8,7 @@
  */
 
 import Component from '@ember/component';
-import { computed, observer, get, getProperties, set, setProperties } from '@ember/object';
+import { observer, get, getProperties, set, setProperties } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import ReplacingChunksArray from 'onezone-gui-plugin-ecrin/utils/replacing-chunks-array';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
@@ -34,6 +34,11 @@ export default Component.extend(I18n, {
   queryParams: undefined,
 
   /**
+   * @type {Utils.ReplacingChunksArray}
+   */
+  queryResults: undefined,
+
+  /**
    * Number of records, that fulfills query conditions. -1 means, that results are
    * not available.
    * @type {number}
@@ -54,18 +59,6 @@ export default Component.extend(I18n, {
    * @type {Ember.ComputedProperty<boolean>}
    */
   hasActiveFindParams: reads('queryParams.hasActiveFindParams'),
-
-  /**
-   * @type {Ember.ComputedProperty<Utils.ReplacingChunksArray>}
-   */
-  queryResults: computed(function queryResults() {
-    return ReplacingChunksArray.create({
-      fetch: () => resolve([]),
-      startIndex: 0,
-      endIndex: 50,
-      indexMargin: 24,
-    });
-  }),
 
   queryParamsObserver: observer('queryParams', function queryParamsObserver() {
     this.find();
@@ -108,6 +101,7 @@ export default Component.extend(I18n, {
           this.set('queryResultsNumber', get(results, 'total'));
           results = get(results, 'results.hits.hits');
           results.forEach((doc, i) => {
+            // add index required by ReplacingChunksArray
             doc.index = {
               name: get(doc, '_source.scientific_title.title'),
               index: (startFromIndex.index || 0) + i,
@@ -312,7 +306,7 @@ export default Component.extend(I18n, {
       aggs: {
         related_studies_ids: {
           composite: {
-            size: Math.max(size, 20),
+            size: Math.max(size, 50),
             sources: [{
               id: {
                 terms: {
@@ -334,9 +328,10 @@ export default Component.extend(I18n, {
     }
 
     if (hasActiveFindParams) {
+      const filters = [];
       set(dataObjectBody, 'query', {
         bool: {
-          filter: [],
+          filter: filters,
         },
       });
       const {
@@ -344,13 +339,13 @@ export default Component.extend(I18n, {
         dataObjectTitle,
       } = getProperties(activeFindParams, 'doi', 'dataObjectTitle');
       if (doi) {
-        get(dataObjectBody, 'query.bool.filter').push({
+        filters.push({
           term: {
             DOI: doi,
           },
         });
       } else {
-        get(dataObjectBody, 'query.bool.filter').push({
+        filters.push({
           simple_query_string: {
             query: dataObjectTitle,
             fields: ['data_object_title'],
@@ -449,12 +444,10 @@ export default Component.extend(I18n, {
       this.set(`queryParams.${fieldName}`, newValue);
     },
     find() {
+      this.get('queryParams').applyFindParams();
       this.get('router').transitionTo({
         queryParams: this.get('queryParams.findQueryParams'),
       });
-    },
-    clearAll() {
-      this.get('queryParams').clear();
     },
     filter() {
       this.get('queryParams').applyFilterParams();

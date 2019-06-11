@@ -28,8 +28,7 @@ export default function rangeToNumbers(rangeString) {
         isNaN(partSections[1]) ||
         partSections[0] > partSections[1]) {
         return [];
-      }
-      if (partSections[0] === partSections[1]) {
+      } else if (partSections[0] === partSections[1]) {
         numbers.add(partSections[0]);
       } else {
         ranges.push({ start: partSections[0], end: partSections[1] });
@@ -38,8 +37,9 @@ export default function rangeToNumbers(rangeString) {
       const num = parseInt(part);
       if (isNaN(num)) {
         return [];
+      } else {
+        numbers.add(num);
       }
-      numbers.add(num);
     }
   }
   return Array.from(numbers).concat(ranges);

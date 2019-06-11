@@ -16,7 +16,7 @@ export default Service.extend({
    * Performs request to Elasticsearch.
    * @param {string} method one of `get`, `post`, `put`, `delete`
    * @param {string} indexName
-   * @param {string} path url (without host)
+   * @param {string} path url (without host and index)
    * @param {Object|undefined} body request body
    * @returns {Promise<any>} request result
    */

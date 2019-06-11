@@ -9,7 +9,7 @@
 
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
-import { computed } from '@ember/object';
+import { computed, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import QueryParams from 'onezone-gui-plugin-ecrin/utils/query-params';
@@ -63,8 +63,10 @@ export default Component.extend(I18n, {
 
   actions: {
     find() {
+      const queryParams = this.get('queryParams');
+      queryParams.applyFindParams();
       this.get('router').transitionTo('query', {
-        queryParams: this.get('queryParams.findQueryParams'),
+        queryParams: get(queryParams, 'findQueryParams'),
       });
     },
   },
