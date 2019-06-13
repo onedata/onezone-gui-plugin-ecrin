@@ -288,7 +288,7 @@ export default EmberObject.extend({
    * @returns {undefined}
    */
   applyFindParams() {
-    this.applyNamespacedParams('Find', findParamNames);
+    this.applyNamespacedParams('Find', findParamNames, ['mode']);
   },
 
   /**
@@ -301,9 +301,10 @@ export default EmberObject.extend({
   /**
    * @param {string} paramNamespace
    * @param {Array<string>} paramNames
+   * @param {Array<string>} [paramNamesWithoutCheck=[]]
    * @returns {undefined}
    */
-  applyNamespacedParams(paramNamespace, paramNames) {
+  applyNamespacedParams(paramNamespace, paramNames, paramNamesWithoutCheck = []) {
     const activeParams = {};
     let hasActiveParams = false;
     if (this.get(`has${paramNamespace}Params`)) {
@@ -315,6 +316,12 @@ export default EmberObject.extend({
       });
       hasActiveParams = true;
     }
+    paramNamesWithoutCheck.forEach(filterName => {
+      const filter = this.get(filterName);
+      if (filter) {
+        activeParams[filterName] = filter;
+      }
+    });
     this.setProperties({
       [`active${paramNamespace}Params`]: activeParams,
       [`hasActive${paramNamespace}Params`]: hasActiveParams,

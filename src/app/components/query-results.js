@@ -41,8 +41,14 @@ export default Component.extend(I18n, {
    */
   queryParams: undefined,
 
+  /**
+   * @type {number}
+   */
   rowHeight: 43,
 
+  /**
+   * @type {number}
+   */
   expandedRowExtraHeight: 250,
 
   /**

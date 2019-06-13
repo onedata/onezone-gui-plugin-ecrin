@@ -107,10 +107,7 @@ export default Component.extend(I18n, {
   ),
 
   filterParamsObserver: observer('filterParams', function filterParamsObserver() {
-    this.clearDataObjects();
-    if (this.get('isExpanded')) {
-      this.fetchNextDataObjects();
-    }
+    this.reloadDataObjects();
   }),
 
   init() {
@@ -121,7 +118,18 @@ export default Component.extend(I18n, {
       this.clearDataObjects();
     }
 
-    this.isExpandedObserver();
+    this.reloadDataObjects();
+  },
+
+  /**
+   * Clears and fetches again list of data objects related with this study
+   * @returns {undefined}
+   */
+  reloadDataObjects() {
+    this.clearDataObjects();
+    if (this.get('isExpanded')) {
+      this.fetchNextDataObjects();
+    }
   },
 
   /**

@@ -8,7 +8,7 @@
  */
 
 import Component from '@ember/component';
-import { observer, get, getProperties, set, setProperties } from '@ember/object';
+import { observer, get, getProperties, set, setProperties, computed } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import ReplacingChunksArray from 'onezone-gui-plugin-ecrin/utils/replacing-chunks-array';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
@@ -60,7 +60,25 @@ export default Component.extend(I18n, {
    */
   hasActiveFindParams: reads('queryParams.hasActiveFindParams'),
 
+  /**
+   * Study ids used to render list of query result. Checking this array while
+   * fetching results helps to avoid possible duplicates of studies (which
+   * breaks down rendering). For now only used by fetchViaPubPaper.
+   * @type {Ember.ComputedPropert<Array<number>>}
+   */
+  usedStudyIds: computed(function () { return [];}),
+
+  /**
+   * Field used as a cursor of query results in fetchViaPubPaper.
+   * @type {number}
+   */
+  lastCheckedDataObjectId: undefined,
+
   queryParamsObserver: observer('queryParams', function queryParamsObserver() {
+    this.setProperties({
+      usedStudyIds: [],
+      lastCheckedDataObjectId: undefined,
+    });
     this.find();
   }),
 
@@ -131,9 +149,7 @@ export default Component.extend(I18n, {
    */
   constructQueryBodyBase(type, startFromIndex, size) {
     const body = {};
-    if (startFromIndex && get(startFromIndex, 'index') !== undefined) {
-      set(body, 'search_after', [startFromIndex.name, startFromIndex.id]);
-    }
+    
     let _source;
     if (type === 'study') {
       _source = [
@@ -145,6 +161,20 @@ export default Component.extend(I18n, {
         { 'scientific_title.title.raw': { order: 'asc' } },
         { id: { order: 'asc' } },
       ];
+      if (startFromIndex && get(startFromIndex, 'index') !== undefined) {
+        body.search_after = [startFromIndex.name, startFromIndex.id];
+      }
+    } else if (type === 'data_object') {
+      _source = [
+        'id',
+        'related_studies',
+      ];
+      body.sort = [
+        { id: { order: 'asc' } },
+      ];
+      if (startFromIndex && get(startFromIndex, 'lastDataObjectId') !== undefined) {
+        body.search_after = [startFromIndex.lastDataObjectId];
+      }
     }
     setProperties(body, {
       size,
@@ -284,6 +314,106 @@ export default Component.extend(I18n, {
   },
 
   /**
+   * Fetches ids of studies, that are related to data objects specified by
+   * `published paper` query params. If first fetch attempt does not give
+   * enough number of ids, method will call itself again to filfill
+   * `size` requirement (if possible).
+   * @param {number} dataObjectLastId last checked data object (works as query cursor)
+   * @param {number} size
+   * @param {Array<number>} [alreadyFound=[]] array of study ids, that were
+   * fetched in previous recurrent call of this method. Used to aggregate results
+   * of subsequent calls
+   * @returns {Promise<{dataObjectLastId: number, studyIds: Array<number>}>}
+   */
+  fetchStudyIdsForPerPaperSearch(dataObjectLastId, size, alreadyFound = []) {
+    const {
+      elasticsearch,
+      activeFindParams,
+      usedStudyIds,
+    } = this.getProperties(
+      'elasticsearch',
+      'activeFindParams',
+      'usedStudyIds'
+    );
+
+    // Minimum studies number, to avoid fetching data objects one by one
+    size = Math.max(size, 6);
+    // Algorithm of fetching assumes, that each data object has 1+ related studies,
+    // so we should fetch less than `size` data objects to get `size` studies
+    const dataObjectsToFetch = Math.floor(size * 0.75);
+
+    const filters = [];
+    const dataObjectBody = {
+      size: dataObjectsToFetch,
+      _source: [
+        'id',
+        'related_studies',
+      ],
+      sort: [
+        { id: { order: 'asc' } },
+      ],
+      search_after: dataObjectLastId !== undefined ? [dataObjectLastId] : undefined,
+      query: {
+        bool: {
+          filter: filters,
+        },
+      },
+    };
+
+    const {
+      doi,
+      dataObjectTitle,
+    } = getProperties(activeFindParams, 'doi', 'dataObjectTitle');
+    if (doi) {
+      filters.push({
+        term: {
+          DOI: doi,
+        },
+      });
+    } else if (dataObjectTitle) {
+      filters.push({
+        simple_query_string: {
+          query: dataObjectTitle,
+          fields: ['data_object_title'],
+        },
+      });
+    } else {
+      return resolve({
+        studyIds: [],
+      });
+    }
+    return elasticsearch.post('data_object', '_search', dataObjectBody)
+      .then(results => {
+        results = results.hits.hits;
+        const fetchedDataObjects = get(results, 'length');
+        if (fetchedDataObjects === 0) {
+          return {
+            dataObjectLastId,
+            studyIds: alreadyFound,
+          };
+        }
+        const dataObjectLastId = get(results[results.length - 1], '_source.id');
+
+        // extract studies from data objects
+        let newStudyIds = _.uniq(_.flatten(
+          results.map(dataObject =>
+            (get(dataObject, '_source.related_studies') || []).mapBy('id')
+          )
+        ));
+        newStudyIds = _.without(newStudyIds, ...alreadyFound.concat(usedStudyIds));
+        const studyIds = alreadyFound.concat(newStudyIds);
+        if (get(studyIds, 'length') >= size || dataObjectsToFetch > fetchedDataObjects) {
+          return {
+            dataObjectLastId,
+            studyIds,
+          };
+        } else {
+          return this.fetchStudyIdsForPerPaperSearch(dataObjectLastId, size, studyIds);
+        }
+      });
+  },
+
+  /**
    * Loads studies according to related paper
    * @param {Object} startFromIndex index from ReplacingChunksArray
    * @param {number} size expected results size
@@ -292,90 +422,45 @@ export default Component.extend(I18n, {
   fetchViaPubPaper(startFromIndex, size) {
     const {
       elasticsearch,
-      activeFindParams,
       hasActiveFindParams,
+      lastCheckedDataObjectId,
     } = this.getProperties(
       'elasticsearch',
-      'activeFindParams',
-      'hasActiveFindParams'
+      'hasActiveFindParams',
+      'lastCheckedDataObjectId'
     );
-    const dataObjectBody = this.constructQueryBodyBase('data_object', undefined, size);
 
-    setProperties(dataObjectBody, {
-      size: 0,
-      aggs: {
-        related_studies_ids: {
-          composite: {
-            size: Math.max(size, 50),
-            sources: [{
-              id: {
-                terms: {
-                  field: 'related_studies.id',
-                },
-              },
-            }],
-          },
-        },
-      },
-    });
-    if (get(startFromIndex, 'id') !== undefined) {
-      set(
-        dataObjectBody,
-        'aggs.related_studies_ids.composite.after', {
-          id: get(startFromIndex, 'id'),
-        }
-      );
-    }
-
-    if (hasActiveFindParams) {
-      const filters = [];
-      set(dataObjectBody, 'query', {
-        bool: {
-          filter: filters,
-        },
-      });
-      const {
-        doi,
-        dataObjectTitle,
-      } = getProperties(activeFindParams, 'doi', 'dataObjectTitle');
-      if (doi) {
-        filters.push({
-          term: {
-            DOI: doi,
-          },
-        });
-      } else {
-        filters.push({
-          simple_query_string: {
-            query: dataObjectTitle,
-            fields: ['data_object_title'],
-          },
-        });
-      }
-    } else {
+    if (!hasActiveFindParams) {
       return resolve(null);
     }
-    let noStudyIdsLeft = false;
-    return elasticsearch.post('data_object', '_search', dataObjectBody)
+
+    return this.fetchStudyIdsForPerPaperSearch(lastCheckedDataObjectId, size)
       .then(results => {
-        // extract studies from data objects
-        let relatedStudiesIds = (get(
-          results,
-          'aggregations.related_studies_ids.buckets'
-        ) || []).map(bucket => get(bucket, 'key.id'));
-        const idsNumber = get(relatedStudiesIds, 'length');
-        if (idsNumber) {
-          if (idsNumber < size) {
+        const usedStudyIds = this.get('usedStudyIds');
+        const {
+          dataObjectLastId,
+          studyIds,
+        } = getProperties(results, 'dataObjectLastId', 'studyIds');
+
+        // Remember state of fetch
+        this.setProperties({
+          lastCheckedDataObjectId: dataObjectLastId,
+          usedStudyIds: usedStudyIds.concat(studyIds),
+        });
+
+        const studyIdsNumber = get(studyIds, 'length');
+        let noStudyIdsLeft = false;
+        if (studyIdsNumber) {
+          if (studyIdsNumber < size) {
             noStudyIdsLeft = true;
           }
-          relatedStudiesIds = _.uniq(relatedStudiesIds);
           const studyBody =
-            this.constructQueryBodyBase('study', undefined, size);
+            this.constructQueryBodyBase('study', undefined, studyIdsNumber);
           set(studyBody, 'query', {
             bool: {
               filter: [{
                 terms: {
-                  id: relatedStudiesIds,
+                  id: studyIds,
                 },
               }],
             },
@@ -385,20 +470,18 @@ export default Component.extend(I18n, {
             const hitsNumber = get(results, 'hits.total');
             if (hitsNumber < size && !noStudyIdsLeft) {
               // if found studies are not enough, perform next query
-              return this.fetchViaPubPaper({
-                index: (get(startFromIndex, 'index') || -1) + hitsNumber,
-                id: relatedStudiesIds[get(relatedStudiesIds, 'length') - 1],
-              }, size - hitsNumber).then(({ results: nextResults }) => {
-                // append results from subsequent query to the first result
-                set(
-                  results,
-                  'hits.total',
-                  hitsNumber + get(nextResults, 'hits.total')
-                );
-                get(results, 'hits.hits')
-                  .push(...get(nextResults, 'hits.hits'));
-                return results;
-              });
+              return this.fetchViaPubPaper(null, size - hitsNumber)
+                .then(({ results: nextResults }) => {
+                  // append results from subsequent query to the first result
+                  set(
+                    results,
+                    'hits.total',
+                    hitsNumber + get(nextResults, 'hits.total')
+                  );
+                  get(results, 'hits.hits')
+                    .push(...get(nextResults, 'hits.hits'));
+                  return results;
+                });
             } else {
               return results;
             }
