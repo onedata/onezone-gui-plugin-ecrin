@@ -1,5 +1,6 @@
 html, body, body > .ember-view {
-  height: 100%;
+  @include fill-container();
+  position: absolute;
 }
 
 .application-container {
