@@ -31,6 +31,13 @@ export default Component.extend(I18n, {
    * @returns {undefined}
    */
   onChange: undefined,
+  
+  /**
+   * @virtual
+   * @type {Function}
+   * @returns {undefined}
+   */
+  onFind: () => {},
 
   /**
    * @virtual

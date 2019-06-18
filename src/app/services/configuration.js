@@ -10,7 +10,6 @@
 import Service, { inject as service } from '@ember/service';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 import { get } from '@ember/object';
-import { Promise } from 'rsvp';
 import { or, raw } from 'ember-awesome-macros';
 
 export default Service.extend({
@@ -64,7 +63,7 @@ export default Service.extend({
    */
   reloadAvailableEsValues() {
     const elasticsearch = this.get('elasticsearch');
-    const fetchPublishers = elasticsearch.post('data_object', '_search', {
+    return elasticsearch.post('data_object', '_search', {
       size: 0,
       aggs: {
         publishers: {
@@ -86,10 +85,8 @@ export default Service.extend({
           },
         },
       },
-    });
-    return Promise.all([
-      fetchPublishers,
-    ]).then(([publishersResult]) => {
+    })
+    .then(publishersResult => {
       const publishers = get(
         publishersResult,
         'aggregations.publishers.buckets'

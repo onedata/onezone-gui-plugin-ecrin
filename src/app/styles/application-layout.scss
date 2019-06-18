@@ -3,7 +3,7 @@ html, body, body > .ember-view {
   position: absolute;
 }
 
-.application-container {
+#application-container {
   display: flex;
   flex-direction: column;
   padding: $padding-base-vertical;
@@ -11,7 +11,7 @@ html, body, body > .ember-view {
   max-height: 100%;
   overflow: auto;
 
-  & > .content {
+  > .content {
     flex-grow: 1;
   }
 }

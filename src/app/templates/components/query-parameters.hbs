@@ -98,7 +98,7 @@
   </div>
 </div>
 {{#bs-accordion selected=areDataObjectFiltersVisible as |acc|}}
-  {{#acc.item class=(concat "data-object-filters" (if areDataObjectFiltersVisible " expanded" " collapsed")) value=true as |accItem|}}
+  {{#acc.item class=(concat "data-object-filters " (if areDataObjectFiltersVisible "expanded" "collapsed")) value=true as |accItem|}}
     {{#accItem.body}}
       <div class="row">
         <div class="col-xs-12 col-sm-3 form-group">
@@ -130,7 +130,8 @@
             class="form-control"
             type="text"
             value={{queryParams.yearFilter}}
-            oninput={{action (action onChange "yearFilter") value="target.value"}}>
+            oninput={{action (action onChange "yearFilter") value="target.value"}}
+            onkeydown={{invoke-on-enter onFilter}}>
         </div>
         <div class="col-xs-12 col-sm-3 form-group">
           <label class="control-label">{{tt this "filterByPublisher"}}</label>

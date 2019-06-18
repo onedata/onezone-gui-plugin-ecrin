@@ -8,7 +8,7 @@ $inline-alert-left-border-width: 60px;
   border-width: 1px;
   border-left-width: $inline-alert-left-border-width;
   text-align: left;
-  &:before {
+  &::before {
     position: absolute;
     left: -$inline-alert-left-border-width / 2;
     top: 50%;
@@ -28,7 +28,7 @@ $inline-alert-left-border-width: 60px;
   &.alert-danger {
     border-color: $color-one-danger;
   }
-  &.alert-danger:before {
+  &.alert-danger::before {
     @include oneicon-content($oneicon-checkbox-x);
   }
   .error-close {

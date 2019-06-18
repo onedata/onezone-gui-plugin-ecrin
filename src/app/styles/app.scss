@@ -1,4 +1,4 @@
-$root-url: './' !default;
+$root-url: root-url();
 
 @import './fonts.scss';
 @import './colors';

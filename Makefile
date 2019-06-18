@@ -17,6 +17,12 @@ build_dev: deps
 build_prod: deps
 	cd $(SRC_DIR) && ember build --environment=production --output-path=../$(REL_DIR)
 
+build_plugin_dev: build_dev
+	tar -czf plugin.tar.gz $(REL_DIR)
+
+build_plugin_prod: build_prod
+	tar -czf plugin.tar.gz $(REL_DIR)
+
 doc:
 	jsdoc -c $(SRC_DIR)/.jsdoc.conf $(SRC_DIR)/app
 

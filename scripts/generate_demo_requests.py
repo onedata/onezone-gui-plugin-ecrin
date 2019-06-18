@@ -1,3 +1,24 @@
+#
+# Author: Michał Borzęcki
+# 
+# This script creates empty files with study and data object metadata in
+# specified space and Oneprovider. It uses JSON files located in directories
+# `studies_dir` (= studies) and `data_object_dir` (= data_objects). Positional
+# arguments:
+# 1. Oneprovider location (IP address or domain).
+# 2. Space name (it must be supported by passed Oneprovider).
+# 3. Access token (can be obtained via Onezone).
+# 4. Number of files metadata to upload ("100" means 100 studies and 100 data
+#    objects)
+# 5. Name of a directory (in space), where files with metadata should be
+#    uploaded. Warning: if that directory already exists, it will be removed.
+# Example of usage:
+# python3 generate_demo_requests.py 172.17.0.16 s1 MDAzMvY...ZlOGCg 1000 ecrin1
+#
+# Example studies and data objects can be found at
+# https://github.com/beatmix92/ct.gov_updated
+#
+
 import os
 import sys
 import subprocess

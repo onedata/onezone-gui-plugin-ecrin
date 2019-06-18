@@ -54,7 +54,7 @@ export default Component.extend(I18n, {
   /**
    * @type {JQuery}
    */
-  scrollContainer: undefined,
+  $scrollContainer: undefined,
 
   /**
    * @type {string}
@@ -111,23 +111,23 @@ export default Component.extend(I18n, {
   ),
 
   resultsObserver: observer('results', function resultsObserver() {
-    const scrollContainer = this.get('scrollContainer');
-    if (scrollContainer) {
-      scrollContainer.scrollTop(0);
+    const $scrollContainer = this.get('$scrollContainer');
+    if ($scrollContainer) {
+      $scrollContainer.scrollTop(0);
     }
   }),
 
   didInsertElement() {
     this._super(...arguments);
 
-    this.set('scrollContainer', $('.application-container'));
+    this.set('$scrollContainer', $('#application-container'));
     const listWatcher = this.set('listWatcher', this.createListWatcher());
     listWatcher.scrollHandler();
   },
 
   createListWatcher() {
     return new ListWatcher(
-      this.get('scrollContainer'),
+      this.get('$scrollContainer'),
       '.data-row',
       (items, onTop) => safeExec(this, 'onListScroll', items, onTop),
       '.data-start-row',

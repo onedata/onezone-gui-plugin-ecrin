@@ -54,7 +54,7 @@ export default Service.extend({
 
       const savedQuery = Object.assign({ id }, query);
       queries.push(savedQuery);
-      set(queriesCache, 'content', queries.sort(({ id: a }, { id: b }) => a > b));
+      set(queriesCache, 'content', queries.sortBy('id'));
 
       return savedQuery;
     });
