@@ -3,9 +3,9 @@ REL_DIR	 ?= rel
 
 .PHONY: deps build_dev build_prod doc clean test test_xunit_output submodules
 
-all: build_dev
+all: build_plugin_dev
 
-rel: build_prod
+rel: build_plugin_prod
 
 deps:
 	cd $(SRC_DIR) && npm install --no-package-lock
