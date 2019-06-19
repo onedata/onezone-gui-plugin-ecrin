@@ -1,0 +1,92 @@
+<div class="logo ecrin-logo"></div>
+<h1>{{tt this "title"}}</h1>
+<h2>{{tt this "subtitle"}}</h2>
+<form class="form query-parameters row text-left">
+  <div class="col-xs-12 col-sm-5 col-centered">
+    <div class="row">
+      <div class="col-xs-12 form-group">
+        <label class="control-label">{{tt this "selectMode"}}</label>
+        {{#power-select
+          selected=queryParams.mode
+          options=modeOptions
+          onchange=(action (mut queryParams.mode))
+          searchEnabled=false
+          as |mode|}}
+          {{tt this (concat "modes." mode)}}
+        {{/power-select}}
+      </div>
+    </div>
+    {{#if (eq queryParams.mode "specificStudy")}}
+      <div class="row">
+        <div class="col-xs-12 form-group">
+          <label class="control-label">{{tt this "studyIdType"}}</label>
+          {{#power-select
+            selected=queryParams.studyIdType
+            options=studyIdTypeMapping
+            onchange=(action (mut queryParams.studyIdType))
+            searchEnabled=false
+            as |studyIdType|}}
+            {{studyIdType.name}}
+          {{/power-select}}
+        </div>
+        <div class="col-xs-12 form-group">
+          <label class="control-label" for="study-id-input">{{tt this "studyId"}}</label>
+          <input
+            id="study-id-input"
+            class="form-control"
+            type="text"
+            value={{queryParams.studyId}}
+            onkeydown={{invoke-on-enter (action "find")}}
+            oninput={{action (mut queryParams.studyId) value="target.value"}}>
+        </div>
+      </div>
+    {{else if (eq queryParams.mode "studyCharact")}}
+      <div class="row">
+        <div class="col-xs-12 form-group">
+          <label class="control-label" for="study-title-contains-input">{{tt this "studyTitleContains"}}</label>
+          <input
+            id="study-title-contains-input"
+            class="form-control"
+            type="text"
+            value={{queryParams.studyTitleContains}}
+            onkeydown={{invoke-on-enter (action "find")}}
+            oninput={{action (mut queryParams.studyTitleContains) value="target.value"}}>
+        </div>
+        <div class="col-xs-12 form-group">
+          <label class="control-label" for="study-topics-include-input">{{tt this "studyTopicsInclude"}}</label>
+          <input
+            id="study-topics-include-input"
+            class="form-control"
+            type="text"
+            value={{queryParams.studyTopicsInclude}}
+            onkeydown={{invoke-on-enter (action "find")}}
+            oninput={{action (mut queryParams.studyTopicsInclude) value="target.value"}}>
+        </div>
+      </div>
+    {{else if (eq queryParams.mode "viaPubPaper")}}
+      <div class="row">
+        <div class="col-xs-12 form-group">
+          <label class="control-label" for="doi-input">{{tt this "doi"}}</label>
+          <input
+            id="doi-input"
+            class="form-control"
+            type="text"
+            value={{queryParams.doi}}
+            onkeydown={{invoke-on-enter (action "find")}}
+            oninput={{action (mut queryParams.doi) value="target.value"}}>
+        </div>
+        <div class="col-xs-12 form-group">
+          <label class="control-label" for="data-object-title-input">{{tt this "dataObjectTitle"}}</label>
+          <input
+            id="data-object-title-input"
+            class="form-control"
+            type="text"
+            value={{queryParams.dataObjectTitle}}
+            onkeydown={{invoke-on-enter (action "find")}}
+            oninput={{action (mut queryParams.dataObjectTitle) value="target.value"}}>
+        </div>
+      </div>
+    {{/if}}
+  </div>
+</form>
+{{#bs-button type="primary" onClick=(action "find")}}{{tt this "find"}}{{/bs-button}}

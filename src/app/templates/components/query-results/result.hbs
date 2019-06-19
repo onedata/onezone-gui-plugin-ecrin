@@ -1,0 +1,37 @@
+{{#item.title}}
+  {{#truncated-string}}{{or study.scientific_title.title "Untitled"}}{{/truncated-string}}
+{{/item.title}}
+{{!-- TODO: Add actions when requirements will be exactly specified --}}
+{{!-- <ul class="result-actions">
+  <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
+  <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
+  <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
+</ul> --}}
+{{#item.body}}
+  {{#if dataObjects.length}}
+    <table class="do-records table">
+      {{#each dataObjects as |dataObject|}}
+        <tr>
+          <td class="do-type">{{or dataObject._source.type.translatedName dataObject._source.type.name}}</td>
+          <td class="do-description">
+            {{#if dataObject._source.data_object_title}}
+              <p>{{dataObject._source.data_object_title}}</p>
+            {{/if}}
+            {{#if dataObject._source.url}}
+              <p>{{dataObject._source.url}}</p>
+            {{/if}}
+          </td>
+          <td class="do-year">{{or dataObject._source.publication_year "-"}}</td>
+          <td class="do-status"><span class="do-status-icon {{or dataObject._source.access_type.indicator "unknown"}}"></span></td>
+        </tr>
+      {{/each}}
+    </table>
+  {{/if}}
+  {{#unless (eq dataObjectsNumber dataObjects.length)}}
+    {{#if fetchInnerRecordsProxy.isPending}}
+      {{spin-spinner-block sizeClass="xs" class="loading-inner-spinner"}} <span>{{tt this "loading"}}</span>
+    {{else}}
+      {{#bs-button size="sm" onClick=(action "loadMore") class="load-more"}}{{tt this "loadMore"}}{{/bs-button}}
+    {{/if}}
+  {{/unless}}
+{{/item.body}}

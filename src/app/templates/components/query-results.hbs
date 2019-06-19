@@ -1,0 +1,25 @@
+{{#unless (eq totalResultsNumber -1)}}
+  <div class="total-records-number">
+    {{tt this "results"}}: <span class="one-label">{{totalResultsNumber}}</span>
+  </div>
+{{/unless}}
+<div class="data-start-row" style={{firstRowStyle}}></div>
+{{#bs-accordion onChange=(action "resultExpanded") as |acc|}}
+  {{#each results as |result|}}
+    <div class="data-row" data-row-id={{result.index.id}}>
+      {{#acc.item value=result.index.id as |accItem|}}
+        {{query-results/result
+          item=accItem
+          result=result
+          isExpanded=(eq result.index.id expandedResultId)
+          queryParams=queryParams}}
+      {{/acc.item}}
+    </div>
+  {{/each}}
+{{/bs-accordion}}
+{{loading-container
+  isLoading=bottomLoading
+  errorReason=results.error
+  sizeClass="sm"
+  spinnerBlockClass="horizontal-align-middle"}}
+{{yield}}

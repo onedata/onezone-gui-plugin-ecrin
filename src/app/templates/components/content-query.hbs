@@ -1,0 +1,10 @@
+{{query-parameters
+  queryParams=queryParams
+  onChange=(action "parameterChanged")
+  onFind=(action "find")
+  onFilter=(action "filter")}}
+{{query-results
+  totalResultsNumber=queryResultsNumber
+  results=queryResults
+  queryParams=queryParams}}
+{{yield}}

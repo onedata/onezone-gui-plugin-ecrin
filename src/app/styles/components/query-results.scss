@@ -1,0 +1,133 @@
+.query-results {
+  margin-top: $padding-base-vertical;
+  .panel {
+    margin-bottom: $padding-small-vertical;
+  }
+
+  .data-row:nth-child(odd) {
+    .panel-body, .panel-heading {
+      background-color: $panel-default-heading-bg;
+    }
+  }
+
+  .data-row .panel-heading:hover {
+    background-color: darken($panel-default-heading-bg, 5%);
+  }
+
+  .panel-heading {
+    padding: $padding-base-vertical 100px $padding-base-vertical $padding-base-horizontal;
+    a:hover {
+      color: $main-text-color;
+    }
+  }
+
+  .panel-body {
+    padding: $padding-base-vertical $padding-base-horizontal;
+    height: 250px;
+    overflow-y: scroll;
+  }
+
+  .panel-group .panel-heading + .panel-collapse > .panel-body {
+    border-top: 0;
+  }
+
+  .query-results-result {
+    position: relative;
+  }
+
+  .result-actions {
+    position: absolute;
+    top: $padding-base-vertical - 3px;
+    right: $padding-base-horizontal;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+
+  .result-action {
+    display: inline-block;
+    color: $main-text-light-color;
+    cursor: pointer;
+    .one-icon {
+      font-size: 1.7em;
+    }
+    &:hover {
+      color: $main-text-color;
+    }
+  }
+
+  .do-records {
+    table-layout: fixed;
+    margin-bottom: 0;
+    tr + tr td {
+      padding-top: $padding-base-vertical;
+    }
+    td {
+      vertical-align: top;
+      word-break: break-all;
+    }
+  }
+
+  .do-type {
+    width: 10em;
+    @media (max-width: $screen-xs-max) {
+      width: 7em;
+    }
+  }
+
+  .do-description {
+    color: $main-text-light-color;
+    padding-left: $padding-small-horizontal;
+    padding-right: $padding-small-horizontal;
+    p {
+      margin-bottom: $padding-small-vertical;
+    }
+  }
+
+  .do-year {
+    width: 4em;
+    color: $main-text-light-color;
+    @media (max-width: $screen-xs-max) {
+      width: 3em;
+    }
+  }
+
+  .do-status {
+    width: 20px;
+    text-align: center;
+  }
+
+  .do-status-icon {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 100%;
+    vertical-align: middle;
+    &.unknown {
+      background-color: $main-text-light-color;
+    }
+    &.red {
+      background-color: $color-one-danger;
+    }
+    &.yellow {
+      background-color: $color-one-warning;
+    }
+    &.green {
+      background-color: $color-one-success;
+    }
+  }
+
+  .loading-inner-spinner {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .load-more {
+    margin-top: $padding-base-vertical;
+  }
+
+  .total-records-number {
+    margin-bottom: $padding-base-vertical;
+    font-family: 'Open Sans Semibold';
+  }
+}

@@ -1,0 +1,77 @@
+$ember-power-select-background-color: $input-bg;
+$ember-power-select-line-height: $line-height-computed;
+$ember-power-select-border-color: $input-border;
+$ember-power-select-focus-outline: 0 !default;
+$ember-power-select-opened-border-radius: 0;
+$ember-power-select-search-input-border-radius: $border-radius-base;
+$ember-power-select-dropdown-margin: 0;
+$ember-power-select-dropdown-box-shadow: none;
+$ember-power-select-highlighted-color: $color-one-white;
+$ember-power-select-highlighted-background: $color-one-default;
+$ember-power-select-focus-border-color: $brand-primary;
+$ember-power-select-focus-box-shadow: $control-box-shadow-focus;
+$ember-power-select-dropdown-border: 1px solid $ember-power-select-border-color !default;
+$ember-power-select-dropdown-contiguous-border: $ember-power-select-dropdown-border !default;
+$ember-power-select-trigger-ltr-padding: $padding-base-vertical $padding-base-horizontal;
+$ember-power-select-dropdown-contiguous-border: none;
+$ember-power-select-multiple-option-line-height: $line-height-base;
+
+@import "ember-power-select";
+
+.ember-power-select-trigger {
+  box-shadow: $control-box-shadow;
+  min-height: $input-height-base;
+  transform: translateZ(0);
+  &[aria-expanded="true"] {
+    color: $color-one-white;
+    background-color: $color-one-info;
+    border: 1px solid $input-border;
+    box-shadow: none;
+  }
+}
+.ember-power-select-selected-item {
+  margin-left: 0;
+}
+.ember-power-select-status-icon {
+  font-family: 'oneicons' !important;
+  border: 0;
+  transform: none;
+  right: 1.7em;
+  top: 0.9em;
+  margin: initial;
+  font-size: 1.7em;
+  font-weight: bold;
+  line-height: 0;
+  position: fixed;
+  &:before {
+    @include oneicon-content($oneicon-arrow-down);
+  }
+}
+.ember-basic-dropdown-trigger[aria-expanded=true] .ember-power-select-status-icon {
+  transform: scaleY(-1);
+}
+.ember-power-select-option {
+  line-height: $input-height-base;
+  border-bottom: 1px solid $main-border-color;
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.ember-power-select-multiple-option {
+  margin: $padding-small-vertical $padding-xs-horizontal 0 0;
+}
+
+.ember-power-select-multiple-trigger {
+  padding: $padding-base-vertical - 4 $padding-base-horizontal;
+  padding-right: 45px
+}
+
+.ember-power-select-trigger-multiple-input {
+  margin-top: 4px;
+  max-width: 85%;
+}
+
+.ember-power-select-options[role=listbox] {
+  max-height: 250px;
+}
