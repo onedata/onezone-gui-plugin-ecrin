@@ -27,7 +27,6 @@ module.exports = function (defaults) {
 
   // Injects proper root-url to Sass depending on environment. Fixes different
   // root-url in production and development mode
-  const env = process.env.EMBER_ENV;
   if (!app.options.sassOptions) {
     app.options.sassOptions = {};
   }
@@ -36,7 +35,7 @@ module.exports = function (defaults) {
     sassOptions.functions = {};
   }
   sassOptions.functions['root-url'] = function rootUrl() {
-    return new sass.types.String(env === 'production' ? '../' : './');
+    return new sass.types.String('./');
   };
 
   // Use `app.import` to add additional libraries to the generated
