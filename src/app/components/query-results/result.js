@@ -254,7 +254,7 @@ export default Component.extend(I18n, {
           .then(results => {
             if (dataObjectsNumber === -1) {
               safeExec(this, () => {
-                this.set('dataObjectsNumber', results.hits.total);
+                this.set('dataObjectsNumber', results.hits.total.value);
               });
             }
             const hits = results.hits.hits;

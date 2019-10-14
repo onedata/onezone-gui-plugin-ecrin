@@ -46,165 +46,163 @@
             }
           },
           "mappings": {
-            "_doc": {
-              "dynamic": "strict",
-              "_source": {
-                "enabled": true
+            "dynamic": "strict",
+            "_source": {
+              "enabled": true
+            },
+            "properties": {
+              "id": {
+                "type": "integer"
               },
-              "properties": {
-                "id": {
-                  "type": "integer"
-                },
-                "linked_data_objects": {
-                  "type": "nested",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    }
+              "linked_data_objects": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
                   }
-                },
-                "object_type": {
-                  "type": "text"
-                },
-                "scientific_title": {
-                  "type": "object",
-                  "properties": {
-                    "title": {
-                      "type": "text",
-                      "fields": {
-                        "raw": {
-                          "type": "keyword"
-                        }
+                }
+              },
+              "object_type": {
+                "type": "text"
+              },
+              "scientific_title": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "text",
+                    "fields": {
+                      "raw": {
+                        "type": "keyword"
                       }
-                    },
-                    "lang_code": {
-                      "type": "text"
                     }
+                  },
+                  "lang_code": {
+                    "type": "text"
                   }
-                },
-                "study_identifiers": {
-                  "type": "nested",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "value": {
-                      "type": "text",
-                      "analyzer": "keyword"
-                    },
-                    "organization": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "name": {
-                          "type": "text"
-                        }
+                }
+              },
+              "study_identifiers": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "value": {
+                    "type": "text",
+                    "analyzer": "keyword"
+                  },
+                  "organization": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
                       }
-                    },
-                    "date": {
-                      "type": "date",
-                      "format": "YYYY-MM-DD"
-                    },
-                    "type": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "name": {
-                          "type": "keyword"
-                        }
+                    }
+                  },
+                  "date": {
+                    "type": "date",
+                    "format": "YYYY-MM-DD"
+                  },
+                  "type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "keyword"
                       }
                     }
                   }
-                },
-                "study_topics": {
-                  "type": "nested",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "topic_source_type": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "name": {
-                          "type": "text"
-                        }
+                }
+              },
+              "study_topics": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "topic_source_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
                       }
-                    },
-                    "value": {
-                      "type": "text"
-                    },
-                    "topic_ct": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "name": {
-                          "type": "text"
-                        },
-                        "url": {
-                          "type": "text",
-                          "analyzer": "keyword"
-                        }
+                    }
+                  },
+                  "value": {
+                    "type": "text"
+                  },
+                  "topic_ct": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
+                      },
+                      "url": {
+                        "type": "text",
+                        "analyzer": "keyword"
                       }
-                    },
-                    "topic_ct_code": {
-                      "type": "text"
                     }
+                  },
+                  "topic_ct_code": {
+                    "type": "text"
                   }
-                },
-                "study_status": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "text"
-                    }
+                }
+              },
+              "study_status": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
                   }
-                },
-                "study_type": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "text"
-                    }
+                }
+              },
+              "study_type": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
                   }
-                },
-                "study_other_titles": {
-                  "type": "nested",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "title_type": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "name": {
-                          "type": "text"
-                        }
+                }
+              },
+              "study_other_titles": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "title_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
                       }
-                    },
-                    "title_text": {
-                      "type": "text"
-                    },
-                    "lang_code": {
-                      "type": "text"
                     }
+                  },
+                  "title_text": {
+                    "type": "text"
+                  },
+                  "lang_code": {
+                    "type": "text"
                   }
                 }
               }
@@ -235,299 +233,297 @@
             }
           },
           "mappings": {
-            "_doc": {
-              "dynamic": "strict",
-              "_source": {
-                "enabled": true
+            "dynamic": "strict",
+            "_source": {
+              "enabled": true
+            },
+            "properties": {
+              "DOI": {
+                "type": "text"
               },
-              "properties": {
-                "DOI": {
-                  "type": "text"
-                },
-                "access_details": {
-                  "type": "text"
-                },
-                "access_details_url": {
-                  "type": "text"
-                },
-                "access_type": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "text"
-                    }
+              "access_details": {
+                "type": "text"
+              },
+              "access_details_url": {
+                "type": "text"
+              },
+              "access_type": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
                   }
-                },
-                "class": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "text"
-                    }
-                  }
-                },
-                "data_object_contributors": {
-                  "type": "nested",
-                  "properties": {
-                    "contribution_type": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "name": {
-                          "type": "text"
-                        }
-                      }
-                    },
-                    "organization": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "name": {
-                          "type": "text"
-                        }
-                      }
-                    },
-                    "id": {
-                      "type": "integer"
-                    },
-                    "person_data": {
-                      "type": "object",
-                      "properties": {
-                        "affiliation": {
-                          "type": "text"
-                        },
-                        "email": {
-                          "type": "text"
-                        },
-                        "first_name": {
-                          "type": "text"
-                        },
-                        "full_name": {
-                          "type": "text"
-                        },
-                        "id": {
-                          "type": "integer"
-                        },
-                        "last_name": {
-                          "type": "text"
-                        }
-                      }
-                    }
-                  }
-                },
-                "data_object_dates": {
-                  "type": "nested",
-                  "properties": {
-                    "comments": {
-                      "type": "text"
-                    },
-                    "date_type": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "name": {
-                          "type": "text"
-                        }
-                      }
-                    },
-                    "end_date": {
-                      "type": "date",
-                      "format": "YYYY-MM-DD"
-                    },
-                    "start_date": {
-                      "type": "date",
-                      "format": "YYYY-MM-DD"
-                    },
-                    "id": {
-                      "type": "integer"
-                    },
-                    "is_date_range": {
-                      "type": "boolean"
-                    }
-                  }
-                },
-                "data_object_instances": {
-                  "type": "nested",
-                  "properties": {
-                    "file_type": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "name": {
-                          "type": "text"
-                        }
-                      }
-                    },
-                    "id": {
-                      "type": "integer"
-                    },
-                    "repository_org": {
-                      "type": "object",
-                      "properties": {
-                        "id": {
-                          "type": "integer"
-                        },
-                        "name": {
-                          "type": "text",
-                          "analyzer": "keyword"
-                        }
-                      }
-                    },
-                    "resource_size_unit": {
-                      "type": "text"
-                    },
-                    "size": {
-                      "type": "byte"
-                    },
-                    "url": {
-                      "type": "text",
-                      "analyzer": "keyword"
-                    },
-                    "url_direct_access": {
-                      "type": "boolean"
-                    },
-                    "url_last_checked": {
-                      "type": "text"
-                    }
-                  }
-                },
-                "data_object_other_identifiers": {
-                  "type": "nested",
-                  "properties": {
-                    "date": {
-                      "type": "date",
-                      "format": "YYYY-MM-DD"
-                    },
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "text"
-                    },
-                    "type": {
-                      "type": "text"
-                    },
-                    "value": {
-                      "type": "text",
-                      "analyzer": "keyword"
-                    }
-                  }
-                },
-                "data_object_title": {
-                  "type": "text",
-                  "fields": {
-                    "raw": {
-                      "type": "keyword"
-                    }
-                  }
-                },
-                "dataset_consents": {
-                  "type": "object",
-                  "properties": {
-                    "details": {
-                      "type": "text"
-                    },
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "text"
-                    }
-                  }
-                },
-                "dataset_identifiers": {
-                  "type": "object",
-                  "properties": {
-                    "details": {
-                      "type": "text"
-                    },
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "text"
-                    }
-                  }
-                },
-                "dataset_record_keys": {
-                  "type": "object",
-                  "properties": {
-                    "details": {
-                      "type": "text"
-                    },
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "text"
-                    }
-                  }
-                },
-                "id": {
-                  "type": "integer"
-                },
-                "language_code": {
-                  "type": "text"
-                },
-                "managing_organization": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "text",
-                      "fields": {
-                        "raw": {
-                          "type": "keyword"
-                        }
-                      }
-                    }
-                  }
-                },
-                "object_type": {
-                  "type": "text"
-                },
-                "publication_year": {
-                  "type": "date",
-                  "format": "YYYY"
-                },
-                "related_studies": {
-                  "type": "nested",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    }
-                  }
-                },
-                "type": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "integer"
-                    },
-                    "name": {
-                      "type": "text"
-                    }
-                  }
-                },
-                "version": {
-                  "type": "text"
                 }
+              },
+              "class": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  }
+                }
+              },
+              "data_object_contributors": {
+                "type": "nested",
+                "properties": {
+                  "contribution_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
+                      }
+                    }
+                  },
+                  "organization": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
+                      }
+                    }
+                  },
+                  "id": {
+                    "type": "integer"
+                  },
+                  "person_data": {
+                    "type": "object",
+                    "properties": {
+                      "affiliation": {
+                        "type": "text"
+                      },
+                      "email": {
+                        "type": "text"
+                      },
+                      "first_name": {
+                        "type": "text"
+                      },
+                      "full_name": {
+                        "type": "text"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "last_name": {
+                        "type": "text"
+                      }
+                    }
+                  }
+                }
+              },
+              "data_object_dates": {
+                "type": "nested",
+                "properties": {
+                  "comments": {
+                    "type": "text"
+                  },
+                  "date_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
+                      }
+                    }
+                  },
+                  "end_date": {
+                    "type": "date",
+                    "format": "YYYY-MM-DD"
+                  },
+                  "start_date": {
+                    "type": "date",
+                    "format": "YYYY-MM-DD"
+                  },
+                  "id": {
+                    "type": "integer"
+                  },
+                  "is_date_range": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "data_object_instances": {
+                "type": "nested",
+                "properties": {
+                  "file_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
+                      }
+                    }
+                  },
+                  "id": {
+                    "type": "integer"
+                  },
+                  "repository_org": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "analyzer": "keyword"
+                      }
+                    }
+                  },
+                  "resource_size_unit": {
+                    "type": "text"
+                  },
+                  "size": {
+                    "type": "byte"
+                  },
+                  "url": {
+                    "type": "text",
+                    "analyzer": "keyword"
+                  },
+                  "url_direct_access": {
+                    "type": "boolean"
+                  },
+                  "url_last_checked": {
+                    "type": "text"
+                  }
+                }
+              },
+              "data_object_other_identifiers": {
+                "type": "nested",
+                "properties": {
+                  "date": {
+                    "type": "date",
+                    "format": "YYYY-MM-DD"
+                  },
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  },
+                  "type": {
+                    "type": "text"
+                  },
+                  "value": {
+                    "type": "text",
+                    "analyzer": "keyword"
+                  }
+                }
+              },
+              "data_object_title": {
+                "type": "text",
+                "fields": {
+                  "raw": {
+                    "type": "keyword"
+                  }
+                }
+              },
+              "dataset_consents": {
+                "type": "object",
+                "properties": {
+                  "details": {
+                    "type": "text"
+                  },
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  }
+                }
+              },
+              "dataset_identifiers": {
+                "type": "object",
+                "properties": {
+                  "details": {
+                    "type": "text"
+                  },
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  }
+                }
+              },
+              "dataset_record_keys": {
+                "type": "object",
+                "properties": {
+                  "details": {
+                    "type": "text"
+                  },
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  }
+                }
+              },
+              "id": {
+                "type": "integer"
+              },
+              "language_code": {
+                "type": "text"
+              },
+              "managing_organization": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fields": {
+                      "raw": {
+                        "type": "keyword"
+                      }
+                    }
+                  }
+                }
+              },
+              "object_type": {
+                "type": "text"
+              },
+              "publication_year": {
+                "type": "date",
+                "format": "yyyy"
+              },
+              "related_studies": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "type": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  }
+                }
+              },
+              "version": {
+                "type": "text"
               }
             }
           }

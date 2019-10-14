@@ -237,7 +237,7 @@ export default Component.extend(I18n, {
 
     return elasticsearch.post('study', '_search', body).then(results => ({
       results,
-      total: get(results, 'hits.total'),
+      total: get(results, 'hits.total.value'),
     }));
   },
 
@@ -309,7 +309,7 @@ export default Component.extend(I18n, {
 
     return elasticsearch.post('study', '_search', body).then(results => ({
       results,
-      total: get(results, 'hits.total'),
+      total: get(results, 'hits.total.value'),
     }));
   },
 
@@ -467,7 +467,7 @@ export default Component.extend(I18n, {
           });
           // fetch studies
           return elasticsearch.post('study', '_search', studyBody).then(results => {
-            const hitsNumber = get(results, 'hits.total');
+            const hitsNumber = get(results, 'hits.total.value');
             if (hitsNumber < size && !noStudyIdsLeft) {
               // if found studies are not enough, perform next query
               return this.fetchViaPubPaper(null, size - hitsNumber)
@@ -475,8 +475,8 @@ export default Component.extend(I18n, {
                   // append results from subsequent query to the first result
                   set(
                     results,
-                    'hits.total',
-                    hitsNumber + get(nextResults, 'hits.total')
+                    'hits.total.value',
+                    hitsNumber + get(nextResults, 'hits.total.value')
                   );
                   get(results, 'hits.hits')
                     .push(...get(nextResults, 'hits.hits'));
@@ -487,7 +487,9 @@ export default Component.extend(I18n, {
             }
           }).then(results => ({
             results,
-            total: -1,
+            total: {
+              value: -1,
+            },
           }));
         } else {
           return null;
