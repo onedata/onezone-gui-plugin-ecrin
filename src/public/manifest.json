@@ -54,30 +54,14 @@
               "id": {
                 "type": "integer"
               },
-              "linked_data_objects": {
-                "type": "nested",
-                "properties": {
-                  "id": {
-                    "type": "integer"
-                  }
-                }
-              },
-              "object_type": {
-                "type": "text"
-              },
-              "scientific_title": {
+              "display_title": {
                 "type": "object",
                 "properties": {
                   "title": {
-                    "type": "text",
-                    "fields": {
-                      "raw": {
-                        "type": "keyword"
-                      }
-                    }
+                    "type": "text"
                   },
                   "lang_code": {
-                    "type": "text"
+                    "type": "keyword"
                   }
                 }
               },
@@ -87,11 +71,11 @@
                   "id": {
                     "type": "integer"
                   },
-                  "value": {
+                  "identifier_value": {
                     "type": "text",
                     "analyzer": "keyword"
                   },
-                  "organization": {
+                  "identifier_type": {
                     "type": "object",
                     "properties": {
                       "id": {
@@ -102,18 +86,21 @@
                       }
                     }
                   },
-                  "date": {
+                  "identifier_date": {
                     "type": "date",
-                    "format": "YYYY-MM-DD"
+                    "format": "YYYY MMM DD"
                   },
-                  "type": {
+                  "identifier_link": {
+                    "type": "keyword"
+                  },
+                  "identifier_org": {
                     "type": "object",
                     "properties": {
                       "id": {
                         "type": "integer"
                       },
                       "name": {
-                        "type": "keyword"
+                        "type": "text"
                       }
                     }
                   }
@@ -124,6 +111,9 @@
                 "properties": {
                   "id": {
                     "type": "integer"
+                  },
+                  "topic_value": {
+                    "type": "text"
                   },
                   "topic_source_type": {
                     "type": "object",
@@ -136,9 +126,6 @@
                       }
                     }
                   },
-                  "value": {
-                    "type": "text"
-                  },
                   "topic_ct": {
                     "type": "object",
                     "properties": {
@@ -147,10 +134,6 @@
                       },
                       "name": {
                         "type": "text"
-                      },
-                      "url": {
-                        "type": "text",
-                        "analyzer": "keyword"
                       }
                     }
                   },
@@ -159,29 +142,7 @@
                   }
                 }
               },
-              "study_status": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "integer"
-                  },
-                  "name": {
-                    "type": "text"
-                  }
-                }
-              },
-              "study_type": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "integer"
-                  },
-                  "name": {
-                    "type": "text"
-                  }
-                }
-              },
-              "study_other_titles": {
+              "study_titles": {
                 "type": "nested",
                 "properties": {
                   "id": {
@@ -202,9 +163,68 @@
                     "type": "text"
                   },
                   "lang_code": {
+                    "type": "keyword"
+                  },
+                  "contains_html": {
+                    "type": "boolean"
+                  },
+                  "comments": {
                     "type": "text"
                   }
                 }
+              },
+              "study_type": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  }
+                }
+              },
+              "study_status": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  },
+                  "brief_description": {
+                    "type": "text"
+                  },
+                  "data_sharing_statement": {
+                    "type": "text"
+                  },
+                  "related_studies": {
+                    "type": "nested",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "relationship_type": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "text"
+                          }
+                        }
+                      },
+                      "target_study_id": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              },
+              "linked_data_objects": {
+                "type": "integer"
               }
             }
           }
@@ -238,14 +258,68 @@
               "enabled": true
             },
             "properties": {
-              "DOI": {
+              "id": {
+                "type": "integer"
+              },
+              "doi": {
                 "type": "text"
               },
-              "access_details": {
+              "display_title": {
                 "type": "text"
               },
-              "access_details_url": {
+              "version": {
                 "type": "text"
+              },
+              "managing_organisation": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  }
+                }
+              },
+              "object_class": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  }
+                }
+              },
+              "object_type": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  }
+                }
+              },
+              "publication_year": {
+                "type": "date",
+                "format": "YYYY"
+              },
+              "language_code": {
+                "type": "keyword"
+              },
+              "identifier_org": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  }
+                }
               },
               "access_type": {
                 "type": "object",
@@ -258,7 +332,17 @@
                   }
                 }
               },
-              "class": {
+              "access_details": {
+                "type": "text"
+              },
+              "access_details_url": {
+                "type": "text"
+              },
+              "url_last_checked": {
+                "type": "date",
+                "format": "YYYY MM DD"
+              },
+              "dataset_record_keys": {
                 "type": "object",
                 "properties": {
                   "id": {
@@ -266,12 +350,114 @@
                   },
                   "name": {
                     "type": "text"
+                  },
+                  "details": {
+                    "type": "text"
                   }
                 }
               },
-              "data_object_contributors": {
+              "dataset_identifiers": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  },
+                  "details": {
+                    "type": "text"
+                  }
+                }
+              },
+              "dataset_consents": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text"
+                  },
+                  "details": {
+                    "type": "text"
+                  }
+                }
+              },
+              "object_identifiers": {
                 "type": "nested",
                 "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "identifier_value": {
+                    "type": "text"
+                  },
+                  "identifier_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
+                      }
+                    }
+                  },
+                  "identifier_date": {
+                    "type": "date",
+                    "format": "YYYY MMM dd"
+                  },
+                  "identifier_org": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
+                      }
+                    }
+                  }
+                }
+              },
+              "object_titles": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "title_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
+                      }
+                    }
+                  },
+                  "title_text": {
+                    "type": "text"
+                  },
+                  "lang_code": {
+                    "type": "keyword"
+                  },
+                  "contains_html": {
+                    "type": "boolean"
+                  },
+                  "comments": {
+                    "type": "text"
+                  }
+                }
+              },
+              "object_contributors": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
                   "contribution_type": {
                     "type": "object",
                     "properties": {
@@ -283,7 +469,52 @@
                       }
                     }
                   },
-                  "organization": {
+                  "is_individual": {
+                    "type": "boolean"
+                  },
+                  "person": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "family_name": {
+                        "type": "text"
+                      },
+                      "given_name": {
+                        "type": "text"
+                      },
+                      "full_name": {
+                        "type": "text"
+                      },
+                      "identifier": {
+                        "type": "object",
+                        "properties": {
+                          "person_id": {
+                            "type": "text"
+                          },
+                          "scheme_name": {
+                            "type": "text"
+                          }
+                        }
+                      },
+                      "affiliation": {
+                        "type": "object",
+                        "properties": {
+                          "affiliation": {
+                            "type": "text"
+                          },
+                          "org_id": {
+                            "type": "text"
+                          },
+                          "scheme_name": {
+                            "type": "text"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "organisation": {
                     "type": "object",
                     "properties": {
                       "id": {
@@ -293,40 +524,14 @@
                         "type": "text"
                       }
                     }
-                  },
-                  "id": {
-                    "type": "integer"
-                  },
-                  "person_data": {
-                    "type": "object",
-                    "properties": {
-                      "affiliation": {
-                        "type": "text"
-                      },
-                      "email": {
-                        "type": "text"
-                      },
-                      "first_name": {
-                        "type": "text"
-                      },
-                      "full_name": {
-                        "type": "text"
-                      },
-                      "id": {
-                        "type": "integer"
-                      },
-                      "last_name": {
-                        "type": "text"
-                      }
-                    }
                   }
                 }
               },
-              "data_object_dates": {
+              "object_dates": {
                 "type": "nested",
                 "properties": {
-                  "comments": {
-                    "type": "text"
+                  "id": {
+                    "type": "integer"
                   },
                   "date_type": {
                     "type": "object",
@@ -339,25 +544,114 @@
                       }
                     }
                   },
-                  "end_date": {
-                    "type": "date",
-                    "format": "YYYY-MM-DD"
+                  "is_date_range": {
+                    "type": "boolean"
+                  },
+                  "date_as_string": {
+                    "type": "text"
                   },
                   "start_date": {
-                    "type": "date",
-                    "format": "YYYY-MM-DD"
+                    "type": "object",
+                    "properties": {
+                      "start_year": {
+                        "type": "integer"
+                      },
+                      "start_month": {
+                        "type": "integer"
+                      },
+                      "start_day": {
+                        "type": "integer"
+                      }
+                    }
                   },
+                  "end_date": {
+                    "type": "object",
+                    "properties": {
+                      "end_year": {
+                        "type": "integer"
+                      },
+                      "end_month": {
+                        "type": "integer"
+                      },
+                      "end_day": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "comments": {
+                    "type": "text"
+                  }
+                }
+              },
+              "object_descriptions": {
+                "type": "nested",
+                "properties": {
                   "id": {
                     "type": "integer"
                   },
-                  "is_date_range": {
+                  "description_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
+                      }
+                    }
+                  },
+                  "description_label": {
+                    "type": "text"
+                  },
+                  "description_text": {
+                    "type": "text"
+                  },
+                  "language_code": {
+                    "type": "keyword"
+                  },
+                  "contains_html": {
                     "type": "boolean"
                   }
                 }
               },
-              "data_object_instances": {
+              "object_instances": {
                 "type": "nested",
                 "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "repository_org": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "text"
+                  },
+                  "url_direct_access": {
+                    "type": "boolean"
+                  },
+                  "url_last_checked": {
+                    "type": "date",
+                    "format": "YYYY MMM dd"
+                  },
+                  "resource_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
+                      }
+                    }
+                  },
                   "file_type": {
                     "type": "object",
                     "properties": {
@@ -369,161 +663,88 @@
                       }
                     }
                   },
+                  "resource_size": {
+                    "type": "float"
+                  },
+                  "resource_size_unit": {
+                    "type": "text"
+                  }
+                }
+              },
+              "object_topics": {
+                "type": "nested",
+                "properties": {
                   "id": {
                     "type": "integer"
                   },
-                  "repository_org": {
+                  "topic_value": {
+                    "type": "text"
+                  },
+                  "topic_source_type": {
                     "type": "object",
                     "properties": {
                       "id": {
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text",
-                        "analyzer": "keyword"
+                        "type": "text"
                       }
                     }
                   },
-                  "resource_size_unit": {
-                    "type": "text"
+                  "topic_ct": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
+                      }
+                    }
                   },
-                  "size": {
-                    "type": "byte"
-                  },
-                  "url": {
-                    "type": "text",
-                    "analyzer": "keyword"
-                  },
-                  "url_direct_access": {
-                    "type": "boolean"
-                  },
-                  "url_last_checked": {
+                  "topic_ct_code": {
                     "type": "text"
                   }
                 }
               },
-              "data_object_other_identifiers": {
+              "object_rights": {
                 "type": "nested",
                 "properties": {
-                  "date": {
-                    "type": "date",
-                    "format": "YYYY-MM-DD"
-                  },
                   "id": {
                     "type": "integer"
                   },
-                  "name": {
-                    "type": "text"
-                  },
-                  "type": {
-                    "type": "text"
-                  },
-                  "value": {
-                    "type": "text",
-                    "analyzer": "keyword"
-                  }
-                }
-              },
-              "data_object_title": {
-                "type": "text",
-                "fields": {
-                  "raw": {
-                    "type": "keyword"
-                  }
-                }
-              },
-              "dataset_consents": {
-                "type": "object",
-                "properties": {
                   "details": {
                     "type": "text"
                   },
-                  "id": {
-                    "type": "integer"
-                  },
-                  "name": {
+                  "rights_url": {
                     "type": "text"
                   }
                 }
               },
-              "dataset_identifiers": {
-                "type": "object",
-                "properties": {
-                  "details": {
-                    "type": "text"
-                  },
-                  "id": {
-                    "type": "integer"
-                  },
-                  "name": {
-                    "type": "text"
-                  }
-                }
-              },
-              "dataset_record_keys": {
-                "type": "object",
-                "properties": {
-                  "details": {
-                    "type": "text"
-                  },
-                  "id": {
-                    "type": "integer"
-                  },
-                  "name": {
-                    "type": "text"
-                  }
-                }
-              },
-              "id": {
-                "type": "integer"
-              },
-              "language_code": {
-                "type": "text"
-              },
-              "managing_organization": {
-                "type": "object",
+              "related_objects": {
+                "type": "nested",
                 "properties": {
                   "id": {
                     "type": "integer"
                   },
-                  "name": {
-                    "type": "text",
-                    "fields": {
-                      "raw": {
-                        "type": "keyword"
+                  "relationship_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text"
                       }
                     }
+                  },
+                  "target_object_id": {
+                    "type": "integer"
                   }
                 }
-              },
-              "object_type": {
-                "type": "text"
-              },
-              "publication_year": {
-                "type": "date",
-                "format": "yyyy"
               },
               "related_studies": {
-                "type": "nested",
-                "properties": {
-                  "id": {
-                    "type": "integer"
-                  }
-                }
-              },
-              "type": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "integer"
-                  },
-                  "name": {
-                    "type": "text"
-                  }
-                }
-              },
-              "version": {
-                "type": "text"
+                "type": "integer"
               }
             }
           }

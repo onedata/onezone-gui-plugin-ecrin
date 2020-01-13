@@ -1,5 +1,5 @@
 {{#item.title}}
-  {{#truncated-string}}{{or study.scientific_title.title "Untitled"}}{{/truncated-string}}
+  {{#truncated-string}}{{or study.display_title.title "Untitled"}}{{/truncated-string}}
 {{/item.title}}
 {{!-- TODO: Add actions when requirements will be exactly specified --}}
 {{!-- <ul class="result-actions">
@@ -12,10 +12,10 @@
     <table class="do-records table">
       {{#each dataObjects as |dataObject|}}
         <tr>
-          <td class="do-type">{{or dataObject._source.type.translatedName dataObject._source.type.name}}</td>
+          <td class="do-type">{{or dataObject._source.object_type.translatedName dataObject._source.object_type.name}}</td>
           <td class="do-description">
-            {{#if dataObject._source.data_object_title}}
-              <p>{{dataObject._source.data_object_title}}</p>
+            {{#if dataObject._source.display_title}}
+              <p>{{dataObject._source.display_title}}</p>
             {{/if}}
             {{#if dataObject._source.url}}
               <p>{{dataObject._source.url}}</p>

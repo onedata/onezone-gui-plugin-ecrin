@@ -66,7 +66,7 @@ export default Component.extend(I18n, {
    * breaks down rendering). For now only used by fetchViaPubPaper.
    * @type {Ember.ComputedPropert<Array<number>>}
    */
-  usedStudyIds: computed(function () { return [];}),
+  usedStudyIds: computed(function () { return []; }),
 
   /**
    * Field used as a cursor of query results in fetchViaPubPaper.
@@ -121,7 +121,7 @@ export default Component.extend(I18n, {
           results.forEach((doc, i) => {
             // add index required by ReplacingChunksArray
             doc.index = {
-              name: get(doc, '_source.scientific_title.title'),
+              name: get(doc, '_source.display_title.title'),
               index: (startFromIndex.index || 0) + i,
               id: get(doc, '_source.id'),
             };
@@ -149,20 +149,20 @@ export default Component.extend(I18n, {
    */
   constructQueryBodyBase(type, startFromIndex, size) {
     const body = {};
-    
+
     let _source;
     if (type === 'study') {
       _source = [
         'id',
-        'scientific_title.title',
+        'display_title.title',
         'linked_data_objects',
       ];
       body.sort = [
-        { 'scientific_title.title.raw': { order: 'asc' } },
+        // { 'display_title.title.raw': { order: 'asc' } },
         { id: { order: 'asc' } },
       ];
       if (startFromIndex && get(startFromIndex, 'index') !== undefined) {
-        body.search_after = [startFromIndex.name, startFromIndex.id];
+        body.search_after = [startFromIndex.id];
       }
     } else if (type === 'data_object') {
       _source = [
@@ -275,7 +275,7 @@ export default Component.extend(I18n, {
         filtersArray.push({
           simple_query_string: {
             query: studyTitleContains,
-            fields: ['scientific_title.title'],
+            fields: ['display_title.title'],
           },
         });
       }
@@ -286,7 +286,7 @@ export default Component.extend(I18n, {
             query: {
               simple_query_string: {
                 query: studyTopicsInclude,
-                fields: ['study_topics.value'],
+                fields: ['study_topics.topic_value'],
               },
             },
           },
@@ -402,13 +402,15 @@ export default Component.extend(I18n, {
         ));
         newStudyIds = _.without(newStudyIds, ...alreadyFound.concat(usedStudyIds));
         const studyIds = alreadyFound.concat(newStudyIds);
-        if (get(studyIds, 'length') >= size || dataObjectsToFetch > fetchedDataObjects) {
+        if (get(studyIds, 'length') >= size || dataObjectsToFetch >
+          fetchedDataObjects) {
           return {
             dataObjectLastId,
             studyIds,
           };
         } else {
-          return this.fetchStudyIdsForPerPaperSearch(dataObjectLastId, size, studyIds);
+          return this.fetchStudyIdsForPerPaperSearch(dataObjectLastId, size,
+            studyIds);
         }
       });
   },

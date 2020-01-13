@@ -184,7 +184,7 @@ export default Component.extend(I18n, {
 
       const filters = [{
         terms: {
-          id: get(study, 'linked_data_objects').mapBy('id'),
+          id: get(study, 'linked_data_objects'),
         },
       }];
       const body = {
@@ -258,17 +258,18 @@ export default Component.extend(I18n, {
               });
             }
             const hits = results.hits.hits;
-            hits.forEach(({ _source: { type, access_type } }) => {
-              const typeId = get(type, 'id');
+            hits.forEach(({ _source: { object_type, access_type } }) => {
+              const typeId = get(object_type, 'id');
               const typeDef = typeMapping.findBy('id', typeId);
               if (typeDef) {
-                set(type, 'translatedName', get(typeDef, 'name'));
+                set(object_type, 'translatedName', get(typeDef, 'name'));
               }
               const accessTypeId = get(access_type, 'id');
               const accessTypeDef =
                 accessTypeMapping.findBy('id', accessTypeId);
               if (accessTypeDef) {
-                set(access_type, 'indicator', get(accessTypeDef, 'indicator'));
+                set(access_type, 'indicator', get(accessTypeDef,
+                  'indicator'));
               }
             });
             dataObjects.pushObjects(hits);
