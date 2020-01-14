@@ -1,15 +1,25 @@
 <div class="panel-body">
-  <div class="footer-section pull-left sources-section">
-    {{!-- TODO: link target --}}
-    <a>{{tt this "sourcesAndOrganisations"}}</a>
+  <div class="messages">
+    <div class="footer-section sources-section">
+      {{!-- TODO: link target --}}
+      <a>{{tt this "sourcesAndOrganisations"}}</a>
+    </div>
+    <div class="footer-section include-metadata-section">
+      {{tt this "contactStart"}}<a href="https://www.ecrin.org/" target="_blank">{{tt this "here"}}</a>{{tt this "contactEnd"}}
+    </div>
   </div>
-  <div class="footer-section pull-left include-metadata-section">
-    {{tt this "yourMetedataIncludedContact"}}<a href="https://www.ecrin.org/" target="_blank">{{tt this "here"}}</a>.
-  </div>
-  <div class="logo eosc-logo pull-right">
-    {{bs-tooltip title=(tt this "eoscLogoDescription")}}
-  </div>
-  <div class="logo xdc-logo pull-right">
-    {{bs-tooltip title=(tt this "xdcLogoDescription")}}
+  <div class="logos">
+    <div class="logo onedata-logo">
+      {{bs-tooltip title=(tt this "onedataLogoDescription")}}
+    </div>
+    <div class="logo ecrin-logo">
+      {{bs-tooltip title=(tt this "ecrinLogoDescription")}}
+    </div>
+    <div class="logo xdc-logo">
+      {{bs-tooltip title=(tt this "xdcLogoDescription")}}
+    </div>
+    <div class="logo eosc-logo">
+      {{bs-tooltip title=(tt this "eoscLogoDescription")}}
+    </div>
   </div>
 </div>

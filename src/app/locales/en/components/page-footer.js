@@ -1,7 +1,10 @@
 export default {
   sourcesAndOrganisations: 'Data sources and contributing organisations',
-  yourMetedataIncludedContact: 'Do you want your metadata included in the&nbsp;CS-DOI? Please contact us ',
+  contactStart: 'Please contact us ',
   here: 'here',
+  contactEnd: ', to report an error or to arrange for your for your data to be included in the&nbsp;MDR.',
   eoscLogoDescription: 'The European Open Science Cloud for Research Pilot Project',
   xdcLogoDescription: 'eXtreme DataCloud',
+  ecrinLogoDescription: 'European Clinical Research Infrastructure Network',
+  onedataLogoDescription: 'Onedata',
 };

@@ -1,21 +1,61 @@
 .page-footer {
+  $sources-section-width: 230px;
+  $include-metadata-section-width: 320px;
+
   margin-bottom: 0;
   border: 1px solid $main-border-color;
   box-shadow: none;
 
+  .panel-body {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .messages {
+    display: flex;
+    flex-grow: 1;
+    flex-basis: 50%;
+  }
+
+  .logos {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
   .footer-section {
-    height: $logo-images-height;
+    flex-grow: 1;
+    height: $logo-images-height * 1.2;
     padding-right: $padding-base-horizontal;
     margin-right: $padding-base-horizontal;
     border-right: 1px solid $main-border-color;
+    box-sizing: border-box;
   }
+
   .sources-section {
-    width: 230px;
+    min-width: $sources-section-width;
   }
+
   .include-metadata-section {
-    width: 290px;
+    min-width: $include-metadata-section-width;
   }
-  .eosc-logo {
+
+  .logo {
     margin-left: $padding-base-horizontal;
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+
+  @media (max-width: $screen-xs-max) {
+    .messages {
+      flex-wrap: wrap;
+    }
+
+    .footer-section {
+      border-right: 0;
+      height: initial;
+      margin-bottom: $padding-base-vertical;
+    }
   }
 }

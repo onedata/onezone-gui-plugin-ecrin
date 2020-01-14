@@ -13,7 +13,7 @@ import { inject as service } from '@ember/service';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 
 export default Component.extend(I18n, {
-  classNames: ['page-header', 'row'],
+  classNames: ['page-header'],
 
   router: service(),
 
