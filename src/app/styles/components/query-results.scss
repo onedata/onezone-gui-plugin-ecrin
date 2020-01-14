@@ -130,4 +130,8 @@
     margin-bottom: $padding-base-vertical;
     font-family: 'Open Sans Semibold';
   }
+
+  .result-actions .remove-action:hover {
+    color: $color-one-danger;
+  }
 }

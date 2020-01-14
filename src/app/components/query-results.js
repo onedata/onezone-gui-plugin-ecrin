@@ -166,5 +166,11 @@ export default Component.extend(I18n, {
     resultExpanded(resultId) {
       this.set('expandedResultId', resultId);
     },
+    removeStudy(study) {
+      this.get('results.sourceArray').removeObject(study);
+      if (this.get('expandedResultId') === study.index.id) {
+        this.set('expandedResultId', null);
+      }
+    },
   },
 });

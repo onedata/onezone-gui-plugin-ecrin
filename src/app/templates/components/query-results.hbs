@@ -12,7 +12,8 @@
           item=accItem
           study=result._source
           isExpanded=(eq result.index.id expandedResultId)
-          queryParams=queryParams}}
+          queryParams=queryParams
+          remove=(action "removeStudy" result)}}
       {{/acc.item}}
     </div>
   {{/each}}

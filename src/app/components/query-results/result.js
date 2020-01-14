@@ -53,6 +53,13 @@ export default Component.extend(I18n, {
   isExpanded: false,
 
   /**
+   * @virtual
+   * @type {Function}
+   * @returns {any}
+   */
+  remove: () => {},
+
+  /**
    * @type {PromiseProxy}
    * Set by `fetchDataObjects` method
    */

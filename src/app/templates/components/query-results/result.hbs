@@ -2,11 +2,11 @@
   {{#truncated-string}}{{or study.display_title.title "Untitled"}}{{/truncated-string}}
 {{/item.title}}
 {{!-- TODO: Add actions when requirements will be exactly specified --}}
-{{!-- <ul class="result-actions">
-  <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
-  <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
-  <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
-</ul> --}}
+<ul class="result-actions">
+  {{!-- <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
+  <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li> --}}
+  <li class="result-action remove-action" {{action remove}}>{{one-icon icon="x"}}</li>
+</ul>
 {{#item.body}}
   {{#if dataObjects.length}}
     <table class="do-records table">
