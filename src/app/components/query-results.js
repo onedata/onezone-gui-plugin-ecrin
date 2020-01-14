@@ -110,7 +110,7 @@ export default Component.extend(I18n, {
     }
   ),
 
-  resultsObserver: observer('results', function resultsObserver() {
+  scrollResetTrigger: observer('results', function scrollResetTrigger() {
     const $scrollContainer = this.get('$scrollContainer');
     if ($scrollContainer) {
       $scrollContainer.scrollTop(0);
@@ -171,6 +171,11 @@ export default Component.extend(I18n, {
       if (this.get('expandedResultId') === study.index.id) {
         this.set('expandedResultId', null);
       }
+    },
+    removeAllStudies() {
+      this.get('results.sourceArray').clear();
+      this.set('expandedResultId', null);
+      this.scrollResetTrigger();
     },
   },
 });
