@@ -8,7 +8,7 @@
  */
 
 import Component from '@ember/component';
-import { observer, get, getProperties, set, setProperties, computed } from '@ember/object';
+import { observer, get, getProperties, set, setProperties } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import ReplacingChunksArray from 'onezone-gui-plugin-ecrin/utils/replacing-chunks-array';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
@@ -36,16 +36,13 @@ export default Component.extend(I18n, {
   /**
    * @type {Utils.ReplacingChunksArray}
    */
-  queryResults: computed(() => ReplacingChunksArray.create({
-    fetch() { return resolve([]); },
-  })),
+  queryResults: undefined,
 
   /**
-   * Number of records, that fulfills query conditions. -1 means, that results are
-   * not available.
+   * Number of records, that fulfills query conditions.
    * @type {number}
    */
-  queryResultsNumber: -1,
+  queryResultsNumber: reads('queryResults.sourceArray.length'),
 
   /**
    * @type {Ember.ComputedProperty<string>}
@@ -62,67 +59,47 @@ export default Component.extend(I18n, {
    */
   hasActiveFindParams: reads('queryParams.hasActiveFindParams'),
 
-  /**
-   * Study ids used to render list of query result. Checking this array while
-   * fetching results helps to avoid possible duplicates of studies (which
-   * breaks down rendering). For now only used by fetchViaPubPaper.
-   * @type {Ember.ComputedPropert<Array<number>>}
-   */
-  usedStudyIds: computed(function () { return []; }),
-
-  /**
-   * Field used as a cursor of query results in fetchViaPubPaper.
-   * @type {number}
-   */
-  lastCheckedDataObjectId: undefined,
-
   queryParamsObserver: observer('queryParams', function queryParamsObserver() {
-    this.setProperties({
-      usedStudyIds: [],
-      lastCheckedDataObjectId: undefined,
-    });
-    this.find();
+    this.fetchResults();
   }),
 
-  fetchResults(startFromIndex, size /*, offset */ ) {
+  fetchResults() {
     const mode = this.get('mode');
-    if (startFromIndex === undefined) {
-      startFromIndex = {};
-    }
 
     let promise = resolve([]);
     switch (mode) {
       case 'specificStudy':
-        promise = this.fetchSpecificStudy(startFromIndex, size);
+        promise = this.fetchSpecificStudy();
         break;
       case 'studyCharact':
-        promise = this.fetchStudyCharact(startFromIndex, size);
+        promise = this.fetchStudyCharact();
         break;
       case 'viaPubPaper':
-        promise = this.fetchViaPubPaper(startFromIndex, size);
+        promise = this.fetchViaPubPaper();
         break;
     }
-    return this.extractResultsFromResponse(promise, startFromIndex);
+    return this.extractResultsFromResponse(promise);
   },
 
   /**
    * @param {Promise} promise 
-   * @param {Object} startFromIndex 
    * @returns {Promise}
    */
-  extractResultsFromResponse(promise, startFromIndex) {
+  extractResultsFromResponse(promise) {
     return promise.then(results => {
         if (results) {
-          this.set('queryResultsNumber', get(results, 'total'));
-          results = get(results, 'results.hits.hits');
+          results = get(results, 'hits.hits') || [];
+          const alreadyFetchedStudies = this.get('queryResults.sourceArray');
           results.forEach((doc, i) => {
             // add index required by ReplacingChunksArray
             doc.index = {
               name: get(doc, '_source.display_title.title'),
-              index: (startFromIndex.index || 0) + i,
+              index: (get(alreadyFetchedStudies, 'lastObject.index.index') ||
+                0) + i,
               id: get(doc, '_source.id'),
             };
           });
+          alreadyFetchedStudies.pushObjects(results);
           return results;
         } else {
           return [];
@@ -140,11 +117,9 @@ export default Component.extend(I18n, {
   /**
    * Generates body base object for Elastisearch query
    * @param {string} type `study` or `data_object`
-   * @param {Object} startFromIndex index from ReplacingChunksArray
-   * @param {number} size expected results size
    * @returns {Object}
    */
-  constructQueryBodyBase(type, startFromIndex, size) {
+  constructQueryBodyBase(type) {
     const body = {};
 
     let _source;
@@ -155,27 +130,17 @@ export default Component.extend(I18n, {
         'study_status.brief_description',
         'linked_data_objects',
       ];
-      body.sort = [
-        // { 'display_title.title.raw': { order: 'asc' } },
-        { id: { order: 'asc' } },
-      ];
-      if (startFromIndex && get(startFromIndex, 'index') !== undefined) {
-        body.search_after = [startFromIndex.id];
-      }
     } else if (type === 'data_object') {
       _source = [
         'id',
         'related_studies',
       ];
-      body.sort = [
-        { id: { order: 'asc' } },
-      ];
-      if (startFromIndex && get(startFromIndex, 'lastDataObjectId') !== undefined) {
-        body.search_after = [startFromIndex.lastDataObjectId];
-      }
     }
+    body.sort = [
+      { id: { order: 'asc' } },
+    ];
     setProperties(body, {
-      size,
+      size: 1000,
       _source,
     });
     return body;
@@ -183,11 +148,9 @@ export default Component.extend(I18n, {
 
   /**
    * Loads studies according to study identifier
-   * @param {Object} startFromIndex index from ReplacingChunksArray
-   * @param {number} size expected results size
    * @returns {Promise}
    */
-  fetchSpecificStudy(startFromIndex, size) {
+  fetchSpecificStudy() {
     const {
       elasticsearch,
       activeFindParams,
@@ -197,7 +160,7 @@ export default Component.extend(I18n, {
       'activeFindParams',
       'hasActiveFindParams'
     );
-    const body = this.constructQueryBodyBase('study', startFromIndex, size);
+    const body = this.constructQueryBodyBase('study');
 
     if (hasActiveFindParams) {
       const {
@@ -218,34 +181,31 @@ export default Component.extend(I18n, {
                 bool: {
                   must: [{
                     term: {
-                      'study_identifiers.type.id': get(studyIdType, 'id'),
+                      'study_identifiers.identifier_type.id': get(
+                        studyIdType, 'id'),
                     },
                   }, {
                     term: {
-                      'study_identifiers.value': studyId,
+                      'study_identifiers.identifier_value': studyId,
                     },
                   }],
                 },
               },
             },
           }],
+          must_not: this.filterByStudyIdClause(),
         },
       });
     }
 
-    return elasticsearch.post('study', '_search', body).then(results => ({
-      results,
-      total: get(results, 'hits.total.value'),
-    }));
+    return elasticsearch.post('study', '_search', body);
   },
 
   /**
    * Loads studies according to study parameters
-   * @param {Object} startFromIndex index from ReplacingChunksArray
-   * @param {number} size expected results size
    * @returns {Promise}
    */
-  fetchStudyCharact(startFromIndex, size) {
+  fetchStudyCharact() {
     const {
       elasticsearch,
       activeFindParams,
@@ -255,7 +215,12 @@ export default Component.extend(I18n, {
       'activeFindParams',
       'hasActiveFindParams'
     );
-    const body = this.constructQueryBodyBase('study', startFromIndex, size);
+    const body = this.constructQueryBodyBase('study');
+    body.query = {
+      bool: {
+        must_not: this.filterByStudyIdClause(),
+      },
+    };
 
     if (hasActiveFindParams) {
       const {
@@ -291,24 +256,17 @@ export default Component.extend(I18n, {
         });
       }
       if (studyTitleTopicOperator === 'or') {
-        set(body, 'query', {
-          bool: {
-            should: filtersArray,
-          },
+        Object.assign(body.query.bool, {
+          should: filtersArray,
         });
       } else {
-        set(body, 'query', {
-          bool: {
-            filter: filtersArray,
-          },
+        Object.assign(body.query.bool, {
+          filter: filtersArray,
         });
       }
     }
 
-    return elasticsearch.post('study', '_search', body).then(results => ({
-      results,
-      total: get(results, 'hits.total.value'),
-    }));
+    return elasticsearch.post('study', '_search', body);
   },
 
   /**
@@ -316,41 +274,24 @@ export default Component.extend(I18n, {
    * `published paper` query params. If first fetch attempt does not give
    * enough number of ids, method will call itself again to filfill
    * `size` requirement (if possible).
-   * @param {number} dataObjectLastId last checked data object (works as query cursor)
-   * @param {number} size
-   * @param {Array<number>} [alreadyFound=[]] array of study ids, that were
-   * fetched in previous recurrent call of this method. Used to aggregate results
-   * of subsequent calls
-   * @returns {Promise<{dataObjectLastId: number, studyIds: Array<number>}>}
+   * @returns {Promise<Array<number>>}
    */
-  fetchStudyIdsForPerPaperSearch(dataObjectLastId, size, alreadyFound = []) {
+  fetchStudyIdsForPerPaperSearch() {
     const {
       elasticsearch,
       activeFindParams,
-      usedStudyIds,
     } = this.getProperties(
       'elasticsearch',
-      'activeFindParams',
-      'usedStudyIds'
+      'activeFindParams'
     );
-
-    // Minimum studies number, to avoid fetching data objects one by one
-    size = Math.max(size, 6);
-    // Algorithm of fetching assumes, that each data object has 1+ related studies,
-    // so we should fetch less than `size` data objects to get `size` studies
-    const dataObjectsToFetch = Math.floor(size * 0.75);
 
     const filters = [];
     const dataObjectBody = {
-      size: dataObjectsToFetch,
-      _source: [
-        'id',
-        'related_studies',
-      ],
+      size: 10000,
+      _source: ['related_studies'],
       sort: [
         { id: { order: 'asc' } },
       ],
-      search_after: dataObjectLastId !== undefined ? [dataObjectLastId] : undefined,
       query: {
         bool: {
           filter: filters,
@@ -365,97 +306,53 @@ export default Component.extend(I18n, {
     if (doi) {
       filters.push({
         term: {
-          DOI: doi,
+          doi: doi,
         },
       });
     } else if (dataObjectTitle) {
       filters.push({
         simple_query_string: {
           query: dataObjectTitle,
-          fields: ['data_object_title'],
+          fields: ['display_title'],
         },
       });
     } else {
-      return resolve({
-        studyIds: [],
-      });
+      return resolve([]);
     }
     return elasticsearch.post('data_object', '_search', dataObjectBody)
       .then(results => {
         results = results.hits.hits;
-        const fetchedDataObjects = get(results, 'length');
-        if (fetchedDataObjects === 0) {
-          return {
-            dataObjectLastId,
-            studyIds: alreadyFound,
-          };
-        }
-        const dataObjectLastId = get(results[results.length - 1], '_source.id');
-
-        // extract studies from data objects
-        let newStudyIds = _.uniq(_.flatten(
+        return _.uniq(_.flatten(
           results.map(dataObject =>
-            (get(dataObject, '_source.related_studies') || []).mapBy('id')
+            (get(dataObject, '_source.related_studies') || [])
           )
         ));
-        newStudyIds = _.without(newStudyIds, ...alreadyFound.concat(usedStudyIds));
-        const studyIds = alreadyFound.concat(newStudyIds);
-        if (get(studyIds, 'length') >= size || dataObjectsToFetch >
-          fetchedDataObjects) {
-          return {
-            dataObjectLastId,
-            studyIds,
-          };
-        } else {
-          return this.fetchStudyIdsForPerPaperSearch(dataObjectLastId, size,
-            studyIds);
-        }
       });
   },
 
   /**
    * Loads studies according to related paper
-   * @param {Object} startFromIndex index from ReplacingChunksArray
-   * @param {number} size expected results size
    * @returns {Promise}
    */
-  fetchViaPubPaper(startFromIndex, size) {
+  fetchViaPubPaper() {
     const {
       elasticsearch,
       hasActiveFindParams,
-      lastCheckedDataObjectId,
     } = this.getProperties(
       'elasticsearch',
-      'hasActiveFindParams',
-      'lastCheckedDataObjectId'
+      'hasActiveFindParams'
     );
 
     if (!hasActiveFindParams) {
       return resolve(null);
     }
 
-    return this.fetchStudyIdsForPerPaperSearch(lastCheckedDataObjectId, size)
-      .then(results => {
-        const usedStudyIds = this.get('usedStudyIds');
-        const {
-          dataObjectLastId,
-          studyIds,
-        } = getProperties(results, 'dataObjectLastId', 'studyIds');
-
-        // Remember state of fetch
-        this.setProperties({
-          lastCheckedDataObjectId: dataObjectLastId,
-          usedStudyIds: usedStudyIds.concat(studyIds),
-        });
-
+    return this.fetchStudyIdsForPerPaperSearch()
+      .then(studyIds => {
         const studyIdsNumber = get(studyIds, 'length');
-        let noStudyIdsLeft = false;
         if (studyIdsNumber) {
-          if (studyIdsNumber < size) {
-            noStudyIdsLeft = true;
-          }
           const studyBody =
-            this.constructQueryBodyBase('study', undefined, studyIdsNumber);
+            this.constructQueryBodyBase('study');
           set(studyBody, 'query', {
             bool: {
               filter: [{
@@ -463,65 +360,51 @@ export default Component.extend(I18n, {
                   id: studyIds,
                 },
               }],
+              must_not: this.filterByStudyIdClause(),
             },
           });
           // fetch studies
-          return elasticsearch.post('study', '_search', studyBody).then(results => {
-            const hitsNumber = get(results, 'hits.total.value');
-            if (hitsNumber < size && !noStudyIdsLeft) {
-              // if found studies are not enough, perform next query
-              return this.fetchViaPubPaper(null, size - hitsNumber)
-                .then(({ results: nextResults }) => {
-                  // append results from subsequent query to the first result
-                  set(
-                    results,
-                    'hits.total.value',
-                    hitsNumber + get(nextResults, 'hits.total.value')
-                  );
-                  get(results, 'hits.hits')
-                    .push(...get(nextResults, 'hits.hits'));
-                  return results;
-                });
-            } else {
-              return results;
-            }
-          }).then(results => ({
-            results,
-            total: {
-              value: -1,
-            },
-          }));
+          return elasticsearch.post('study', '_search', studyBody);
         } else {
           return null;
         }
       });
   },
 
-  /**
-   * Creates new dynamic array with find query results
-   * @returns {undefined}
-   */
-  find() {
-    this.setProperties({
-      queryResults: ReplacingChunksArray.create({
-        fetch: (...fetchArgs) => this.fetchResults(...fetchArgs),
-        startIndex: 0,
-        endIndex: 50,
-        indexMargin: 24,
-        sortFun: (a, b) => {
-          const ai = get(a, 'index.index');
-          const bi = get(b, 'index.index');
-          if (ai < bi) {
-            return -1;
-          } else if (ai > bi) {
-            return 1;
-          } else {
-            return 0;
-          }
-        },
-      }),
-      queryResultsNumber: -1,
+  filterByStudyIdClause() {
+    const studies = this.get('queryResults.sourceArray') || [];
+    const studyIds = studies.map(s => get(s, '_source.id'));
+    return {
+      terms: {
+        id: studyIds,
+      },
+    };
+  },
+
+  init() {
+    this._super(...arguments);
+
+    const studiesChunksArray = ReplacingChunksArray.create({
+      fetch() { return resolve([]); },
+      startIndex: 0,
+      endIndex: 50,
+      indexMargin: 24,
+      sortFun: (a, b) => {
+        const ai = get(a, 'index.index');
+        const bi = get(b, 'index.index');
+        if (ai < bi) {
+          return -1;
+        } else if (ai > bi) {
+          return 1;
+        } else {
+          return 0;
+        }
+      },
     });
+    get(studiesChunksArray, 'initialLoad')
+      .then(() => set(studiesChunksArray, '_endReached', true));
+
+    this.set('queryResults', studiesChunksArray);
   },
 
   actions: {
