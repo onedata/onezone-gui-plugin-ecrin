@@ -36,7 +36,9 @@ export default Component.extend(I18n, {
   /**
    * @type {Utils.ReplacingChunksArray}
    */
-  queryResults: undefined,
+  queryResults: computed(() => ReplacingChunksArray.create({
+    fetch() { return resolve([]); },
+  })),
 
   /**
    * Number of records, that fulfills query conditions. -1 means, that results are
@@ -81,11 +83,6 @@ export default Component.extend(I18n, {
     });
     this.find();
   }),
-
-  init() {
-    this._super(...arguments);
-    this.queryParamsObserver();
-  },
 
   fetchResults(startFromIndex, size /*, offset */ ) {
     const mode = this.get('mode');
@@ -155,6 +152,7 @@ export default Component.extend(I18n, {
       _source = [
         'id',
         'display_title.title',
+        'study_status.brief_description',
         'linked_data_objects',
       ];
       body.sort = [

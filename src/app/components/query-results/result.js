@@ -10,7 +10,7 @@
 
 import Component from '@ember/component';
 import { observer, get, set, getProperties } from '@ember/object';
-import { reads, alias } from '@ember/object/computed';
+import { reads } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
 import { A } from '@ember/array';
@@ -30,8 +30,9 @@ export default Component.extend(I18n, {
 
   /**
    * @virtual
+   * @type {Object}
    */
-  result: undefined,
+  study: undefined,
 
   /**
    * @virtual
@@ -53,9 +54,14 @@ export default Component.extend(I18n, {
 
   /**
    * @type {PromiseProxy}
-   * Set by `fetchNextDataObjects` method
+   * Set by `fetchDataObjects` method
    */
   fetchDataObjectsProxy: undefined,
+
+  /**
+   * @type {ComputedProperty<string>}
+   */
+  studyDescription: reads('study.study_status.brief_description'),
 
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
@@ -78,20 +84,14 @@ export default Component.extend(I18n, {
   filterParams: reads('queryParams.activeFilterParams'),
 
   /**
-   * @type {Ember.ComputedProperty<Object>}
+   * @type {Array<Object>}
    */
-  study: reads('result._source'),
+  dataObjects: undefined,
 
   /**
-   * @type {Ember.ComputedProperty<Ember.A<Object>>}
+   * @type {number}
    */
-  dataObjects: alias('result.dataObjects'),
-
-  /**
-   * Is different than -1 if data objects have been fetched at least once
-   * @type {Ember.ComputedProperty<number>}
-   */
-  dataObjectsNumber: alias('result.dataObjectsNumber'),
+  dataObjectsNumber: -1,
 
   isExpandedObserver: observer(
     'isExpanded',
@@ -101,22 +101,17 @@ export default Component.extend(I18n, {
         dataObjectsNumber,
       } = this.getProperties('isExpanded', 'dataObjectsNumber');
       if (isExpanded && dataObjectsNumber === -1) {
-        this.fetchNextDataObjects();
+        this.fetchDataObjects();
       }
     }
   ),
 
-  filterParamsObserver: observer('filterParams', function filterParamsObserver() {
-    this.reloadDataObjects();
-  }),
+  // filterParamsObserver: observer('filterParams', function filterParamsObserver() {
+  //   this.reloadDataObjects();
+  // }),
 
   init() {
     this._super(...arguments);
-
-    const dataObjectsNumber = this.get('dataObjectsNumber');
-    if (dataObjectsNumber === undefined) {
-      this.clearDataObjects();
-    }
 
     this.reloadDataObjects();
   },
@@ -128,7 +123,7 @@ export default Component.extend(I18n, {
   reloadDataObjects() {
     this.clearDataObjects();
     if (this.get('isExpanded')) {
-      this.fetchNextDataObjects();
+      this.fetchDataObjects();
     }
   },
 
@@ -144,26 +139,22 @@ export default Component.extend(I18n, {
   },
 
   /**
-   * Loads next data object records related to study
+   * Loads data object records related to study
    * @returns {PromiseObject}
    */
-  fetchNextDataObjects() {
+  fetchDataObjects() {
     let fetchDataObjectsProxy = this.get('fetchDataObjectsProxy');
     if (fetchDataObjectsProxy && get(fetchDataObjectsProxy, 'isLoading')) {
       return fetchDataObjectsProxy;
     } else {
       const {
         elasticsearch,
-        dataObjectsNumber,
-        dataObjects,
         study,
         typeMapping,
         accessTypeMapping,
         filterParams,
       } = this.getProperties(
         'elasticsearch',
-        'dataObjectsNumber',
-        'dataObjects',
         'study',
         'typeMapping',
         'accessTypeMapping',
@@ -192,16 +183,12 @@ export default Component.extend(I18n, {
           { publication_year: { order: 'desc' } },
           { id: { order: 'asc' } },
         ],
-        size: 15,
         query: {
           bool: {
             filter: filters,
           },
         },
       };
-      if (dataObjectsNumber > 0) {
-        body.search_after = get(dataObjects, 'lastObject.sort');
-      }
       if (typeFilter && get(typeFilter, 'length')) {
         filters.push({
           terms: {
@@ -252,11 +239,11 @@ export default Component.extend(I18n, {
       fetchDataObjectsProxy = PromiseObject.create({
         promise: elasticsearch.post('data_object', '_search', body)
           .then(results => {
-            if (dataObjectsNumber === -1) {
-              safeExec(this, () => {
-                this.set('dataObjectsNumber', results.hits.total.value);
+            safeExec(this, () => {
+              this.setProperties({
+                dataObjectsNumber: results.hits.total.value,
               });
-            }
+            });
             const hits = results.hits.hits;
             hits.forEach(({ _source: { object_type, access_type } }) => {
               const typeId = get(object_type, 'id');
@@ -272,16 +259,15 @@ export default Component.extend(I18n, {
                   'indicator'));
               }
             });
-            dataObjects.pushObjects(hits);
+            safeExec(this, () => {
+              this.setProperties({
+                dataObjectsNumber: results.hits.total.value,
+                dataObjects: hits,
+              });
+            });
           }),
       });
       return this.set('fetchDataObjectsProxy', fetchDataObjectsProxy);
     }
-  },
-
-  actions: {
-    loadMore() {
-      this.fetchNextDataObjects();
-    },
   },
 });

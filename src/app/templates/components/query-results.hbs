@@ -10,7 +10,7 @@
       {{#acc.item value=result.index.id as |accItem|}}
         {{query-results/result
           item=accItem
-          result=result
+          study=result._source
           isExpanded=(eq result.index.id expandedResultId)
           queryParams=queryParams}}
       {{/acc.item}}
