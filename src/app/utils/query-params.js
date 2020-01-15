@@ -11,19 +11,8 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-import EmberObject, { computed, get, getProperties } from '@ember/object';
+import EmberObject, { computed, get } from '@ember/object';
 import rangeToNumbers from 'onezone-gui-plugin-ecrin/utils/range-to-numbers';
-
-const findParamNames = [
-  'mode',
-  'studyIdType',
-  'studyId',
-  'studyTitleContains',
-  'studyTopicsInclude',
-  'studyTitleTopicOperator',
-  'doi',
-  'dataObjectTitle',
-];
 
 const filterParamNames = [
   'typeFilter',
@@ -34,48 +23,6 @@ const filterParamNames = [
 ];
 
 export default EmberObject.extend({
-  /**
-   * One of 'specificStudy', 'studyCharact', 'viaPubPaper'
-   * @type {string}
-   */
-  mode: 'studyCharact',
-
-  /**
-   * Only for mode === 'specificStudy'
-   * @type {string}
-   */
-  studyIdType: undefined,
-
-  /**
-   * Only for mode === 'specificStudy'
-   * @type {string}
-   */
-  studyId: '',
-
-  /**
-   * Only for mode === 'studyCharact'
-   * @type {string}
-   */
-  studyTitleContains: '',
-
-  /**
-   * Only for mode === 'studyCharact'
-   * @type {string}
-   */
-  studyTopicsInclude: '',
-
-  /**
-   * Only for mode === 'viaPubPaper'
-   * @type {string}
-   */
-  doi: '',
-
-  /**
-   * Only for mode === 'viaPubPaper'
-   * @type {string}
-   */
-  dataObjectTitle: '',
-
   /**
    * @type {string}
    */
@@ -121,46 +68,10 @@ export default EmberObject.extend({
   activeFilterParams: Object.freeze({}),
 
   /**
-   * Only for mode === 'studyCharact'
-   * @type {Ember.ComputedProperty<string>}
-   */
-  studyTitleTopicOperator: computed({
-    get() {
-      return 'and';
-    },
-    set(key, value) {
-      return ['and', 'or'].includes(value) ? value : 'and';
-    },
-  }),
-
-  /**
    * @type {Ember.ComputedProperty<Array<number|Object>>}
    */
   parsedYearFilter: computed('yearFilter', function parsedYearFilter() {
     return rangeToNumbers(this.get('yearFilter'));
-  }),
-
-  /**
-   * @type {Ember.ComputedProperty<boolean>}
-   */
-  hasFindParams: computed(...findParamNames, function hasFindParams() {
-    const {
-      mode,
-      studyIdType,
-      studyId,
-      studyTitleContains,
-      studyTopicsInclude,
-      doi,
-      dataObjectTitle,
-    } = this.getProperties(...findParamNames);
-    switch (mode) {
-      case 'specificStudy':
-        return Boolean(studyIdType && studyId);
-      case 'studyCharact':
-        return Boolean(studyTitleContains || studyTopicsInclude);
-      case 'viaPubPaper':
-        return Boolean(doi || dataObjectTitle);
-    }
   }),
 
   /**
@@ -175,73 +86,6 @@ export default EmberObject.extend({
     } = this.getProperties(...filterParamNames);
     return !!typeFilter.length || !!accessTypeFilter.length ||
       !!parsedYearFilter.length || !!publisherFilter.length;
-  }),
-
-  /**
-   * @type {Ember.ComputedProperty<Object>}
-   */
-  findQueryParams: computed(...findParamNames, function findQueryParams() {
-    const {
-      hasActiveFindParams,
-      activeFindParams,
-    } = this.getProperties(
-      'hasActiveFindParams',
-      'activeFindParams',
-    );
-    const {
-      mode,
-      studyIdType,
-      studyId,
-      doi,
-      dataObjectTitle,
-    } = getProperties(
-      activeFindParams,
-      'mode',
-      'studyIdType',
-      'studyId',
-      'doi',
-      'dataObjectTitle'
-    );
-    const params = {
-      mode,
-      studyId: null,
-      studyTitleContains: null,
-      studyTopicsInclude: null,
-      doi: null,
-      dataObjectTitle: null,
-    };
-    if (hasActiveFindParams) {
-      switch (mode) {
-        case 'specificStudy':
-          if (studyIdType) {
-            params.studyIdType = get(studyIdType, 'id');
-          }
-          if (studyId) {
-            params.studyId = studyId;
-          }
-          break;
-        case 'studyCharact':
-          [
-            'studyTitleContains',
-            'studyTopicsInclude',
-            'studyTitleTopicOperator',
-          ].forEach(filterName => {
-            const filter = get(activeFindParams, filterName);
-            if (filter) {
-              params[filterName] = filter;
-            }
-          });
-          break;
-        case 'viaPubPaper':
-          if (doi) {
-            params.doi = doi;
-          } else if (dataObjectTitle) {
-            params.dataObjectTitle = dataObjectTitle;
-          }
-          break;
-      }
-    }
-    return params;
   }),
 
   /**
@@ -287,13 +131,6 @@ export default EmberObject.extend({
   /**
    * @returns {undefined}
    */
-  applyFindParams() {
-    this.applyNamespacedParams('Find', findParamNames, ['mode']);
-  },
-
-  /**
-   * @returns {undefined}
-   */
   applyFilterParams() {
     this.applyNamespacedParams('Filter', filterParamNames);
   },
@@ -334,15 +171,10 @@ export default EmberObject.extend({
    */
   clear() {
     this.setProperties({
-      studyId: '',
-      studyTitleContains: '',
-      studyTopicsInclude: '',
       typeFilter: [],
       accessTypeFilter: [],
       yearFilter: '',
       publisherFilter: [],
-      doi: '',
-      dataObjectTitle: '',
     });
   },
 
@@ -354,28 +186,12 @@ export default EmberObject.extend({
    */
   consumeQueryParams(queryParams, configuration) {
     [
-      'mode',
-      'studyId',
-      'studyTitleContains',
-      'studyTopicsInclude',
-      'studyTitleTopicOperator',
       'yearFilter',
-      'doi',
-      'dataObjectTitle',
     ].forEach(filterName => {
       if (queryParams[filterName]) {
         this.set(filterName, queryParams[filterName]);
       }
     });
-
-    if (queryParams.studyIdType) {
-      const studyIdTypeMapping = get(configuration, 'studyIdTypeMapping');
-      const studyIdType = studyIdTypeMapping
-        .filter(({ id }) => id == queryParams.studyIdType)[0];
-      if (studyIdType) {
-        this.set('studyIdType', studyIdType);
-      }
-    }
 
     [
       ['typeFilter', 'typeMapping'],
@@ -401,7 +217,6 @@ export default EmberObject.extend({
         this.set(filterName, filters);
       }
     });
-    this.applyFindParams();
     this.applyFilterParams();
   },
 });

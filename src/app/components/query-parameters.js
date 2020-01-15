@@ -25,13 +25,19 @@ export default Component.extend(I18n, {
 
   /**
    * @virtual
+   * @type {Utils.StudySearchParams}
+   */
+  studySearchParams: undefined,
+
+  /**
+   * @virtual
    * @type {Function}
    * @param {string} fieldName
    * @param {any} newValue
    * @returns {undefined}
    */
   onChange: undefined,
-  
+
   /**
    * @virtual
    * @type {Function}

@@ -8,13 +8,20 @@
  */
 
 import Component from '@ember/component';
-import { observer, get, getProperties, set, setProperties } from '@ember/object';
+import {
+  computed,
+  get,
+  getProperties,
+  set,
+  setProperties,
+} from '@ember/object';
 import { reads } from '@ember/object/computed';
 import ReplacingChunksArray from 'onezone-gui-plugin-ecrin/utils/replacing-chunks-array';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { resolve } from 'rsvp';
 import { inject as service } from '@ember/service';
 import _ from 'lodash';
+import StudySearchParams from 'onezone-gui-plugin-ecrin/utils/study-search-params';
 
 export default Component.extend(I18n, {
   classNames: ['content-query', 'content'],
@@ -26,6 +33,11 @@ export default Component.extend(I18n, {
    * @override
    */
   i18nPrefix: 'components.contentQuery',
+
+  /**
+   * @type {StudySearchParams}
+   */
+  studySearchParams: computed(() => StudySearchParams.create()),
 
   /**
    * @virtual
@@ -47,23 +59,28 @@ export default Component.extend(I18n, {
   /**
    * @type {Ember.ComputedProperty<string>}
    */
-  mode: reads('queryParams.mode'),
+  mode: reads('studySearchParams.mode'),
 
   /**
-   * @type {Ember.ComputedProperty<Object>}
+   * @type {ComputedProperty<boolean>}
    */
-  activeFindParams: reads('queryParams.activeFindParams'),
+  hasMeaningfulStudySearchParams: reads('studySearchParams.hasMeaningfulParams'),
 
-  /**
-   * @type {Ember.ComputedProperty<boolean>}
-   */
-  hasActiveFindParams: reads('queryParams.hasActiveFindParams'),
+  // /**
+  //  * @type {Ember.ComputedProperty<Object>}
+  //  */
+  // activeFindParams: reads('queryParams.activeFindParams'),
 
-  queryParamsObserver: observer('queryParams', function queryParamsObserver() {
-    this.fetchResults();
-  }),
+  // /**
+  //  * @type {Ember.ComputedProperty<boolean>}
+  //  */
+  // hasActiveFindParams: reads('queryParams.hasActiveFindParams'),
 
-  fetchResults() {
+  // queryParamsObserver: observer('queryParams', function queryParamsObserver() {
+  //   this.searchStudies();
+  // }),
+
+  searchStudies() {
     const mode = this.get('mode');
 
     let promise = resolve([]);
@@ -153,24 +170,23 @@ export default Component.extend(I18n, {
   fetchSpecificStudy() {
     const {
       elasticsearch,
-      activeFindParams,
-      hasActiveFindParams,
+      studySearchParams,
     } = this.getProperties(
       'elasticsearch',
-      'activeFindParams',
-      'hasActiveFindParams'
+      'studySearchParams',
     );
     const body = this.constructQueryBodyBase('study');
 
-    if (hasActiveFindParams) {
+    if (get(studySearchParams, 'hasMeaningfulParams')) {
       const {
         studyIdType,
         studyId,
       } = getProperties(
-        activeFindParams,
+        studySearchParams,
         'studyIdType',
         'studyId'
       );
+      const studyIdTypeId = get(studyIdType, 'id');
 
       set(body, 'query', {
         bool: {
@@ -181,8 +197,7 @@ export default Component.extend(I18n, {
                 bool: {
                   must: [{
                     term: {
-                      'study_identifiers.identifier_type.id': get(
-                        studyIdType, 'id'),
+                      'study_identifiers.identifier_type.id': studyIdTypeId,
                     },
                   }, {
                     term: {
@@ -193,12 +208,14 @@ export default Component.extend(I18n, {
               },
             },
           }],
-          must_not: this.filterByStudyIdClause(),
+          must_not: this.generateExcludeFetchedStudiesClause(),
         },
       });
-    }
 
-    return elasticsearch.post('study', '_search', body);
+      return elasticsearch.post('study', '_search', body);
+    } else {
+      return resolve(null);
+    }
   },
 
   /**
@@ -208,27 +225,25 @@ export default Component.extend(I18n, {
   fetchStudyCharact() {
     const {
       elasticsearch,
-      activeFindParams,
-      hasActiveFindParams,
+      studySearchParams,
     } = this.getProperties(
       'elasticsearch',
-      'activeFindParams',
-      'hasActiveFindParams'
+      'studySearchParams',
     );
     const body = this.constructQueryBodyBase('study');
     body.query = {
       bool: {
-        must_not: this.filterByStudyIdClause(),
+        must_not: this.generateExcludeFetchedStudiesClause(),
       },
     };
 
-    if (hasActiveFindParams) {
+    if (get(studySearchParams, 'hasMeaningfulParams')) {
       const {
         studyTitleContains,
         studyTopicsInclude,
         studyTitleTopicOperator,
       } = getProperties(
-        activeFindParams,
+        studySearchParams,
         'studyTitleContains',
         'studyTopicsInclude',
         'studyTitleTopicOperator',
@@ -264,9 +279,10 @@ export default Component.extend(I18n, {
           filter: filtersArray,
         });
       }
+      return elasticsearch.post('study', '_search', body);
+    } else {
+      return resolve(null);
     }
-
-    return elasticsearch.post('study', '_search', body);
   },
 
   /**
@@ -279,10 +295,10 @@ export default Component.extend(I18n, {
   fetchStudyIdsForPerPaperSearch() {
     const {
       elasticsearch,
-      activeFindParams,
+      studySearchParams,
     } = this.getProperties(
       'elasticsearch',
-      'activeFindParams'
+      'studySearchParams'
     );
 
     const filters = [];
@@ -298,11 +314,10 @@ export default Component.extend(I18n, {
         },
       },
     };
-
     const {
       doi,
       dataObjectTitle,
-    } = getProperties(activeFindParams, 'doi', 'dataObjectTitle');
+    } = getProperties(studySearchParams, 'doi', 'dataObjectTitle');
     if (doi) {
       filters.push({
         term: {
@@ -335,17 +350,7 @@ export default Component.extend(I18n, {
    * @returns {Promise}
    */
   fetchViaPubPaper() {
-    const {
-      elasticsearch,
-      hasActiveFindParams,
-    } = this.getProperties(
-      'elasticsearch',
-      'hasActiveFindParams'
-    );
-
-    if (!hasActiveFindParams) {
-      return resolve(null);
-    }
+    const elasticsearch = this.get('elasticsearch');
 
     return this.fetchStudyIdsForPerPaperSearch()
       .then(studyIds => {
@@ -360,7 +365,7 @@ export default Component.extend(I18n, {
                   id: studyIds,
                 },
               }],
-              must_not: this.filterByStudyIdClause(),
+              must_not: this.generateExcludeFetchedStudiesClause(),
             },
           });
           // fetch studies
@@ -371,7 +376,7 @@ export default Component.extend(I18n, {
       });
   },
 
-  filterByStudyIdClause() {
+  generateExcludeFetchedStudiesClause() {
     const studies = this.get('queryResults.sourceArray') || [];
     const studyIds = studies.map(s => get(s, '_source.id'));
     return {
@@ -409,13 +414,10 @@ export default Component.extend(I18n, {
 
   actions: {
     parameterChanged(fieldName, newValue) {
-      this.set(`queryParams.${fieldName}`, newValue);
+      this.set(`studySearchParams.${fieldName}`, newValue);
     },
     find() {
-      this.get('queryParams').applyFindParams();
-      this.get('router').transitionTo({
-        queryParams: this.get('queryParams.findQueryParams'),
-      });
+      this.searchStudies();
     },
     filter() {
       this.get('queryParams').applyFilterParams();
