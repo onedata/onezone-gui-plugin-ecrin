@@ -4,24 +4,26 @@
     {{#bs-button type="danger" size="sm" onClick=(action "removeAllStudies") class="pull-right"}}{{tt this "clearStudyList"}}{{/bs-button}}
   {{/if}}
 </div>
-<div class="data-start-row" style={{firstRowStyle}}></div>
-{{#bs-accordion onChange=(action "resultExpanded") as |acc|}}
-  {{#each results as |result|}}
-    <div class="data-row" data-row-id={{result.index.id}}>
-      {{#acc.item value=result.index.id as |accItem|}}
-        {{query-results/result
-          item=accItem
-          study=result._source
-          isExpanded=(eq result.index.id expandedResultId)
-          queryParams=queryParams
-          remove=(action "removeStudy" result)}}
-      {{/acc.item}}
-    </div>
-  {{/each}}
-{{/bs-accordion}}
-{{loading-container
-  isLoading=bottomLoading
-  errorReason=results.error
-  sizeClass="sm"
-  spinnerBlockClass="horizontal-align-middle"}}
+<div class="studies-list">
+  <div class="data-start-row" style={{firstRowStyle}}></div>
+  {{#bs-accordion onChange=(action "resultExpanded") as |acc|}}
+    {{#each results as |result|}}
+      <div class="data-row" data-row-id={{result.index.id}}>
+        {{#acc.item value=result.index.id as |accItem|}}
+          {{query-results/result
+            item=accItem
+            study=result._source
+            isExpanded=(eq result.index.id expandedResultId)
+            queryParams=queryParams
+            remove=(action "removeStudy" result)}}
+        {{/acc.item}}
+      </div>
+    {{/each}}
+  {{/bs-accordion}}
+  {{loading-container
+    isLoading=bottomLoading
+    errorReason=results.error
+    sizeClass="sm"
+    spinnerBlockClass="horizontal-align-middle"}}
+</div>
 {{yield}}

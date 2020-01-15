@@ -134,4 +134,19 @@
   .result-actions .remove-action:hover {
     color: $color-one-danger;
   }
+
+  @media (min-width: $screen-sm-min) {
+    display: flex;
+    flex-direction: column;
+
+    .studies-list-header {
+      flex-grow: 0;
+    }
+
+    .studies-list {
+      flex-grow: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+  }
 }

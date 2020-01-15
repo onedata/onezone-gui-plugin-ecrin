@@ -2,7 +2,7 @@
 'use strict';
 
 const defineSassBreakpoints = require('./app/utils/define-sass-breakpoints');
-const breakpointValues = require('./app/breakpoint-values').default;
+const breakpointValues = require('./app/breakpoint-values');
 const sass = require('sass');
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 

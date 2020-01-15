@@ -1,0 +1,15 @@
+.content-query {
+  @media (min-width: $screen-sm-min) {
+    display: flex;
+    flex-direction: column;
+    
+    .query-parameters {
+      flex-grow: 0;
+    }
+
+    .query-results {
+      flex-grow: 1;
+      min-height: 0;
+    }
+  }
+}

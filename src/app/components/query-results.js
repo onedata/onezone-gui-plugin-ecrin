@@ -14,9 +14,12 @@ import ListWatcher from 'onezone-gui-plugin-ecrin/utils/list-watcher';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 import $ from 'jquery';
+import { inject as service } from '@ember/service';
 
 export default Component.extend(I18n, {
   classNames: ['query-results'],
+
+  media: service(),
 
   /**
    * @override
@@ -60,6 +63,11 @@ export default Component.extend(I18n, {
    * @type {string}
    */
   expandedResultId: undefined,
+
+  /**
+   * @type {Util.ListWatcher}
+   */
+  listWatcher: null,
 
   /**
    * @type {Ember.ComputedProperty<number>}
@@ -110,28 +118,40 @@ export default Component.extend(I18n, {
     }
   ),
 
-  scrollResetTrigger: observer('results', function scrollResetTrigger() {
-    const $scrollContainer = this.get('$scrollContainer');
-    if ($scrollContainer) {
-      $scrollContainer.scrollTop(0);
+  scrollContainerModifier: observer(
+    'media.isMobile',
+    function scrollContainerModifier() {
+      const isMobile = this.get('media.isMobile');
+      const $scrollContainer = isMobile ?
+        $('#application-container') : this.$('.studies-list');
+
+      const $oldScrollContainer = this.get('$scrollContainer');
+      if (!$oldScrollContainer || $oldScrollContainer[0] !== $scrollContainer[0]) {
+        const oldListWatcher = this.get('listWatcher');
+        if (oldListWatcher) {
+          oldListWatcher.destroy();
+        }
+
+        const newListWatcher = new ListWatcher(
+          $scrollContainer,
+          '.data-row',
+          (items, onTop) => safeExec(this, 'onListScroll', items, onTop),
+          '.data-start-row',
+        );
+        newListWatcher.scrollHandler();
+
+        this.setProperties({
+          $scrollContainer,
+          listWatcher: newListWatcher,
+        });
+      }
     }
-  }),
+  ),
 
   didInsertElement() {
     this._super(...arguments);
 
-    this.set('$scrollContainer', $('#application-container'));
-    const listWatcher = this.set('listWatcher', this.createListWatcher());
-    listWatcher.scrollHandler();
-  },
-
-  createListWatcher() {
-    return new ListWatcher(
-      this.get('$scrollContainer'),
-      '.data-row',
-      (items, onTop) => safeExec(this, 'onListScroll', items, onTop),
-      '.data-start-row',
-    );
+    this.scrollContainerModifier();
   },
 
   /**
@@ -175,7 +195,6 @@ export default Component.extend(I18n, {
     removeAllStudies() {
       this.get('results.sourceArray').clear();
       this.set('expandedResultId', null);
-      this.scrollResetTrigger();
     },
   },
 });
