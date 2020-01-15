@@ -71,6 +71,11 @@ export default Component.extend(I18n, {
   studyDescription: reads('study.study_status.brief_description'),
 
   /**
+   * @type {ComputedProperty<string>}
+   */
+  studyDataSharingStatement: reads('study.study_status.data_sharing_statement'),
+
+  /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   typeMapping: reads('configuration.typeMapping'),

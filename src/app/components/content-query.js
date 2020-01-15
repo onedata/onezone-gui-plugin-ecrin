@@ -144,6 +144,7 @@ export default Component.extend(I18n, {
       _source = [
         'id',
         'display_title.title',
+        'study_status.data_sharing_statement',
         'study_status.brief_description',
         'linked_data_objects',
       ];

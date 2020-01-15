@@ -58,7 +58,6 @@
 
   .data-object-record {
     display: flex;
-    word-break: break-all;
 
     + .data-object-record {
       padding-top: $padding-base-vertical;
@@ -81,6 +80,7 @@
     color: $main-text-light-color;
     padding-left: $padding-small-horizontal;
     padding-right: $padding-small-horizontal;
+    word-break: break-all;
     p {
       margin-bottom: $padding-small-vertical;
     }
@@ -135,6 +135,10 @@
 
   .result-actions .remove-action:hover {
     color: $color-one-danger;
+  }
+
+  .study-info .data-object-type {
+    font-style: italic;
   }
 
   @media (min-width: $screen-sm-min) {

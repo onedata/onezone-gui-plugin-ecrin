@@ -11,11 +11,24 @@
   {{#if dataObjects.length}}
     <div class="data-object-records">
       {{#if studyDescription}}
-        <div class="data-object-record">
+        <div class="data-object-record study-info">
           <div class="data-object-type">{{tt this "studyDescription"}}</div>
           <div class="data-object-description">
             {{line-clamp
               text=studyDescription
+              lines=2
+              interactive=false
+              truncate=true
+            }}
+          </div>
+        </div>
+      {{/if}}
+      {{#if studyDataSharingStatement}}
+        <div class="data-object-record study-info">
+          <div class="data-object-type">{{tt this "studyDataSharingStatement"}}</div>
+          <div class="data-object-description">
+            {{line-clamp
+              text=studyDataSharingStatement
               lines=2
               interactive=false
               truncate=true
