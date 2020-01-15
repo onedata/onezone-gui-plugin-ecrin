@@ -56,26 +56,28 @@
     }
   }
 
-  .do-records {
-    table-layout: fixed;
-    margin-bottom: 0;
-    tr + tr td {
+  .data-object-record {
+    display: flex;
+    word-break: break-all;
+
+    + .data-object-record {
       padding-top: $padding-base-vertical;
-    }
-    td {
-      vertical-align: top;
-      word-break: break-all;
     }
   }
 
-  .do-type {
-    width: 10em;
+  .data-object-type, .data-object-year, .data-object-status {
+    flex-shrink: 0;
+  }
+
+  .data-object-type {
+    flex-basis: 10em;
     @media (max-width: $screen-xs-max) {
       width: 7em;
     }
   }
 
-  .do-description {
+  .data-object-description {
+    flex-grow: 1;
     color: $main-text-light-color;
     padding-left: $padding-small-horizontal;
     padding-right: $padding-small-horizontal;
@@ -84,20 +86,20 @@
     }
   }
 
-  .do-year {
-    width: 4em;
+  .data-object-year {
+    flex-basis: 4em;
     color: $main-text-light-color;
     @media (max-width: $screen-xs-max) {
       width: 3em;
     }
   }
 
-  .do-status {
-    width: 20px;
+  .data-object-status {
+    flex-basis: 20px;
     text-align: center;
   }
 
-  .do-status-icon {
+  .data-object-status-icon {
     display: inline-block;
     width: 15px;
     height: 15px;
@@ -147,6 +149,12 @@
       flex-grow: 1;
       min-height: 0;
       overflow: auto;
+    }
+  }
+
+  @media (max-width: $screen-xs-max) {
+    .data-object-record {
+      flex-wrap: wrap;
     }
   }
 }

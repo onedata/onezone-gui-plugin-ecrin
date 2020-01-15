@@ -9,31 +9,43 @@
 </ul>
 {{#item.body}}
   {{#if dataObjects.length}}
-    <table class="do-records table">
+    <div class="data-object-records">
       {{#if studyDescription}}
-        <tr>
-          <td class="do-type">{{tt this "studyDescription"}}</td>
-          <td class="do-description">{{studyDescription}}</td>
-          <td class="do-year"></td>
-          <td class="do-status"></td>
-        </tr>
+        <div class="data-object-record">
+          <div class="data-object-type">{{tt this "studyDescription"}}</div>
+          <div class="data-object-description">
+            {{line-clamp
+              text=studyDescription
+              lines=2
+              interactive=false
+              truncate=true
+            }}
+          </div>
+        </div>
       {{/if}}
       {{#each dataObjects as |dataObject|}}
-        <tr>
-          <td class="do-type">{{or dataObject._source.object_type.translatedName dataObject._source.object_type.name}}</td>
-          <td class="do-description">
+        <div class="data-object-record">
+          <div class="data-object-type">{{or dataObject._source.object_type.translatedName dataObject._source.object_type.name}}</div>
+          <div class="data-object-description">
             {{#if dataObject._source.display_title}}
-              <p>{{dataObject._source.display_title}}</p>
+              <p>
+                {{line-clamp
+                  text=dataObject._source.display_title
+                  lines=2
+                  interactive=false
+                  truncate=true
+                }}
+              </p>
             {{/if}}
             {{#if dataObject._source.url}}
               <p>{{dataObject._source.url}}</p>
             {{/if}}
-          </td>
-          <td class="do-year">{{or dataObject._source.publication_year "-"}}</td>
-          <td class="do-status"><span class="do-status-icon {{or dataObject._source.access_type.indicator "unknown"}}"></span></td>
-        </tr>
+          </div>
+          <div class="data-object-year">{{or dataObject._source.publication_year "-"}}</div>
+          <div class="data-object-status"><span class="data-object-status-icon {{or dataObject._source.access_type.indicator "unknown"}}"></span></div>
+        </div>
       {{/each}}
-    </table>
+    </div>
   {{/if}}
   {{#if fetchInnerRecordsProxy.isPending}}
     {{spin-spinner-block sizeClass="xs" class="loading-inner-spinner"}} <span>{{tt this "loading"}}</span>
