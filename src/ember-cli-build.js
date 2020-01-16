@@ -52,6 +52,12 @@ module.exports = function (defaults) {
   // please specify an object with the list of modules as keys
   // along with the exports of each module as its value.
 
+  app.import('node_modules/is-url/index.js', {
+    using: [
+      { transformation: 'cjs', as: 'is-url' },
+    ],
+  });
+
   const NODE_ASSETS = [
     'dexie/dist/dexie.min.js',
   ];

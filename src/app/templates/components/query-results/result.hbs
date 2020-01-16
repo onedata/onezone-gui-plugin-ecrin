@@ -69,7 +69,14 @@
             </p>
           {{/if}}
           {{#if dataObject.url}}
-            <p>{{dataObject.url}}</p>
+            <p>
+              {{tt this "urlAccess"}}:
+              {{#if dataObject.hasCorrectUrl}}
+                <a href={{dataObject.url}} target="_blank">{{dataObject.url}}</a>
+              {{else}}
+                {{dataObject.url}}
+              {{/if}}
+            </p>
           {{/if}}
         </div>
         <div class="data-object-year">{{or dataObject.year "-"}}</div>

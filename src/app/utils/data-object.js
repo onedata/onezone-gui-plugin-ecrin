@@ -1,6 +1,7 @@
 import EmberObject, { computed, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { array, raw } from 'ember-awesome-macros';
+import isUrl from 'is-url';
 
 export default EmberObject.extend({
   /**
@@ -48,6 +49,13 @@ export default EmberObject.extend({
     ),
     raw(0)
   ),
+
+  /**
+   * @type {ComputedProperty<boolean>}
+   */
+  hasCorrectUrl: computed('url', function hasCorrectUrl() {
+    return isUrl(this.get('url'));
+  }),
 
   /**
    * @type {ComputedProperty<number>}

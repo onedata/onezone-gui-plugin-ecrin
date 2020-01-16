@@ -7,5 +7,6 @@ export default {
     studyDataSharingStatement: 'Data sharing statement',
     showLess: '(show less)',
     showMore: '(show more)',
+    urlAccess: 'Access',
   },
 };
