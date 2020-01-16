@@ -16,17 +16,21 @@ import {
   setProperties,
 } from '@ember/object';
 import { reads } from '@ember/object/computed';
-import ReplacingChunksArray from 'onezone-gui-plugin-ecrin/utils/replacing-chunks-array';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { resolve } from 'rsvp';
 import { inject as service } from '@ember/service';
 import _ from 'lodash';
 import StudySearchParams from 'onezone-gui-plugin-ecrin/utils/study-search-params';
+import Study from 'onezone-gui-plugin-ecrin/utils/study';
+import DataObject from 'onezone-gui-plugin-ecrin/utils/data-object';
+import { A } from '@ember/array';
+import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
 
 export default Component.extend(I18n, {
   classNames: ['content-query', 'content'],
 
   elasticsearch: service(),
+  configuration: service(),
   router: service(),
 
   /**
@@ -45,16 +49,9 @@ export default Component.extend(I18n, {
    */
   queryParams: undefined,
 
-  /**
-   * @type {Utils.ReplacingChunksArray}
-   */
-  queryResults: undefined,
+  studies: computed(() => A()),
 
-  /**
-   * Number of records, that fulfills query conditions.
-   * @type {number}
-   */
-  queryResultsNumber: reads('queryResults.sourceArray.length'),
+  dataObjects: computed(() => A()),
 
   /**
    * @type {Ember.ComputedProperty<string>}
@@ -65,20 +62,6 @@ export default Component.extend(I18n, {
    * @type {ComputedProperty<boolean>}
    */
   hasMeaningfulStudySearchParams: reads('studySearchParams.hasMeaningfulParams'),
-
-  // /**
-  //  * @type {Ember.ComputedProperty<Object>}
-  //  */
-  // activeFindParams: reads('queryParams.activeFindParams'),
-
-  // /**
-  //  * @type {Ember.ComputedProperty<boolean>}
-  //  */
-  // hasActiveFindParams: reads('queryParams.hasActiveFindParams'),
-
-  // queryParamsObserver: observer('queryParams', function queryParamsObserver() {
-  //   this.searchStudies();
-  // }),
 
   searchStudies() {
     const mode = this.get('mode');
@@ -106,17 +89,11 @@ export default Component.extend(I18n, {
     return promise.then(results => {
         if (results) {
           results = get(results, 'hits.hits') || [];
-          const alreadyFetchedStudies = this.get('queryResults.sourceArray');
-          results.forEach((doc, i) => {
-            // add index required by ReplacingChunksArray
-            doc.index = {
-              name: get(doc, '_source.display_title.title'),
-              index: (get(alreadyFetchedStudies, 'lastObject.index.index') ||
-                0) + i,
-              id: get(doc, '_source.id'),
-            };
-          });
-          alreadyFetchedStudies.pushObjects(results);
+          const alreadyFetchedStudies = this.get('studies');
+          const newStudies = results.map(doc => Study.create({
+            raw: get(doc, '_source'),
+          }));
+          alreadyFetchedStudies.pushObjects(newStudies);
           return results;
         } else {
           return [];
@@ -378,39 +355,13 @@ export default Component.extend(I18n, {
   },
 
   generateExcludeFetchedStudiesClause() {
-    const studies = this.get('queryResults.sourceArray') || [];
-    const studyIds = studies.map(s => get(s, '_source.id'));
+    const studies = this.get('studies') || [];
+    const studyIds = studies.mapBy('id');
     return {
       terms: {
         id: studyIds,
       },
     };
-  },
-
-  init() {
-    this._super(...arguments);
-
-    const studiesChunksArray = ReplacingChunksArray.create({
-      fetch() { return resolve([]); },
-      startIndex: 0,
-      endIndex: 50,
-      indexMargin: 24,
-      sortFun: (a, b) => {
-        const ai = get(a, 'index.index');
-        const bi = get(b, 'index.index');
-        if (ai < bi) {
-          return -1;
-        } else if (ai > bi) {
-          return 1;
-        } else {
-          return 0;
-        }
-      },
-    });
-    get(studiesChunksArray, 'initialLoad')
-      .then(() => set(studiesChunksArray, '_endReached', true));
-
-    this.set('queryResults', studiesChunksArray);
   },
 
   actions: {
@@ -425,6 +376,76 @@ export default Component.extend(I18n, {
       this.get('router').transitionTo({
         queryParams: this.get('queryParams.filterQueryParams'),
       });
+    },
+    removeStudies(studiesToRemove) {
+      this.get('studies').removeObjects(studiesToRemove);
+    },
+    loadDataObjectsForStudies(studies) {
+      const {
+        elasticsearch,
+        dataObjects,
+        configuration,
+      } = this.getProperties('elasticsearch', 'dataObjects', 'configuration');
+      const studiesWithoutFetchedDataObjects =
+        studies.rejectBy('dataObjectsPromiseObject');
+      const idsOfFetchedDataObjects = dataObjects.mapBy('id');
+      const idsOfDataObjectsToFetch = _.difference(
+        _.uniq(_.flatten(
+          studiesWithoutFetchedDataObjects.mapBy('dataObjectsIds')
+        )),
+        idsOfFetchedDataObjects
+      );
+
+      let fetchDataObjectsPromise;
+
+      if (idsOfDataObjectsToFetch.length) {
+        fetchDataObjectsPromise = elasticsearch.post('data_object', '_search', {
+          query: {
+            bool: {
+              filter: [{
+                terms: {
+                  id: idsOfDataObjectsToFetch,
+                },
+              }],
+            },
+          },
+        }).then(results => {
+          const newDataObjectInjections = getProperties(
+            configuration,
+            'typeMapping',
+            'accessTypeMapping'
+          );
+          const hits = results.hits.hits;
+          const newDataObjects = hits.map(doHit => {
+            const existingDataObjectInstance =
+              dataObjects.findBy('id', get(doHit, '_source.id'));
+            if (existingDataObjectInstance) {
+              return existingDataObjectInstance;
+            } else {
+              return DataObject.create(newDataObjectInjections, {
+                raw: get(doHit, '_source'),
+              });
+            }
+          });
+          dataObjects.addObjects(newDataObjects);
+          return dataObjects;
+        });
+      } else {
+        fetchDataObjectsPromise = resolve(dataObjects);
+      }
+
+      studiesWithoutFetchedDataObjects.forEach(study => {
+        set(study, 'dataObjectsPromiseObject', PromiseObject.create({
+          promise: fetchDataObjectsPromise.then(dataObjects => {
+            const dataObjectsIds = get(study, 'dataObjectsIds');
+            return dataObjectsIds
+              .map(id => dataObjects.findBy('id', id))
+              .compact();
+          }),
+        }));
+      });
+
+      return fetchDataObjectsPromise;
     },
   },
 });

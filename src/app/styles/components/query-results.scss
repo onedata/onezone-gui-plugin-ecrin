@@ -133,8 +133,14 @@
     font-family: 'Open Sans Semibold';
   }
 
-  .result-actions .remove-action:hover {
-    color: $color-one-danger;
+  .result-actions {
+    .expand-action .one-icon {
+      font-weight: bold;
+    }
+
+    .remove-action:hover {
+      color: $color-one-danger;
+    }
   }
 
   .study-info .data-object-type {

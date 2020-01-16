@@ -1,66 +1,83 @@
 {{#item.title}}
-  {{#truncated-string}}{{or study.display_title.title "Untitled"}}{{/truncated-string}}
+  {{#truncated-string}}{{or study.title "Untitled"}}{{/truncated-string}}
 {{/item.title}}
 {{!-- TODO: Add actions when requirements will be exactly specified --}}
 <ul class="result-actions">
-  {{!-- <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li>
-  <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li> --}}
+  {{!-- <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li> --}}
+  {{#if isExpanded}}
+    <li class="result-action expand-action" {{action "toggleAllElementsExpansion"}}>
+      {{one-icon icon=(if study.hasAllElementsExpanded "arrow-up" "arrow-down")}}
+    </li>
+  {{/if}}
   <li class="result-action remove-action" {{action remove}}>{{one-icon icon="x"}}</li>
 </ul>
 {{#item.body}}
-  {{#if dataObjects.length}}
-    <div class="data-object-records">
-      {{#if studyDescription}}
-        <div class="data-object-record study-info">
-          <div class="data-object-type">{{tt this "studyDescription"}}</div>
-          <div class="data-object-description">
-            {{line-clamp
-              text=studyDescription
-              lines=2
-              interactive=false
-              truncate=true
-            }}
-          </div>
+  <div class="data-object-records">
+    {{#if study.description}}
+      <div class="data-object-record study-info">
+        <div class="data-object-type">
+          {{tt this "studyDescription"}}<br/>
+          <a {{action (mut study.isDescriptionExpanded) (not study.isDescriptionExpanded)}}>
+            {{tt this (if study.isDescriptionExpanded "showLess" "showMore")}}
+          </a>
         </div>
-      {{/if}}
-      {{#if studyDataSharingStatement}}
-        <div class="data-object-record study-info">
-          <div class="data-object-type">{{tt this "studyDataSharingStatement"}}</div>
-          <div class="data-object-description">
-            {{line-clamp
-              text=studyDataSharingStatement
-              lines=2
-              interactive=false
-              truncate=true
-            }}
-          </div>
+        <div class="data-object-description">
+          {{line-clamp
+            text=study.description
+            lines=2
+            interactive=false
+            truncate=(not study.isDescriptionExpanded)
+          }}
         </div>
-      {{/if}}
-      {{#each dataObjects as |dataObject|}}
-        <div class="data-object-record">
-          <div class="data-object-type">{{or dataObject._source.object_type.translatedName dataObject._source.object_type.name}}</div>
-          <div class="data-object-description">
-            {{#if dataObject._source.display_title}}
-              <p>
-                {{line-clamp
-                  text=dataObject._source.display_title
-                  lines=2
-                  interactive=false
-                  truncate=true
-                }}
-              </p>
-            {{/if}}
-            {{#if dataObject._source.url}}
-              <p>{{dataObject._source.url}}</p>
-            {{/if}}
-          </div>
-          <div class="data-object-year">{{or dataObject._source.publication_year "-"}}</div>
-          <div class="data-object-status"><span class="data-object-status-icon {{or dataObject._source.access_type.indicator "unknown"}}"></span></div>
+      </div>
+    {{/if}}
+  {{#if study.dataSharingStatement}}
+      <div class="data-object-record study-info">
+        <div class="data-object-type">
+          {{tt this "studyDataSharingStatement"}}<br/>
+          <a {{action (mut study.isDataSharingStatementExpanded) (not study.isDataSharingStatementExpanded)}}>
+            {{tt this (if study.isDataSharingStatementExpanded "showLess" "showMore")}}
+          </a>
         </div>
-      {{/each}}
-    </div>
-  {{/if}}
-  {{#if fetchInnerRecordsProxy.isPending}}
+        <div class="data-object-description">
+          {{line-clamp
+            text=study.dataSharingStatement
+            lines=2
+            interactive=false
+            truncate=(not study.isDataSharingStatementExpanded)
+          }}
+        </div>
+      </div>
+    {{/if}}
+    {{#each study.dataObjects as |dataObject|}}
+      <div class="data-object-record">
+        <div class="data-object-type">
+          {{dataObject.typeName}}<br/>
+          <a {{action "toggleDataObjectExpansion" dataObject}}>
+            {{tt this (if (contains dataObject study.expandedDataObjects) "showLess" "showMore")}}
+          </a>
+        </div>
+        <div class="data-object-description">
+          {{#if dataObject.title}}
+            <p>
+              {{line-clamp
+                text=dataObject.title
+                lines=2
+                interactive=false
+                truncate=(not (contains dataObject study.expandedDataObjects))
+              }}
+            </p>
+          {{/if}}
+          {{#if dataObject.url}}
+            <p>{{dataObject.url}}</p>
+          {{/if}}
+        </div>
+        <div class="data-object-year">{{or dataObject.year "-"}}</div>
+        <div class="data-object-status"><span class="data-object-status-icon {{dataObject.accessTypeIndicator}}"></span></div>
+      </div>
+    {{/each}}
+  </div>
+  {{#if study.dataObjectsPromiseObject.isPending}}
     {{spin-spinner-block sizeClass="xs" class="loading-inner-spinner"}} <span>{{tt this "loading"}}</span>
   {{/if}}
 {{/item.body}}

@@ -5,5 +5,7 @@ export default {
     loading: 'Loading...',
     studyDescription: 'Description',
     studyDataSharingStatement: 'Data sharing statement',
+    showLess: '(show less)',
+    showMore: '(show more)',
   },
 };

@@ -4,7 +4,8 @@
   onFind=(action "find")
   onFilter=(action "filter")}}
 {{query-results
-  totalResultsNumber=queryResultsNumber
-  results=queryResults
-  queryParams=queryParams}}
+  studies=studies
+  queryParams=queryParams
+  removeStudies=(action "removeStudies")
+  loadDataObjectsForStudies=(action "loadDataObjectsForStudies")}}
 {{yield}}

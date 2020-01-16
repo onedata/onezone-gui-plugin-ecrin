@@ -1,21 +1,22 @@
 <div class="studies-list-header">
-  {{tt this "results"}}: <span class="one-label">{{totalResultsNumber}}</span>
-  {{#if (gt totalResultsNumber 0)}}
+  {{tt this "results"}}: <span class="one-label">{{studies.length}}</span>
+  {{#if studies.length}}
     {{#bs-button type="danger" size="sm" onClick=(action "removeAllStudies") class="pull-right"}}{{tt this "clearStudyList"}}{{/bs-button}}
   {{/if}}
 </div>
 <div class="studies-list">
   <div class="data-start-row" style={{firstRowStyle}}></div>
   {{#bs-accordion onChange=(action "resultExpanded") as |acc|}}
-    {{#each results as |result|}}
-      <div class="data-row" data-row-id={{result.index.id}}>
-        {{#acc.item value=result.index.id as |accItem|}}
+    {{#each studiesChunksArray as |study|}}
+      <div class="data-row" data-row-id={{study.id}}>
+        {{#acc.item value=study.id as |accItem|}}
           {{query-results/result
             item=accItem
-            study=result._source
-            isExpanded=(eq result.index.id expandedResultId)
+            study=study
+            isExpanded=(eq study.id expandedResultId)
             queryParams=queryParams
-            remove=(action "removeStudy" result)}}
+            remove=(action "removeStudy" study)
+            loadDataObjects=(action loadDataObjectsForStudies (array study))}}
         {{/acc.item}}
       </div>
     {{/each}}

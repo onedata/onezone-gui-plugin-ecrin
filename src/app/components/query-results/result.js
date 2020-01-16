@@ -9,13 +9,10 @@
  */
 
 import Component from '@ember/component';
-import { observer, get, set, getProperties } from '@ember/object';
+import { observer, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
-import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
-import { A } from '@ember/array';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
-import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 
 export default Component.extend(I18n, {
   classNames: ['query-results-result'],
@@ -55,15 +52,16 @@ export default Component.extend(I18n, {
   /**
    * @virtual
    * @type {Function}
+   * @returns {Promise}
+   */
+  loadDataObjects: () => {},
+
+  /**
+   * @virtual
+   * @type {Function}
    * @returns {any}
    */
   remove: () => {},
-
-  /**
-   * @type {PromiseProxy}
-   * Set by `fetchDataObjects` method
-   */
-  fetchDataObjectsProxy: undefined,
 
   /**
    * @type {ComputedProperty<string>}
@@ -95,191 +93,40 @@ export default Component.extend(I18n, {
    */
   filterParams: reads('queryParams.activeFilterParams'),
 
-  /**
-   * @type {Array<Object>}
-   */
-  dataObjects: undefined,
-
-  /**
-   * @type {number}
-   */
-  dataObjectsNumber: -1,
-
   isExpandedObserver: observer(
     'isExpanded',
     function isExpandedObserver() {
       const {
         isExpanded,
-        dataObjectsNumber,
-      } = this.getProperties('isExpanded', 'dataObjectsNumber');
-      if (isExpanded && dataObjectsNumber === -1) {
-        this.fetchDataObjects();
+        loadDataObjects,
+      } = this.getProperties('isExpanded', 'loadDataObjects');
+      if (isExpanded) {
+        loadDataObjects();
       }
     }
   ),
-
-  // filterParamsObserver: observer('filterParams', function filterParamsObserver() {
-  //   this.reloadDataObjects();
-  // }),
-
   init() {
     this._super(...arguments);
 
-    this.reloadDataObjects();
+    this.isExpandedObserver();
   },
 
-  /**
-   * Clears and fetches again list of data objects related with this study
-   * @returns {undefined}
-   */
-  reloadDataObjects() {
-    this.clearDataObjects();
-    if (this.get('isExpanded')) {
-      this.fetchDataObjects();
-    }
-  },
-
-  /**
-   * Clears state of data objects fetch
-   * @returns {undefined}
-   */
-  clearDataObjects() {
-    this.setProperties({
-      dataObjects: A(),
-      dataObjectsNumber: -1,
-    });
-  },
-
-  /**
-   * Loads data object records related to study
-   * @returns {PromiseObject}
-   */
-  fetchDataObjects() {
-    let fetchDataObjectsProxy = this.get('fetchDataObjectsProxy');
-    if (fetchDataObjectsProxy && get(fetchDataObjectsProxy, 'isLoading')) {
-      return fetchDataObjectsProxy;
-    } else {
-      const {
-        elasticsearch,
-        study,
-        typeMapping,
-        accessTypeMapping,
-        filterParams,
-      } = this.getProperties(
-        'elasticsearch',
-        'study',
-        'typeMapping',
-        'accessTypeMapping',
-        'filterParams',
-      );
-      const {
-        typeFilter,
-        accessTypeFilter,
-        parsedYearFilter,
-        publisherFilter,
-      } = getProperties(
-        filterParams,
-        'typeFilter',
-        'accessTypeFilter',
-        'parsedYearFilter',
-        'publisherFilter'
-      );
-
-      const filters = [{
-        terms: {
-          id: get(study, 'linked_data_objects'),
-        },
-      }];
-      const body = {
-        sort: [
-          { publication_year: { order: 'desc' } },
-          { id: { order: 'asc' } },
-        ],
-        query: {
-          bool: {
-            filter: filters,
-          },
-        },
-      };
-      if (typeFilter && get(typeFilter, 'length')) {
-        filters.push({
-          terms: {
-            'type.id': typeFilter.mapBy('id'),
-          },
-        });
+  actions: {
+    toggleDataObjectExpansion(dataObject) {
+      const expandedDataObjects = this.get('study.expandedDataObjects');
+      if (expandedDataObjects.includes(dataObject)) {
+        expandedDataObjects.removeObject(dataObject);
+      } else {
+        expandedDataObjects.addObject(dataObject);
       }
-      if (accessTypeFilter && get(accessTypeFilter, 'length')) {
-        filters.push({
-          terms: {
-            'access_type.id': accessTypeFilter.mapBy('id'),
-          },
-        });
+    },
+    toggleAllElementsExpansion() {
+      const study = this.get('study');
+      if (get(study, 'hasAllElementsExpanded')) {
+        study.collapseAll();
+      } else {
+        study.expandAll();
       }
-      if (parsedYearFilter && parsedYearFilter.length) {
-        const yearFilter = {
-          bool: {
-            should: [],
-          },
-        };
-        parsedYearFilter.forEach(rangeOrNumber => {
-          if (typeof rangeOrNumber === 'number') {
-            yearFilter.bool.should.push({
-              term: {
-                publication_year: rangeOrNumber,
-              },
-            });
-          } else {
-            yearFilter.bool.should.push({
-              range: {
-                publication_year: {
-                  gte: rangeOrNumber.start,
-                  lte: rangeOrNumber.end,
-                },
-              },
-            });
-          }
-        });
-        filters.push(yearFilter);
-      }
-      if (publisherFilter && get(publisherFilter, 'length')) {
-        filters.push({
-          terms: {
-            'managing_organization.id': publisherFilter.mapBy('id'),
-          },
-        });
-      }
-      fetchDataObjectsProxy = PromiseObject.create({
-        promise: elasticsearch.post('data_object', '_search', body)
-          .then(results => {
-            safeExec(this, () => {
-              this.setProperties({
-                dataObjectsNumber: results.hits.total.value,
-              });
-            });
-            const hits = results.hits.hits;
-            hits.forEach(({ _source: { object_type, access_type } }) => {
-              const typeId = get(object_type, 'id');
-              const typeDef = typeMapping.findBy('id', typeId);
-              if (typeDef) {
-                set(object_type, 'translatedName', get(typeDef, 'name'));
-              }
-              const accessTypeId = get(access_type, 'id');
-              const accessTypeDef =
-                accessTypeMapping.findBy('id', accessTypeId);
-              if (accessTypeDef) {
-                set(access_type, 'indicator', get(accessTypeDef,
-                  'indicator'));
-              }
-            });
-            safeExec(this, () => {
-              this.setProperties({
-                dataObjectsNumber: results.hits.total.value,
-                dataObjects: hits,
-              });
-            });
-          }),
-      });
-      return this.set('fetchDataObjectsProxy', fetchDataObjectsProxy);
-    }
+    },
   },
 });
