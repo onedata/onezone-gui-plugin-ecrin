@@ -32,12 +32,6 @@ export default Component.extend(I18n, {
   studies: computed(() => A()),
 
   /**
-   * @virtual
-   * @type {Utils.QueryParams}
-   */
-  queryParams: undefined,
-
-  /**
    * @type {number}
    */
   rowHeight: 43,

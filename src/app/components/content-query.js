@@ -43,12 +43,6 @@ export default Component.extend(I18n, {
    */
   studySearchParams: computed(() => StudySearchParams.create()),
 
-  /**
-   * @virtual
-   * @type {Utils.QueryParams}
-   */
-  queryParams: undefined,
-
   studies: computed(() => A()),
 
   dataObjects: computed(() => A()),
@@ -439,12 +433,6 @@ export default Component.extend(I18n, {
     },
     find() {
       this.searchStudies();
-    },
-    filter() {
-      this.get('queryParams').applyFilterParams();
-      this.get('router').transitionTo({
-        queryParams: this.get('queryParams.filterQueryParams'),
-      });
     },
     removeStudies(studiesToRemove) {
       this.get('studies').removeObjects(studiesToRemove);

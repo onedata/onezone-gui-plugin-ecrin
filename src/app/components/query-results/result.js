@@ -33,12 +33,6 @@ export default Component.extend(I18n, {
 
   /**
    * @virtual
-   * @type {Utils.QueryParams}
-   */
-  queryParams: undefined,
-
-  /**
-   * @virtual
    * @type {BsAccordion.Item}
    */
   item: undefined,
@@ -87,11 +81,6 @@ export default Component.extend(I18n, {
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   publisherMapping: reads('configuration.publisherMapping'),
-
-  /**
-   * @type {Ember.ComputedProperty<Object>}
-   */
-  filterParams: reads('queryParams.activeFilterParams'),
 
   isExpandedObserver: observer(
     'isExpanded',

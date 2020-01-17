@@ -1,5 +1,5 @@
 /**
- * A form with query/filter parameters for studies/data objects.
+ * A form with query parameters for studies.
  * 
  * @module components/query-parameters
  * @author Michał Borzęcki
@@ -46,24 +46,6 @@ export default Component.extend(I18n, {
   onFind: () => {},
 
   /**
-   * @virtual
-   * @type {Function}
-   * @returns {undefined}
-   */
-  onFilter: () => {},
-
-  /**
-   * @virtual
-   * @type {Utils.QueryParams}
-   */
-  queryParams: undefined,
-
-  /**
-   * @type {boolean}
-   */
-  areDataObjectFiltersVisible: true,
-
-  /**
    * @type {Array<string>}
    */
   modeOptions: Object.freeze([
@@ -81,25 +63,4 @@ export default Component.extend(I18n, {
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   studyIdTypeMapping: reads('configuration.studyIdTypeMapping'),
-
-  /**
-   * @type {Ember.ComputedProperty<Array<Object>>}
-   */
-  typeFilterOptions: reads('configuration.typeMapping'),
-
-  /**
-   * @type {Ember.ComputedProperty<Array<Object>>}
-   */
-  accessTypeFilterOptions: reads('configuration.accessTypeMapping'),
-
-  /**
-   * @type {Ember.ComputedProperty<Array<Object>>}
-   */
-  publisherFilterOptions: reads('configuration.publisherMapping'),
-
-  actions: {
-    toggleDataObjectFilters() {
-      this.toggleProperty('areDataObjectFiltersVisible');
-    },
-  },
 });
