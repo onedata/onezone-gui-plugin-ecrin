@@ -1,3 +1,10 @@
+<div class="form-group">
+  <label class="control-label">{{tt this "accessType"}}</label>
+  {{checkbox-filter
+    items=accessTypeMapping
+    selectedItems=accessTypeFilter
+    onChange=(action (mut accessTypeFilter))}}
+</div>
 <div class="form-group form-group-sm">
   <label class="control-label" for="year-filter-input">{{tt this "year"}}</label>
   <input
@@ -8,4 +15,5 @@
     oninput={{action (action (mut yearFilter)) value="target.value"}}
     onkeydown={{invoke-on-enter (action "filterDataObjects")}}>
 </div>
+{{#bs-button size="sm" type="default" class="pull-right" onClick=(action "filterDataObjects")}}{{tt this "filter"}}{{/bs-button}}
 {{yield}}

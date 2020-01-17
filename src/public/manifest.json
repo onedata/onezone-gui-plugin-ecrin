@@ -16,9 +16,64 @@
       ],
       "accessTypeMapping": [
         {
-          "name": "Public on-screen access (open)",
+          "name": "Public on-screen access",
           "id": 12,
           "indicator": "green"
+        },
+        {
+          "name": "Public on-screen access and download",
+          "id": 11,
+          "indicator": "green"
+        },
+        {
+          "name": "Public on-screen and API access",
+          "id": 20,
+          "indicator": "green"
+        },
+        {
+          "name": "Public download (self-attestation required)",
+          "id": 13,
+          "indicator": "green"
+        },
+        {
+          "name": "Public on-screen access (self-attestation required)",
+          "id": 14,
+          "indicator": "green"
+        },
+        {
+          "name": "Restricted download",
+          "id": 15,
+          "indicator": "yellow"
+        },
+        {
+          "name": "Restricted on-screen access",
+          "id": 16,
+          "indicator": "yellow"
+        },
+        {
+          "name": "Case by case download",
+          "id": 17,
+          "indicator": "yellow"
+        },
+        {
+          "name": "Case by case on-screen access",
+          "id": 18,
+          "indicator": "yellow"
+        },
+        {
+          "name": "Non public access - no details",
+          "id": 19,
+          "indicator": "red"
+        },
+        {
+          "name": "Other",
+          "id": 90,
+          "indicator": "yellow"
+        },
+        {
+          "name": "Not yet known",
+          "id": 0,
+          "indicator": "yellow"
         }
       ]
     },

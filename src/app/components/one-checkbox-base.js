@@ -24,12 +24,6 @@ export default Component.extend({
   attributeBindings: ['dataOption:data-option'],
 
   /**
-   * Element ID for rendered invisible input element
-   * @type {string}
-   */
-  inputId: null,
-
-  /**
    * If true, toggle is in enabled state
    * @type {boolean}
    */
@@ -102,11 +96,19 @@ export default Component.extend({
    */
   onFocusOut: () => {},
 
+  /**
+   * Element ID for rendered invisible input element
+   * @type {string}
+   */
+  inputId: computed('elementId', function inputId() {
+    return this.get('elementId') + '-input';
+  }),
+
   didInsertElement() {
     this._super(...arguments);
 
     this.$('input')
-      .change(() => this._toggle())
+      // .change(() => this._toggle())
       .focusout(() => this.get('onFocusOut')())
       // Fix for Firefox to handle toggle change by 
       // label-click and keyboard change on active input

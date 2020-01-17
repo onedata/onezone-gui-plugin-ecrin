@@ -15,10 +15,12 @@
     }
 
     .data-filters {
+      min-width: 0;
       flex-grow: 0;
       flex-shrink: 0;
       flex-basis: 250px;
       margin-right: $padding-small-horizontal;
+      overflow: auto;
     }
 
     .query-results {

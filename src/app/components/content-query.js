@@ -459,8 +459,9 @@ export default Component.extend(I18n, {
       } = this.getProperties('studies', 'dataObjects');
 
       const {
+        accessType,
         year,
-      } = getProperties(filters, 'year');
+      } = getProperties(filters, 'accessType', 'year');
 
       let filteredDataObjects = dataObjects.slice();
       if (year && year.length) {
@@ -472,6 +473,12 @@ export default Component.extend(I18n, {
             return false;
           }
         });
+      }
+      if (accessType) {
+        const allowedAccessTypeIds = accessType.mapBy('id');
+        filteredDataObjects = filteredDataObjects.filter(dataObject =>
+          allowedAccessTypeIds.includes(get(dataObject, 'accessType.id'))
+        );
       }
 
       studies.forEach(study => {
