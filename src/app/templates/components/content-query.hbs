@@ -3,9 +3,14 @@
   onChange=(action "parameterChanged")
   onFind=(action "find")
   onFilter=(action "filter")}}
-{{query-results
-  studies=studies
-  queryParams=queryParams
-  removeStudies=(action "removeStudies")
-  loadDataObjectsForStudies=(action "loadDataObjectsForStudies")}}
+<div class="query-content">
+  {{data-filters
+    onFilterDataObjects=(action "filterDataObjects")
+  }}
+  {{query-results
+    studies=studies
+    queryParams=queryParams
+    removeStudies=(action "removeStudies")
+    loadDataObjectsForStudies=(action "loadDataObjectsForStudies")}}
+</div>
 {{yield}}

@@ -7,9 +7,23 @@
       flex-grow: 0;
     }
 
+    .query-content {
+      display: flex;
+      flex-grow: 1;
+      align-items: stretch;
+      min-height: 0;
+    }
+
+    .data-filters {
+      flex-grow: 0;
+      flex-shrink: 0;
+      flex-basis: 250px;
+      margin-right: $padding-small-horizontal;
+    }
+
     .query-results {
       flex-grow: 1;
-      min-height: 0;
+      min-width: 0;
     }
   }
 }

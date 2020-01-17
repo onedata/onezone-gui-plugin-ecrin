@@ -78,7 +78,8 @@ export default Component.extend(I18n, {
         promise = this.fetchViaPubPaper();
         break;
     }
-    return this.extractResultsFromResponse(promise);
+    return this.extractResultsFromResponse(promise)
+      .then(newStudies => this.loadDataObjectsForStudies(newStudies));
   },
 
   /**
@@ -94,7 +95,7 @@ export default Component.extend(I18n, {
             raw: get(doc, '_source'),
           }));
           alreadyFetchedStudies.pushObjects(newStudies);
-          return results;
+          return newStudies;
         } else {
           return [];
         }
@@ -364,6 +365,74 @@ export default Component.extend(I18n, {
     };
   },
 
+  loadDataObjectsForStudies(studies) {
+    const {
+      elasticsearch,
+      dataObjects,
+      configuration,
+    } = this.getProperties('elasticsearch', 'dataObjects', 'configuration');
+    const studiesWithoutFetchedDataObjects =
+      studies.rejectBy('dataObjectsPromiseObject');
+    const idsOfFetchedDataObjects = dataObjects.mapBy('id');
+    const idsOfDataObjectsToFetch = _.difference(
+      _.uniq(_.flatten(
+        studiesWithoutFetchedDataObjects.mapBy('dataObjectsIds')
+      )),
+      idsOfFetchedDataObjects
+    );
+
+    let fetchDataObjectsPromise;
+
+    if (idsOfDataObjectsToFetch.length) {
+      fetchDataObjectsPromise = elasticsearch.post('data_object', '_search', {
+        query: {
+          bool: {
+            filter: [{
+              terms: {
+                id: idsOfDataObjectsToFetch,
+              },
+            }],
+          },
+        },
+      }).then(results => {
+        const newDataObjectInjections = getProperties(
+          configuration,
+          'typeMapping',
+          'accessTypeMapping'
+        );
+        const hits = results.hits.hits;
+        const newDataObjects = hits.map(doHit => {
+          const existingDataObjectInstance =
+            dataObjects.findBy('id', get(doHit, '_source.id'));
+          if (existingDataObjectInstance) {
+            return existingDataObjectInstance;
+          } else {
+            return DataObject.create(newDataObjectInjections, {
+              raw: get(doHit, '_source'),
+            });
+          }
+        });
+        dataObjects.addObjects(newDataObjects);
+        return dataObjects;
+      });
+    } else {
+      fetchDataObjectsPromise = resolve(dataObjects);
+    }
+
+    studiesWithoutFetchedDataObjects.forEach(study => {
+      set(study, 'dataObjectsPromiseObject', PromiseObject.create({
+        promise: fetchDataObjectsPromise.then(dataObjects => {
+          const dataObjectsIds = get(study, 'dataObjectsIds');
+          return dataObjectsIds
+            .map(id => dataObjects.findBy('id', id))
+            .compact();
+        }),
+      }));
+    });
+
+    return fetchDataObjectsPromise;
+  },
+
   actions: {
     parameterChanged(fieldName, newValue) {
       this.set(`studySearchParams.${fieldName}`, newValue);
@@ -380,72 +449,39 @@ export default Component.extend(I18n, {
     removeStudies(studiesToRemove) {
       this.get('studies').removeObjects(studiesToRemove);
     },
-    loadDataObjectsForStudies(studies) {
+    loadDataObjectsForStudies() {
+      this.loadDataObjectsForStudies(...arguments);
+    },
+    filterDataObjects(filters) {
       const {
-        elasticsearch,
+        studies,
         dataObjects,
-        configuration,
-      } = this.getProperties('elasticsearch', 'dataObjects', 'configuration');
-      const studiesWithoutFetchedDataObjects =
-        studies.rejectBy('dataObjectsPromiseObject');
-      const idsOfFetchedDataObjects = dataObjects.mapBy('id');
-      const idsOfDataObjectsToFetch = _.difference(
-        _.uniq(_.flatten(
-          studiesWithoutFetchedDataObjects.mapBy('dataObjectsIds')
-        )),
-        idsOfFetchedDataObjects
-      );
+      } = this.getProperties('studies', 'dataObjects');
 
-      let fetchDataObjectsPromise;
+      const {
+        year,
+      } = getProperties(filters, 'year');
 
-      if (idsOfDataObjectsToFetch.length) {
-        fetchDataObjectsPromise = elasticsearch.post('data_object', '_search', {
-          query: {
-            bool: {
-              filter: [{
-                terms: {
-                  id: idsOfDataObjectsToFetch,
-                },
-              }],
-            },
-          },
-        }).then(results => {
-          const newDataObjectInjections = getProperties(
-            configuration,
-            'typeMapping',
-            'accessTypeMapping'
-          );
-          const hits = results.hits.hits;
-          const newDataObjects = hits.map(doHit => {
-            const existingDataObjectInstance =
-              dataObjects.findBy('id', get(doHit, '_source.id'));
-            if (existingDataObjectInstance) {
-              return existingDataObjectInstance;
-            } else {
-              return DataObject.create(newDataObjectInjections, {
-                raw: get(doHit, '_source'),
-              });
-            }
-          });
-          dataObjects.addObjects(newDataObjects);
-          return dataObjects;
+      let filteredDataObjects = dataObjects.slice();
+      if (year && year.length) {
+        filteredDataObjects = filteredDataObjects.filter(dataObject => {
+          const doYear = get(dataObject, 'year');
+          if (doYear) {
+            return year.any(range => doYear >= range.start && doYear <= range.end);
+          } else {
+            return false;
+          }
         });
-      } else {
-        fetchDataObjectsPromise = resolve(dataObjects);
       }
 
-      studiesWithoutFetchedDataObjects.forEach(study => {
-        set(study, 'dataObjectsPromiseObject', PromiseObject.create({
-          promise: fetchDataObjectsPromise.then(dataObjects => {
-            const dataObjectsIds = get(study, 'dataObjectsIds');
-            return dataObjectsIds
-              .map(id => dataObjects.findBy('id', id))
-              .compact();
-          }),
-        }));
+      studies.forEach(study => {
+        const selectedDataObjects = get(study, 'selectedDataObjects');
+        selectedDataObjects.removeObjects(
+          selectedDataObjects.reject(dataObject =>
+            filteredDataObjects.includes(dataObject)
+          )
+        );
       });
-
-      return fetchDataObjectsPromise;
     },
   },
 });

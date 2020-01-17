@@ -1,0 +1,11 @@
+<div class="form-group form-group-sm">
+  <label class="control-label" for="year-filter-input">{{tt this "year"}}</label>
+  <input
+    id="year-filter-input"
+    class="form-control"
+    type="text"
+    value={{yearFilter}}
+    oninput={{action (action (mut yearFilter)) value="target.value"}}
+    onkeydown={{invoke-on-enter (action "filterDataObjects")}}>
+</div>
+{{yield}}
