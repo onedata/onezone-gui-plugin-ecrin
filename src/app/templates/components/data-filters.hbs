@@ -1,4 +1,11 @@
 <div class="form-group">
+  <label class="control-label">{{tt this "type"}}</label>
+  {{checkbox-filter
+    items=typeMapping
+    selectedItems=typeFilter
+    onChange=(action (mut typeFilter))}}
+</div>
+<div class="form-group">
   <label class="control-label">{{tt this "accessType"}}</label>
   {{checkbox-filter
     items=accessTypeMapping

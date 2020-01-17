@@ -2,6 +2,7 @@
   <input
     class="form-control input-sm items-filter"
     type="text"
+    placeholder={{tt this "itemsFilterPlaceholder"}}
     value={{itemsFilter}}
     oninput={{action (action (mut itemsFilter)) value="target.value"}}>
   <a {{action "toggleAllItems"}}>{{tt this (if areAllItemsSelected "deselectAll" "selectAll")}}</a>
