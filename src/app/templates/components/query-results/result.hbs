@@ -81,6 +81,12 @@
         </div>
         <div class="data-object-year">{{or dataObject.year "-"}}</div>
         <div class="data-object-status"><span class="data-object-status-icon {{dataObject.accessTypeIndicator}}"></span></div>
+        <div class="data-object-checkbox">
+          {{one-checkbox
+            checked=(contains dataObject study.selectedDataObjects)
+            update=(action "toggleDataObjectSelection" dataObject)
+          }}
+        </div>
       </div>
     {{/each}}
   </div>

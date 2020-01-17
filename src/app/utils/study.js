@@ -1,7 +1,8 @@
-import EmberObject, { computed } from '@ember/object';
+import EmberObject, { computed, observer } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { A } from '@ember/array';
 import { and, or, raw, not, equal } from 'ember-awesome-macros';
+import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 
 export default EmberObject.extend({
   /**
@@ -83,6 +84,27 @@ export default EmberObject.extend({
     or(not('dataSharingStatement'), 'isDataSharingStatementExpanded'),
     equal('expandedDataObjects.length', or('dataObjects.length', raw(0))),
   ),
+
+  dataObjectsPromiseObjectObserver: observer(
+    'dataObjectsPromiseObject',
+    function dataObjectsPromiseObjectObserver() {
+      const dataObjectsPromiseObject = this.get('dataObjectsPromiseObject');
+      if (dataObjectsPromiseObject) {
+        dataObjectsPromiseObject.then(dataObjects => safeExec(this, () => {
+          this.collapseAll();
+          const selectedDataObjects = this.get('selectedDataObjects');
+          selectedDataObjects.clear();
+          selectedDataObjects.addObjects(dataObjects);
+        }));
+      }
+    }
+  ),
+
+  init() {
+    this._super(...arguments);
+
+    this.dataObjectsPromiseObjectObserver();
+  },
 
   expandAll() {
     const {

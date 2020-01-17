@@ -95,8 +95,8 @@
   }
 
   .data-object-status {
-    flex-basis: 20px;
-    text-align: center;
+    flex-basis: 30px;
+    text-align: left;
   }
 
   .data-object-status-icon {
@@ -116,6 +116,12 @@
     }
     &.green {
       background-color: $color-one-success;
+    }
+  }
+
+  .data-object-checkbox {
+    .one-checkbox {
+      vertical-align: middle;
     }
   }
 

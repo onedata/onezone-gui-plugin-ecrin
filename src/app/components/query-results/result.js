@@ -128,5 +128,13 @@ export default Component.extend(I18n, {
         study.expandAll();
       }
     },
+    toggleDataObjectSelection(dataObject) {
+      const selectedDataObjects = this.get('study.selectedDataObjects');
+      if (selectedDataObjects.includes(dataObject)) {
+        selectedDataObjects.removeObject(dataObject);
+      } else {
+        selectedDataObjects.addObject(dataObject);
+      }
+    },
   },
 });
