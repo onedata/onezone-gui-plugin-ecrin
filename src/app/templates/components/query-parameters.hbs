@@ -18,7 +18,7 @@
           selected=studySearchParams.studyIdType
           options=studyIdTypeMapping
           onchange=(action onChange "studyIdType")
-          searchEnabled=false
+          matcher=entryMatcher
           as |studyIdType|}}
           {{studyIdType.name}}
         {{/power-select}}

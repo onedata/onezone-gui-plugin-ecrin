@@ -8,6 +8,7 @@
  */
 
 import Component from '@ember/component';
+import { get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { inject as service } from '@ember/service';
@@ -63,4 +64,8 @@ export default Component.extend(I18n, {
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   studyIdTypeMapping: reads('configuration.studyIdTypeMapping'),
+
+  entryMatcher(item, term) {
+    return get(item, 'name').toLowerCase().indexOf(term.trim().toLowerCase());
+  },
 });
