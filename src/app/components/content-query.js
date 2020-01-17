@@ -462,7 +462,8 @@ export default Component.extend(I18n, {
         type,
         accessType,
         year,
-      } = getProperties(filters, 'type', 'accessType', 'year');
+        publisher,
+      } = getProperties(filters, 'type', 'accessType', 'year', 'publisher');
 
       let filteredDataObjects = dataObjects.slice();
       if (type) {
@@ -484,6 +485,11 @@ export default Component.extend(I18n, {
             return false;
           }
         });
+      }
+      if (publisher) {
+        filteredDataObjects = filteredDataObjects.filter(dataObject =>
+          publisher.includes(get(dataObject, 'managingOrganisation.id'))
+        );
       }
 
       studies.forEach(study => {

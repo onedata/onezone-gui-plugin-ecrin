@@ -22,5 +22,12 @@
     oninput={{action (action (mut yearFilter)) value="target.value"}}
     onkeydown={{invoke-on-enter (action "filterDataObjects")}}>
 </div>
+<div class="form-group">
+  <label class="control-label">{{tt this "publisher"}}</label>
+  {{checkbox-filter
+    items=publisherMapping
+    selectedItems=publisherFilter
+    onChange=(action (mut publisherFilter))}}
+</div>
 {{#bs-button size="sm" type="default" class="pull-right" onClick=(action "filterDataObjects")}}{{tt this "filter"}}{{/bs-button}}
 {{yield}}

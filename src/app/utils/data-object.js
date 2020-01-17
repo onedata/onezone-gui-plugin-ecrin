@@ -109,4 +109,9 @@ export default EmberObject.extend({
       }
     }
   ),
+
+  /**
+   * @type {ComputedProperty<Object>}
+   */
+  managingOrganisation: reads('raw.managing_organisation'),
 });

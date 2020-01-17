@@ -69,7 +69,9 @@ export default Component.extend(I18n, {
     } = this.getProperties('onChange', 'items', 'selectedItems');
 
     const newSelectedItems = selectedItems.filter(item => items.includes(item));
-    onChange(newSelectedItems);
+    if (get(newSelectedItems, 'length') !== get(selectedItems, 'length')) {
+      onChange(newSelectedItems);
+    }
   }),
 
   actions: {
