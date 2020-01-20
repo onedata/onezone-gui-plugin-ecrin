@@ -62,6 +62,11 @@ export default Service.extend({
     raw([])
   ),
 
+  studyAllocationTypeMapping: or(
+    'configuration.studyAllocationTypeMapping',
+    raw([])
+  ),
+
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */

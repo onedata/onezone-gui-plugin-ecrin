@@ -57,6 +57,13 @@
             selectedItems=studyInterventionModelFilter
             onChange=(action (mut studyInterventionModelFilter))}}
         </div>
+        <div class="form-group">
+          <label class="control-label">{{tt this "studyInterventionModel"}}</label>
+          {{checkbox-filter
+            items=studyAllocationTypeMapping
+            selectedItems=studyAllocationTypeFilter
+            onChange=(action (mut studyAllocationTypeFilter))}}
+        </div>
       </div>
     </div>
   {{/if}}

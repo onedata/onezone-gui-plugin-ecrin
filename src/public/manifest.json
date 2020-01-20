@@ -262,7 +262,8 @@
         },
         {
           "id": 22,
-          "name": "allocation type"
+          "name": "allocation type",
+          "isAllocationTypeTopicType": true
         },
         {
           "id": 23,
@@ -690,6 +691,25 @@
         },
         {
           "id": 325,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyAllocationTypeMapping": [
+        {
+          "id": 205,
+          "name": "Randomized"
+        },
+        {
+          "id": 210,
+          "name": "Nonrandomized"
+        },
+        {
+          "id": 200,
+          "name": "N/A"
+        },
+        {
+          "id": 215,
           "name": "Not provided",
           "useForUnknown": true
         }

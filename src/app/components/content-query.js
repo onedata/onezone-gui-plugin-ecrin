@@ -53,6 +53,8 @@ export default Component.extend(I18n, {
 
   studyInterventionModelMapping: reads('configuration.studyInterventionModelMapping'),
 
+  studyAllocationTypeMapping: reads('configuration.studyAllocationTypeMapping'),
+
   /**
    * @type {Ember.ComputedProperty<string>}
    */
@@ -100,6 +102,7 @@ export default Component.extend(I18n, {
             'studyTopicTypeMapping',
             'studyPhaseMapping',
             'studyInterventionModelMapping',
+            'studyAllocationTypeMapping'
           );
           const newStudies = results.map(doc => Study.create(newStudyInjections, {
             raw: get(doc, '_source'),
@@ -485,11 +488,13 @@ export default Component.extend(I18n, {
         studyGenderEligibilityValues,
         studyPhaseMapping,
         studyInterventionModelMapping,
+        studyAllocationTypeMapping,
       } = this.getProperties(
         'studies',
         'studyGenderEligibilityValues',
         'studyPhaseMapping',
-        'studyInterventionModelMapping'
+        'studyInterventionModelMapping',
+        'studyAllocationTypeMapping'
       );
 
       let {
@@ -498,13 +503,15 @@ export default Component.extend(I18n, {
         genderEligibility,
         phase,
         interventionModel,
+        allocationType,
       } = getProperties(
         filters,
         'type',
         'status',
         'genderEligibility',
         'phase',
-        'interventionModel'
+        'interventionModel',
+        'allocationType'
       );
 
       let filteredStudies = studies.slice();
@@ -547,6 +554,15 @@ export default Component.extend(I18n, {
           'interventionModel',
           studyInterventionModelMapping,
           interventionModel
+        );
+      }
+      if (allocationType) {
+        filteredStudies = checkMatchToTopic(
+          filteredStudies,
+          'isInterventional',
+          'allocationType',
+          studyAllocationTypeMapping,
+          allocationType
         );
       }
 
