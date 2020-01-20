@@ -7,6 +7,7 @@ export default {
   studyGenderEligibility: 'Gender eligibility',
   interventionalStudiesFilters: 'Interventional studies filters',
   observationalStudiesFilters: 'Obsrevational studies filters',
+  studyPhase: 'Phase',
   objectType: 'Type',
   accessType: 'Access type',
   year: 'Year',

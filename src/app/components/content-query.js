@@ -49,6 +49,8 @@ export default Component.extend(I18n, {
 
   studyGenderEligibilityValues: reads('configuration.studyGenderEligibilityValues'),
 
+  studyPhaseMapping: reads('configuration.studyPhaseMapping'),
+
   /**
    * @type {Ember.ComputedProperty<string>}
    */
@@ -86,8 +88,16 @@ export default Component.extend(I18n, {
     return promise.then(results => {
         if (results) {
           results = get(results, 'hits.hits') || [];
-          const alreadyFetchedStudies = this.get('studies');
-          const newStudies = results.map(doc => Study.create({
+          const {
+            studies: alreadyFetchedStudies,
+            configuration,
+          } = this.getProperties('studies', 'configuration');
+          const newStudyInjections = getProperties(
+            configuration,
+            'studyTypeMapping',
+            'studyPhaseMapping'
+          );
+          const newStudies = results.map(doc => Study.create(newStudyInjections, {
             raw: get(doc, '_source'),
           }));
           alreadyFetchedStudies.pushObjects(newStudies);
@@ -452,6 +462,11 @@ export default Component.extend(I18n, {
     dataObjects.removeObjects(dataObjectsToRemove);
   },
 
+  getIdOfOptionForUnknownValues(mapping) {
+    const optionForUnknown = mapping.findBy('useforUnknown', true);
+    return optionForUnknown && get(optionForUnknown, 'id');
+  },
+
   actions: {
     parameterChanged(fieldName, newValue) {
       this.set(`studySearchParams.${fieldName}`, newValue);
@@ -469,20 +484,24 @@ export default Component.extend(I18n, {
       const {
         studies,
         studyGenderEligibilityValues,
+        studyPhaseMapping,
       } = this.getProperties(
         'studies',
-        'studyGenderEligibilityValues'
+        'studyGenderEligibilityValues',
+        'studyPhaseMapping'
       );
 
       let {
         type,
         status,
         genderEligibility,
+        phase,
       } = getProperties(
         filters,
         'type',
         'status',
-        'genderEligibility'
+        'genderEligibility',
+        'phase'
       );
 
       let filteredStudies = studies.slice();
@@ -507,6 +526,22 @@ export default Component.extend(I18n, {
           return genderEligibility.includes(studyGenderEligibility) ||
             (allowCustom && !studyGenderEligibilityValues.includes(
               studyGenderEligibility));
+        });
+      }
+      if (phase) {
+        const unknownOptionId = this.getIdOfOptionForUnknownValues(studyPhaseMapping);
+        const knownIds = studyPhaseMapping.mapBy('id').without(unknownOptionId);
+        const allowCustom = phase.includes(unknownOptionId);
+        phase.removeObject(unknownOptionId);
+
+        filteredStudies = filteredStudies.filter(study => {
+          const isInterventional = get(study, 'isInterventional');
+          const studyPhaseId = get(study, 'phase.id');
+
+          return !isInterventional || (
+            phase.includes(studyPhaseId) ||
+            (allowCustom && !knownIds.includes(studyPhaseId))
+          );
         });
       }
 

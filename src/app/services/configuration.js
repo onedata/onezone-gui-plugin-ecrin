@@ -39,7 +39,15 @@ export default Service.extend({
   /**
    * @type {ComputedProperty<Array<String>>}
    */
-  studyGenderEligibilityValues: or('configuration.studyGenderEligibilityValues', raw([])),
+  studyGenderEligibilityValues: or(
+    'configuration.studyGenderEligibilityValues',
+    raw([])
+  ),
+
+  /**
+   * @type {ComputedProperty<Array<Object>>}
+   */
+  studyPhaseMapping: or('configuration.studyPhaseMapping', raw([])),
 
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}

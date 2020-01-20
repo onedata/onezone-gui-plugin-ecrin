@@ -6,6 +6,18 @@ import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 
 export default EmberObject.extend({
   /**
+   * @virtual
+   * @type {Array<Object>}
+   */
+  studyTypeMapping: undefined,
+
+  /**
+   * @virtual
+   * @type {Array<Object>}
+   */
+  studyPhaseMapping: undefined,
+
+  /**
    * Raw study object (value of _source field from Elasticsearch response)
    * @virtual
    * @type {Object}
@@ -100,6 +112,35 @@ export default EmberObject.extend({
       studyTopics.find(topic => get(topic, 'topic_source_type.id') === 40);
     return genderEligibilityTopic && get(genderEligibilityTopic, 'topic_value');
   }),
+
+  /**
+   * @type {ComputedProperty<Object>}
+   */
+  phase: computed('studyTopics.[]', function phase() {
+    const {
+      studyTopics,
+      studyPhaseMapping,
+    } = this.getProperties('studyTopics', 'studyPhaseMapping');
+    const phaseTopic =
+      studyTopics.find(topic => get(topic, 'topic_source_type.id') === 20);
+    return phaseTopic &&
+      studyPhaseMapping.findBy('name', get(phaseTopic, 'topic_value'));
+  }),
+
+  /**
+   * @type {ComputedProperty<boolean>}
+   */
+  isInterventional: computed(
+    'type.id',
+    'studyTypeMapping.@each.isInterventional',
+    function isInterventional() {
+      const studyTypeId = this.get('type.id');
+      const interventionalTypeId =
+        this.get('studyTypeMapping').findBy('isInterventional', true);
+      return interventionalTypeId !== undefined &&
+        get(interventionalTypeId, 'id') === studyTypeId;
+    }
+  ),
 
   /**
    * @type {ComputedProperty<boolean>}

@@ -227,6 +227,45 @@
         "Male only",
         "Female only"
       ],
+      "studyPhaseMapping": [
+        {
+          "id": 105,
+          "name": "Early Phase 1"
+        },
+        {
+          "id": 110,
+          "name": "Phase 1"
+        },
+        {
+          "id": 115,
+          "name": "Phase 1/Phase 2"
+        },
+        {
+          "id": 120,
+          "name": "Phase 2"
+        },
+        {
+          "id": 125,
+          "name": "Phase 2/Phase 3"
+        },
+        {
+          "id": 130,
+          "name": "Phase 3"
+        },
+        {
+          "id": 135,
+          "name": "Phase 4"
+        },
+        {
+          "id": 100,
+          "name": "N/A"
+        },
+        {
+          "id": 140,
+          "name": "Not provided",
+          "useforUnknown": true
+        }
+      ],
       "objectTypeMapping": [
         {
           "name": "Study Protocol",

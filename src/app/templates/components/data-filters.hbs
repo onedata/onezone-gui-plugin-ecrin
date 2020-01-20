@@ -42,7 +42,15 @@
   {{#if hasInterventionalStudyTypeSelected}}
     <div class="panel panel-default interventional-only-filters">
       <div class="panel-heading">{{tt this "interventionalStudiesFilters"}}</div>
-      <div class="panel-body"></div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label class="control-label">{{tt this "studyPhase"}}</label>
+          {{checkbox-filter
+            items=studyPhaseMapping
+            selectedItems=studyPhaseFilter
+            onChange=(action (mut studyPhaseFilter))}}
+        </div>
+      </div>
     </div>
   {{/if}}
   {{#if hasObservationalStudyTypeSelected}}
