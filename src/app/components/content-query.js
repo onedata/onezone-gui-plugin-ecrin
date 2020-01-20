@@ -95,6 +95,7 @@ export default Component.extend(I18n, {
           const newStudyInjections = getProperties(
             configuration,
             'studyTypeMapping',
+            'studyTopicTypeMapping',
             'studyPhaseMapping'
           );
           const newStudies = results.map(doc => Study.create(newStudyInjections, {

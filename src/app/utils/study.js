@@ -3,6 +3,7 @@ import { reads } from '@ember/object/computed';
 import { A } from '@ember/array';
 import { and, or, raw, not, equal } from 'ember-awesome-macros';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
+import _ from 'lodash';
 
 export default EmberObject.extend({
   /**
@@ -10,6 +11,12 @@ export default EmberObject.extend({
    * @type {Array<Object>}
    */
   studyTypeMapping: undefined,
+
+  /**
+   * @virtual
+   * @type {Array<Object>}
+   */
+  studyTopicTypeMapping: undefined,
 
   /**
    * @virtual
@@ -107,25 +114,27 @@ export default EmberObject.extend({
    * @type {ComputedProperty<String>}
    */
   genderEligibility: computed('studyTopics.[]', function genderEligibility() {
-    const studyTopics = this.get('studyTopics');
-    const genderEligibilityTopic =
-      studyTopics.find(topic => get(topic, 'topic_source_type.id') === 40);
-    return genderEligibilityTopic && get(genderEligibilityTopic, 'topic_value');
+    const {
+      studyTopics,
+      studyTopicTypeMapping,
+    } = this.getProperties(
+      'studyTopics',
+      'studyTopicTypeMapping'
+    );
+    const genderTopicFromMapping =
+      studyTopicTypeMapping.findBy('isPhaseTopicType', true);
+    if (genderTopicFromMapping) {
+      const genderTopicTypeId = get(genderTopicFromMapping, 'id');
+      const genderEligibilityTopic = studyTopics
+        .find(topic => get(topic, 'topic_source_type.id') === genderTopicTypeId);
+      return genderEligibilityTopic && get(genderEligibilityTopic, 'topic_value');
+    }
   }),
 
   /**
    * @type {ComputedProperty<Object>}
    */
-  phase: computed('studyTopics.[]', function phase() {
-    const {
-      studyTopics,
-      studyPhaseMapping,
-    } = this.getProperties('studyTopics', 'studyPhaseMapping');
-    const phaseTopic =
-      studyTopics.find(topic => get(topic, 'topic_source_type.id') === 20);
-    return phaseTopic &&
-      studyPhaseMapping.findBy('name', get(phaseTopic, 'topic_value'));
-  }),
+  phase: topicTypeComputed('phase'),
 
   /**
    * @type {ComputedProperty<boolean>}
@@ -193,3 +202,23 @@ export default EmberObject.extend({
     this.get('expandedDataObjects').clear();
   },
 });
+
+function topicTypeComputed(topicTypeName) {
+  return computed('studyTopics.[]', function () {
+    const {
+      studyTopicTypeMapping,
+      studyTopics,
+    } = this.getProperties('studyTopicTypeMapping', 'studyTopics');
+    const specifiedTopicMapping =
+      this.get(`study${_.upperFirst(topicTypeName)}Mapping`);
+    const topicFromMapping = studyTopicTypeMapping
+      .findBy(`is${_.upperFirst(topicTypeName)}TopicType`, true);
+    if (topicFromMapping) {
+      const topicTypeId = get(topicFromMapping, 'id');
+      const topic = studyTopics
+        .find(topic => get(topic, 'topic_source_type.id') === topicTypeId);
+      return topic &&
+        specifiedTopicMapping.findBy('name', get(topic, 'topic_value'));
+    }
+  });
+}

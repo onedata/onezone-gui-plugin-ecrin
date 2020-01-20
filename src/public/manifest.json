@@ -222,6 +222,406 @@
           "name": "Unknown status"
         }
       ],
+      "studyTopicTypeMapping": [
+        {
+          "id": 11,
+          "name": "keywords"
+        },
+        {
+          "id": 12,
+          "name": "chemical / agent"
+        },
+        {
+          "id": 13,
+          "name": "condition"
+        },
+        {
+          "id": 14,
+          "name": "design"
+        },
+        {
+          "id": 15,
+          "name": "outcome"
+        },
+        {
+          "id": 16,
+          "name": "geographic"
+        },
+        {
+          "id": 17,
+          "name": "organism"
+        },
+        {
+          "id": 20,
+          "name": "phase",
+          "isPhaseTopicType": true
+        },
+        {
+          "id": 21,
+          "name": "primary purpose"
+        },
+        {
+          "id": 22,
+          "name": "allocation type"
+        },
+        {
+          "id": 23,
+          "name": "intervention model"
+        },
+        {
+          "id": 24,
+          "name": "masking"
+        },
+        {
+          "id": 30,
+          "name": "observational model"
+        },
+        {
+          "id": 31,
+          "name": "time perspective"
+        },
+        {
+          "id": 32,
+          "name": "biospecimens retained"
+        },
+        {
+          "id": 40,
+          "name": "gender eligibility",
+          "isGenderEligibilityTopicType": true
+        },
+        {
+          "id": 41,
+          "name": "minimum age"
+        },
+        {
+          "id": 42,
+          "name": "maximum age"
+        },
+        {
+          "id": 43,
+          "name": "enrolment"
+        },
+        {
+          "id": 101,
+          "name": "abnormalities"
+        },
+        {
+          "id": 102,
+          "name": "administration & dosage"
+        },
+        {
+          "id": 103,
+          "name": "adverse effects"
+        },
+        {
+          "id": 104,
+          "name": "agonists"
+        },
+        {
+          "id": 105,
+          "name": "analogs & derivatives"
+        },
+        {
+          "id": 106,
+          "name": "analysis"
+        },
+        {
+          "id": 107,
+          "name": "anatomy & histology"
+        },
+        {
+          "id": 108,
+          "name": "antagonists & inhibitors"
+        },
+        {
+          "id": 109,
+          "name": "biosynthesis"
+        },
+        {
+          "id": 110,
+          "name": "blood"
+        },
+        {
+          "id": 111,
+          "name": "blood supply"
+        },
+        {
+          "id": 112,
+          "name": "cerebrospinal fluid"
+        },
+        {
+          "id": 113,
+          "name": "chemical synthesis"
+        },
+        {
+          "id": 114,
+          "name": "chemically induced"
+        },
+        {
+          "id": 115,
+          "name": "chemistry"
+        },
+        {
+          "id": 116,
+          "name": "classification"
+        },
+        {
+          "id": 117,
+          "name": "complications"
+        },
+        {
+          "id": 118,
+          "name": "congenital"
+        },
+        {
+          "id": 119,
+          "name": "cytology"
+        },
+        {
+          "id": 120,
+          "name": "deficiency"
+        },
+        {
+          "id": 121,
+          "name": "diagnosis"
+        },
+        {
+          "id": 122,
+          "name": "diagnostic imaging"
+        },
+        {
+          "id": 123,
+          "name": "diet therapy"
+        },
+        {
+          "id": 124,
+          "name": "drug effects"
+        },
+        {
+          "id": 125,
+          "name": "drug therapy"
+        },
+        {
+          "id": 126,
+          "name": "economics"
+        },
+        {
+          "id": 127,
+          "name": "education"
+        },
+        {
+          "id": 128,
+          "name": "embryology"
+        },
+        {
+          "id": 129,
+          "name": "enzymology"
+        },
+        {
+          "id": 130,
+          "name": "epidemiology"
+        },
+        {
+          "id": 131,
+          "name": "ethics"
+        },
+        {
+          "id": 132,
+          "name": "ethnology"
+        },
+        {
+          "id": 133,
+          "name": "etiology"
+        },
+        {
+          "id": 134,
+          "name": "genetics"
+        },
+        {
+          "id": 135,
+          "name": "growth & development"
+        },
+        {
+          "id": 136,
+          "name": "history"
+        },
+        {
+          "id": 137,
+          "name": "immunology"
+        },
+        {
+          "id": 138,
+          "name": "injuries"
+        },
+        {
+          "id": 139,
+          "name": "innervation"
+        },
+        {
+          "id": 140,
+          "name": "instrumentation"
+        },
+        {
+          "id": 141,
+          "name": "isolation & purification"
+        },
+        {
+          "id": 142,
+          "name": "legislation & jurisprudence"
+        },
+        {
+          "id": 143,
+          "name": "manpower"
+        },
+        {
+          "id": 144,
+          "name": "metabolism"
+        },
+        {
+          "id": 145,
+          "name": "methods"
+        },
+        {
+          "id": 146,
+          "name": "microbiology"
+        },
+        {
+          "id": 147,
+          "name": "mortality"
+        },
+        {
+          "id": 148,
+          "name": "nursing"
+        },
+        {
+          "id": 149,
+          "name": "organization & administration"
+        },
+        {
+          "id": 150,
+          "name": "parasitology"
+        },
+        {
+          "id": 151,
+          "name": "pathogenicity"
+        },
+        {
+          "id": 152,
+          "name": "pathology"
+        },
+        {
+          "id": 153,
+          "name": "pharmacokinetics"
+        },
+        {
+          "id": 154,
+          "name": "pharmacology"
+        },
+        {
+          "id": 155,
+          "name": "physiology"
+        },
+        {
+          "id": 156,
+          "name": "physiopathology"
+        },
+        {
+          "id": 157,
+          "name": "poisoning"
+        },
+        {
+          "id": 158,
+          "name": "prevention & control"
+        },
+        {
+          "id": 159,
+          "name": "psychology"
+        },
+        {
+          "id": 160,
+          "name": "radiation effects"
+        },
+        {
+          "id": 161,
+          "name": "radiotherapy"
+        },
+        {
+          "id": 162,
+          "name": "rehabilitation"
+        },
+        {
+          "id": 163,
+          "name": "secondary"
+        },
+        {
+          "id": 164,
+          "name": "secretion"
+        },
+        {
+          "id": 165,
+          "name": "standards"
+        },
+        {
+          "id": 166,
+          "name": "statistics & numerical data"
+        },
+        {
+          "id": 167,
+          "name": "supply & distribution"
+        },
+        {
+          "id": 168,
+          "name": "surgery"
+        },
+        {
+          "id": 169,
+          "name": "therapeutic use"
+        },
+        {
+          "id": 170,
+          "name": "therapy"
+        },
+        {
+          "id": 171,
+          "name": "toxicity"
+        },
+        {
+          "id": 172,
+          "name": "transmission"
+        },
+        {
+          "id": 173,
+          "name": "transplantation"
+        },
+        {
+          "id": 174,
+          "name": "trends"
+        },
+        {
+          "id": 175,
+          "name": "ultrastructure"
+        },
+        {
+          "id": 176,
+          "name": "urine"
+        },
+        {
+          "id": 177,
+          "name": "utilization"
+        },
+        {
+          "id": 178,
+          "name": "veterinary"
+        },
+        {
+          "id": 179,
+          "name": "virology"
+        },
+        {
+          "id": 0,
+          "name": "not yet known"
+        }
+      ],
       "studyGenderEligibilityValues": [
         "Both",
         "Male only",
