@@ -34,6 +34,11 @@ export default Service.extend({
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
+  studyStatusMapping: or('configuration.studyStatusMapping', raw([])),
+
+  /**
+   * @type {Ember.ComputedProperty<Array<Object>>}
+   */
   objectTypeMapping: or('configuration.objectTypeMapping', raw([])),
 
   /**

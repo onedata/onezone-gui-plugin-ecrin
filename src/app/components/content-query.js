@@ -117,6 +117,7 @@ export default Component.extend(I18n, {
         'id',
         'study_type',
         'display_title.title',
+        'study_status.id',
         'study_status.data_sharing_statement',
         'study_status.brief_description',
         'linked_data_objects',
@@ -465,12 +466,18 @@ export default Component.extend(I18n, {
 
       const {
         type,
-      } = getProperties(filters, 'type');
+        status,
+      } = getProperties(filters, 'type', 'status');
 
       let filteredStudies = studies.slice();
       if (type) {
         filteredStudies = filteredStudies.filter(study =>
           type.includes(get(study, 'type.id'))
+        );
+      }
+      if (status) {
+        filteredStudies = filteredStudies.filter(study =>
+          status.includes(get(study, 'status.id'))
         );
       }
 

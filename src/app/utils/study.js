@@ -59,12 +59,12 @@ export default EmberObject.extend({
   /**
    * @type {ComputedProperty<String>}
    */
-  description: reads('raw.study_status.brief_description'),
+  description: reads('status.brief_description'),
 
   /**
    * @type {ComputedProperty<String>}
    */
-  dataSharingStatement: reads('raw.study_status.data_sharing_statement'),
+  dataSharingStatement: reads('status.data_sharing_statement'),
 
   /**
    * @type {ComputedProperty<Array<number>>}
@@ -80,6 +80,11 @@ export default EmberObject.extend({
    * @type {ComputedProperty<Object>}
    */
   type: reads('raw.study_type'),
+
+  /**
+   * @type {ComputedProperty<Object>}
+   */
+  status: reads('raw.study_status'),
 
   /**
    * @type {ComputedProperty<boolean>}

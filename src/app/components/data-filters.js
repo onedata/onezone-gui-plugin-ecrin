@@ -45,6 +45,8 @@ export default Component.extend(I18n, {
 
   studyTypeMapping: reads('configuration.studyTypeMapping'),
 
+  studyStatusMapping: reads('configuration.studyStatusMapping'),
+
   objectTypeMapping: computed(
     'configuration.objectTypeMapping.@each.{name,class}',
     function objectTypeMapping() {
@@ -85,6 +87,11 @@ export default Component.extend(I18n, {
   /**
    * @type {Array<Object>}
    */
+  studyStatusFilter: reads('studyStatusMapping'),
+
+  /**
+   * @type {Array<Object>}
+   */
   objectTypeFilter: reads('objectTypeMapping'),
 
   /**
@@ -107,17 +114,25 @@ export default Component.extend(I18n, {
       const {
         onFilterStudies,
         studyTypeMapping,
+        studyStatusMapping,
         studyTypeFilter,
+        studyStatusFilter,
       } = this.getProperties(
         'onFilterStudies',
         'studyTypeMapping',
-        'studyTypeFilter'
+        'studyStatusMapping',
+        'studyTypeFilter',
+        'studyStatusFilter',
       );
 
       const filters = {};
 
       if (studyTypeMapping && studyTypeMapping.length) {
         filters.type = studyTypeFilter.mapBy('id');
+      }
+
+      if (studyStatusMapping && studyStatusMapping.length) {
+        filters.status = studyStatusFilter.mapBy('id');
       }
 
       onFilterStudies(filters);

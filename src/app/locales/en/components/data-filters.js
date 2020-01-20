@@ -3,6 +3,7 @@ export default {
   studies: 'Studies',
   dataObjects: 'Data objects',
   studyType: 'Type',
+  studyStatus: 'Status',
   objectType: 'Type',
   accessType: 'Access type',
   year: 'Year',
