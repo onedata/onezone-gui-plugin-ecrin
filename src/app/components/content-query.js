@@ -427,6 +427,25 @@ export default Component.extend(I18n, {
     return fetchDataObjectsPromise;
   },
 
+  removeStudies(studiesToRemove) {
+    const {
+      studies,
+      dataObjects,
+    } = this.getProperties('studies', 'dataObjects');
+
+    studies.removeObjects(studiesToRemove);
+
+    const dataObjectsMaybeToRemove = _.uniq(_.flatten(
+      studiesToRemove.mapBy('dataObjects').compact()
+    ));
+    const usedDataObjectIds = _.flatten(studies.mapBy('dataObjectsIds'));
+    const dataObjectsToRemove = dataObjectsMaybeToRemove.filter(dataObject => {
+      const doId = get(dataObject, 'id');
+      return !usedDataObjectIds.includes(doId);
+    });
+    dataObjects.removeObjects(dataObjectsToRemove);
+  },
+
   actions: {
     parameterChanged(fieldName, newValue) {
       this.set(`studySearchParams.${fieldName}`, newValue);
@@ -435,7 +454,7 @@ export default Component.extend(I18n, {
       this.searchStudies();
     },
     removeStudies(studiesToRemove) {
-      this.get('studies').removeObjects(studiesToRemove);
+      this.removeStudies(studiesToRemove);
     },
     loadDataObjectsForStudies() {
       this.loadDataObjectsForStudies(...arguments);
