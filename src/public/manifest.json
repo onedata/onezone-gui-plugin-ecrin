@@ -266,7 +266,8 @@
         },
         {
           "id": 23,
-          "name": "intervention model"
+          "name": "intervention model",
+          "isInterventionModelTopicType": true
         },
         {
           "id": 24,
@@ -663,7 +664,34 @@
         {
           "id": 140,
           "name": "Not provided",
-          "useforUnknown": true
+          "useForUnknown": true
+        }
+      ],
+      "studyInterventionModelMapping": [
+        {
+          "id": 300,
+          "name": "Single Group"
+        },
+        {
+          "id": 305,
+          "name": "Parallel"
+        },
+        {
+          "id": 310,
+          "name": "Crossover"
+        },
+        {
+          "id": 315,
+          "name": "Factorial"
+        },
+        {
+          "id": 320,
+          "name": "Sequential"
+        },
+        {
+          "id": 325,
+          "name": "Not provided",
+          "useForUnknown": true
         }
       ],
       "objectTypeMapping": [

@@ -25,6 +25,12 @@ export default EmberObject.extend({
   studyPhaseMapping: undefined,
 
   /**
+   * @virtual
+   * @type {Array<Object>}
+   */
+  studyInterventionModelMapping: undefined,
+
+  /**
    * Raw study object (value of _source field from Elasticsearch response)
    * @virtual
    * @type {Object}
@@ -135,6 +141,11 @@ export default EmberObject.extend({
    * @type {ComputedProperty<Object>}
    */
   phase: topicTypeComputed('phase'),
+
+  /**
+   * @type {ComputedProperty<Object>}
+   */
+  interventionModel: topicTypeComputed('interventionModel'),
 
   /**
    * @type {ComputedProperty<boolean>}

@@ -51,6 +51,8 @@ export default Component.extend(I18n, {
 
   studyPhaseMapping: reads('configuration.studyPhaseMapping'),
 
+  studyInterventionModelMapping: reads('configuration.studyInterventionModelMapping'),
+
   /**
    * @type {Ember.ComputedProperty<string>}
    */
@@ -96,7 +98,8 @@ export default Component.extend(I18n, {
             configuration,
             'studyTypeMapping',
             'studyTopicTypeMapping',
-            'studyPhaseMapping'
+            'studyPhaseMapping',
+            'studyInterventionModelMapping',
           );
           const newStudies = results.map(doc => Study.create(newStudyInjections, {
             raw: get(doc, '_source'),
@@ -463,11 +466,6 @@ export default Component.extend(I18n, {
     dataObjects.removeObjects(dataObjectsToRemove);
   },
 
-  getIdOfOptionForUnknownValues(mapping) {
-    const optionForUnknown = mapping.findBy('useforUnknown', true);
-    return optionForUnknown && get(optionForUnknown, 'id');
-  },
-
   actions: {
     parameterChanged(fieldName, newValue) {
       this.set(`studySearchParams.${fieldName}`, newValue);
@@ -486,10 +484,12 @@ export default Component.extend(I18n, {
         studies,
         studyGenderEligibilityValues,
         studyPhaseMapping,
+        studyInterventionModelMapping,
       } = this.getProperties(
         'studies',
         'studyGenderEligibilityValues',
-        'studyPhaseMapping'
+        'studyPhaseMapping',
+        'studyInterventionModelMapping'
       );
 
       let {
@@ -497,12 +497,14 @@ export default Component.extend(I18n, {
         status,
         genderEligibility,
         phase,
+        interventionModel,
       } = getProperties(
         filters,
         'type',
         'status',
         'genderEligibility',
-        'phase'
+        'phase',
+        'interventionModel'
       );
 
       let filteredStudies = studies.slice();
@@ -530,20 +532,22 @@ export default Component.extend(I18n, {
         });
       }
       if (phase) {
-        const unknownOptionId = this.getIdOfOptionForUnknownValues(studyPhaseMapping);
-        const knownIds = studyPhaseMapping.mapBy('id').without(unknownOptionId);
-        const allowCustom = phase.includes(unknownOptionId);
-        phase.removeObject(unknownOptionId);
-
-        filteredStudies = filteredStudies.filter(study => {
-          const isInterventional = get(study, 'isInterventional');
-          const studyPhaseId = get(study, 'phase.id');
-
-          return !isInterventional || (
-            phase.includes(studyPhaseId) ||
-            (allowCustom && !knownIds.includes(studyPhaseId))
-          );
-        });
+        filteredStudies = checkMatchToTopic(
+          filteredStudies,
+          'isInterventional',
+          'phase',
+          studyPhaseMapping,
+          phase
+        );
+      }
+      if (interventionModel) {
+        filteredStudies = checkMatchToTopic(
+          filteredStudies,
+          'isInterventional',
+          'interventionModel',
+          studyInterventionModelMapping,
+          interventionModel
+        );
       }
 
       const studiesToRemove = _.difference(studies.toArray(), filteredStudies);
@@ -600,3 +604,26 @@ export default Component.extend(I18n, {
     },
   },
 });
+
+function getIdOfOptionForUnknownValues(mapping) {
+  const optionForUnknown = mapping.findBy('useForUnknown', true);
+  return optionForUnknown && get(optionForUnknown, 'id');
+}
+
+function checkMatchToTopic(studies, preflightCheckFlag, topicName, mapping, filter) {
+  const unknownOptionId = getIdOfOptionForUnknownValues(mapping);
+  const knownIds = mapping.mapBy('id').without(unknownOptionId);
+  const allowCustom = filter.includes(unknownOptionId);
+  filter = filter.without(unknownOptionId);
+
+  return studies.filter(study => {
+    const fulfillsPreflight = preflightCheckFlag ? get(study, preflightCheckFlag) :
+      true;
+    const studyTopicId = get(study, `${topicName}.id`);
+
+    return !fulfillsPreflight || (
+      filter.includes(studyTopicId) ||
+      (allowCustom && !knownIds.includes(studyTopicId))
+    );
+  });
+}

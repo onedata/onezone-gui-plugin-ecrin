@@ -8,6 +8,7 @@ export default {
   interventionalStudiesFilters: 'Interventional studies filters',
   observationalStudiesFilters: 'Obsrevational studies filters',
   studyPhase: 'Phase',
+  studyInterventionModel: 'Intervention model',
   objectType: 'Type',
   accessType: 'Access type',
   year: 'Year',

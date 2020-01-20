@@ -6,6 +6,7 @@ import { computed, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { A } from '@ember/array';
 import { array, raw } from 'ember-awesome-macros';
+import _ from 'lodash';
 
 export default Component.extend(I18n, {
   classNames: ['data-filters'],
@@ -60,6 +61,8 @@ export default Component.extend(I18n, {
   ),
 
   studyPhaseMapping: reads('configuration.studyPhaseMapping'),
+
+  studyInterventionModelMapping: reads('configuration.studyInterventionModelMapping'),
 
   objectTypeMapping: computed(
     'configuration.objectTypeMapping.@each.{name,class}',
@@ -116,6 +119,11 @@ export default Component.extend(I18n, {
   /**
    * @type {Array<Object>}
    */
+  studyInterventionModelFilter: reads('studyInterventionModelMapping'),
+
+  /**
+   * @type {Array<Object>}
+   */
   objectTypeFilter: reads('objectTypeMapping'),
 
   /**
@@ -153,39 +161,28 @@ export default Component.extend(I18n, {
     filterStudies() {
       const {
         onFilterStudies,
-        studyTypeMapping,
-        studyStatusMapping,
-        studyPhaseMapping,
-        studyTypeFilter,
-        studyStatusFilter,
         studyGenderEligibilityFilter,
-        studyPhaseFilter,
       } = this.getProperties(
         'onFilterStudies',
-        'studyTypeMapping',
-        'studyStatusMapping',
-        'studyPhaseMapping',
-        'studyTypeFilter',
-        'studyStatusFilter',
         'studyGenderEligibilityFilter',
-        'studyPhaseFilter'
       );
 
       const filters = {
         genderEligibility: studyGenderEligibilityFilter.mapBy('name'),
       };
 
-      if (studyTypeMapping && studyTypeMapping.length) {
-        filters.type = studyTypeFilter.mapBy('id');
-      }
-
-      if (studyStatusMapping && studyStatusMapping.length) {
-        filters.status = studyStatusFilter.mapBy('id');
-      }
-
-      if (studyPhaseMapping && studyPhaseMapping.length) {
-        filters.phase = studyPhaseFilter.mapBy('id');
-      }
+      [
+        'type',
+        'status',
+        'phase',
+        'interventionModel',
+      ].forEach(filterName => {
+        const mapping = this.get(`study${_.upperFirst(filterName)}Mapping`);
+        const filter = this.get(`study${_.upperFirst(filterName)}Filter`);
+        if (mapping && mapping.length) {
+          filters[filterName] = filter.mapBy('id');
+        }
+      });
 
       onFilterStudies(filters);
     },

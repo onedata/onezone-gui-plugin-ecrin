@@ -55,6 +55,14 @@ export default Service.extend({
   studyPhaseMapping: or('configuration.studyPhaseMapping', raw([])),
 
   /**
+   * @type {ComputedProperty<Array<Object>>}
+   */
+  studyInterventionModelMapping: or(
+    'configuration.studyInterventionModelMapping',
+    raw([])
+  ),
+
+  /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   objectTypeMapping: or('configuration.objectTypeMapping', raw([])),
