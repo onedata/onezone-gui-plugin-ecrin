@@ -39,6 +39,18 @@
       selectedItems=studyGenderEligibilityFilter
       onChange=(action (mut studyGenderEligibilityFilter))}}
   </div>
+  {{#if hasInterventionalStudyTypeSelected}}
+    <div class="panel panel-default interventional-only-filters">
+      <div class="panel-heading">{{tt this "interventionalStudiesFilters"}}</div>
+      <div class="panel-body"></div>
+    </div>
+  {{/if}}
+  {{#if hasObservationalStudyTypeSelected}}
+    <div class="panel panel-default observational-only-filters">
+      <div class="panel-heading">{{tt this "observationalStudiesFilters"}}</div>
+      <div class="panel-body"></div>
+    </div>
+  {{/if}}
 {{else}}
   <div class="form-group">
     <label class="control-label">{{tt this "objectType"}}</label>

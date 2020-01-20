@@ -143,11 +143,13 @@
       "studyTypeMapping": [
         {
           "name": "Interventional",
-          "id": 11
+          "id": 11,
+          "isInterventional": true
         },
         {
           "name": "Observational",
-          "id": 12
+          "id": 12,
+          "isObservational": true
         },
         {
           "name": "Observational Patient Registry",

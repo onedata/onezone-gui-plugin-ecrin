@@ -5,6 +5,7 @@ import { inject as service } from '@ember/service';
 import { computed, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { A } from '@ember/array';
+import { array, raw } from 'ember-awesome-macros';
 
 export default Component.extend(I18n, {
   classNames: ['data-filters'],
@@ -124,6 +125,22 @@ export default Component.extend(I18n, {
    * @type {Array<Object>}
    */
   publisherFilter: reads('publisherMapping'),
+
+  /**
+   * @type {ComputedProperty<boolean>}
+   */
+  hasInterventionalStudyTypeSelected: array.isAny(
+    'studyTypeFilter',
+    raw('isInterventional')
+  ),
+
+  /**
+   * @type {ComputedProperty<boolean>}
+   */
+  hasObservationalStudyTypeSelected: array.isAny(
+    'studyTypeFilter',
+    raw('isObservational')
+  ),
 
   actions: {
     filterStudies() {

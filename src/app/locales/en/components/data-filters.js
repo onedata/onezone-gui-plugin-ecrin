@@ -5,6 +5,8 @@ export default {
   studyType: 'Type',
   studyStatus: 'Status',
   studyGenderEligibility: 'Gender eligibility',
+  interventionalStudiesFilters: 'Interventional studies filters',
+  observationalStudiesFilters: 'Obsrevational studies filters',
   objectType: 'Type',
   accessType: 'Access type',
   year: 'Year',
