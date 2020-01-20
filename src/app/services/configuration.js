@@ -67,6 +67,11 @@ export default Service.extend({
     raw([])
   ),
 
+  studyPrimaryPurposeMapping: or(
+    'configuration.studyPrimaryPurposeMapping',
+    raw([])
+  ),
+
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */

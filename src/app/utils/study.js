@@ -37,6 +37,12 @@ export default EmberObject.extend({
   studyAllocationTypeMapping: undefined,
 
   /**
+   * @virtual
+   * @type {Array<Object>}
+   */
+  studyPrimaryPurposeMapping: undefined,
+
+  /**
    * Raw study object (value of _source field from Elasticsearch response)
    * @virtual
    * @type {Object}
@@ -157,6 +163,11 @@ export default EmberObject.extend({
    * @type {ComputedProperty<Object>}
    */
   allocationType: topicTypeComputed('allocationType'),
+
+  /**
+   * @type {ComputedProperty<Object>}
+   */
+  primaryPurpose: topicTypeComputed('primaryPurpose'),
 
   /**
    * @type {ComputedProperty<boolean>}

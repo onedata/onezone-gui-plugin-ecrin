@@ -258,7 +258,8 @@
         },
         {
           "id": 21,
-          "name": "primary purpose"
+          "name": "primary purpose",
+          "isPrimaryPurposeTopicType": true
         },
         {
           "id": 22,
@@ -710,6 +711,49 @@
         },
         {
           "id": 215,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyPrimaryPurposeMapping": [
+        {
+          "id": 400,
+          "name": "Treatment"
+        },
+        {
+          "id": 405,
+          "name": "Prevention"
+        },
+        {
+          "id": 410,
+          "name": "Diagnostic"
+        },
+        {
+          "id": 415,
+          "name": "Supportive Care"
+        },
+        {
+          "id": 420,
+          "name": "Screening"
+        },
+        {
+          "id": 425,
+          "name": "Health Services Research"
+        },
+        {
+          "id": 430,
+          "name": "Basic Science"
+        },
+        {
+          "id": 435,
+          "name": "Device Feasibility"
+        },
+        {
+          "id": 440,
+          "name": "Other"
+        },
+        {
+          "id": 445,
           "name": "Not provided",
           "useForUnknown": true
         }

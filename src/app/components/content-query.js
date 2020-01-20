@@ -55,6 +55,8 @@ export default Component.extend(I18n, {
 
   studyAllocationTypeMapping: reads('configuration.studyAllocationTypeMapping'),
 
+  studyPrimaryPurposeMapping: reads('configuration.studyPrimaryPurposeMapping'),
+
   /**
    * @type {Ember.ComputedProperty<string>}
    */
@@ -102,7 +104,8 @@ export default Component.extend(I18n, {
             'studyTopicTypeMapping',
             'studyPhaseMapping',
             'studyInterventionModelMapping',
-            'studyAllocationTypeMapping'
+            'studyAllocationTypeMapping',
+            'studyPrimaryPurposeMapping'
           );
           const newStudies = results.map(doc => Study.create(newStudyInjections, {
             raw: get(doc, '_source'),
@@ -489,12 +492,14 @@ export default Component.extend(I18n, {
         studyPhaseMapping,
         studyInterventionModelMapping,
         studyAllocationTypeMapping,
+        studyPrimaryPurposeMapping,
       } = this.getProperties(
         'studies',
         'studyGenderEligibilityValues',
         'studyPhaseMapping',
         'studyInterventionModelMapping',
-        'studyAllocationTypeMapping'
+        'studyAllocationTypeMapping',
+        'studyPrimaryPurposeMapping'
       );
 
       let {
@@ -504,6 +509,7 @@ export default Component.extend(I18n, {
         phase,
         interventionModel,
         allocationType,
+        primaryPurpose,
       } = getProperties(
         filters,
         'type',
@@ -511,7 +517,8 @@ export default Component.extend(I18n, {
         'genderEligibility',
         'phase',
         'interventionModel',
-        'allocationType'
+        'allocationType',
+        'primaryPurpose'
       );
 
       let filteredStudies = studies.slice();
@@ -563,6 +570,15 @@ export default Component.extend(I18n, {
           'allocationType',
           studyAllocationTypeMapping,
           allocationType
+        );
+      }
+      if (primaryPurpose) {
+        filteredStudies = checkMatchToTopic(
+          filteredStudies,
+          'isInterventional',
+          'primaryPurpose',
+          studyPrimaryPurposeMapping,
+          primaryPurpose
         );
       }
 
