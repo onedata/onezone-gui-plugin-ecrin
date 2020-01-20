@@ -140,7 +140,33 @@
           "id": 0
         }
       ],
-      "typeMapping": [
+      "studyTypeMapping": [
+        {
+          "name": "Interventional",
+          "id": 11
+        },
+        {
+          "name": "Observational",
+          "id": 12
+        },
+        {
+          "name": "Observational Patient Registry",
+          "id": 13
+        },
+        {
+          "name": "Expanded access",
+          "id": 14
+        },
+        {
+          "name": "Funded programme",
+          "id": 15
+        },
+        {
+          "name": "Not yet known",
+          "id": 0
+        }
+      ],
+      "objectTypeMapping": [
         {
           "name": "Study Protocol",
           "class": "Text",

@@ -77,6 +77,11 @@ export default EmberObject.extend({
   dataObjects: reads('dataObjectsPromiseObject.content'),
 
   /**
+   * @type {ComputedProperty<Object>}
+   */
+  type: reads('raw.study_type'),
+
+  /**
    * @type {ComputedProperty<boolean>}
    */
   hasAllElementsExpanded: and(

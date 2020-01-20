@@ -70,7 +70,7 @@ export default Component.extend(I18n, {
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  typeMapping: reads('configuration.typeMapping'),
+  objectTypeMapping: reads('configuration.objectTypeMapping'),
 
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}

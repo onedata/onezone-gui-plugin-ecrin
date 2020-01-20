@@ -18,6 +18,13 @@
   {{/bs-button-group}}
 </div>
 {{#if (eq filtersModel "study")}}
+  <div class="form-group">
+    <label class="control-label">{{tt this "studyType"}}</label>
+    {{checkbox-filter
+      items=studyTypeMapping
+      selectedItems=studyTypeFilter
+      onChange=(action (mut studyTypeFilter))}}
+  </div>
 {{else}}
   <div class="form-group">
     <label class="control-label">{{tt this "objectType"}}</label>

@@ -43,10 +43,12 @@ export default Component.extend(I18n, {
    */
   filtersModel: 'dataObject',
 
+  studyTypeMapping: reads('configuration.studyTypeMapping'),
+
   objectTypeMapping: computed(
-    'configuration.typeMapping.@each.{name,class}',
-    function typeMapping() {
-      const mappingsBase = this.get('configuration.typeMapping');
+    'configuration.objectTypeMapping.@each.{name,class}',
+    function objectTypeMapping() {
+      const mappingsBase = this.get('configuration.objectTypeMapping');
       return mappingsBase.map(type => Object.assign({}, type, {
         name: `${get(type, 'name')} [${get(type, 'class')}]`,
       }));
@@ -78,6 +80,11 @@ export default Component.extend(I18n, {
   /**
    * @type {Array<Object>}
    */
+  studyTypeFilter: reads('studyTypeMapping'),
+
+  /**
+   * @type {Array<Object>}
+   */
   objectTypeFilter: reads('objectTypeMapping'),
 
   /**
@@ -99,9 +106,21 @@ export default Component.extend(I18n, {
     filterStudies() {
       const {
         onFilterStudies,
-      } = this.getProperties('onFilterStudies');
+        studyTypeMapping,
+        studyTypeFilter,
+      } = this.getProperties(
+        'onFilterStudies',
+        'studyTypeMapping',
+        'studyTypeFilter'
+      );
 
-      onFilterStudies();
+      const filters = {};
+
+      if (studyTypeMapping && studyTypeMapping.length) {
+        filters.type = studyTypeFilter.mapBy('id');
+      }
+
+      onFilterStudies(filters);
     },
     filterDataObjects() {
       const {

@@ -115,6 +115,7 @@ export default Component.extend(I18n, {
     if (type === 'study') {
       _source = [
         'id',
+        'study_type',
         'display_title.title',
         'study_status.data_sharing_statement',
         'study_status.brief_description',
@@ -391,7 +392,7 @@ export default Component.extend(I18n, {
       }).then(results => {
         const newDataObjectInjections = getProperties(
           configuration,
-          'typeMapping',
+          'objectTypeMapping',
           'accessTypeMapping'
         );
         const hits = results.hits.hits;
@@ -460,7 +461,21 @@ export default Component.extend(I18n, {
       this.loadDataObjectsForStudies(...arguments);
     },
     filterStudies(filters) {
+      const studies = this.get('studies');
 
+      const {
+        type,
+      } = getProperties(filters, 'type');
+
+      let filteredStudies = studies.slice();
+      if (type) {
+        filteredStudies = filteredStudies.filter(study =>
+          type.includes(get(study, 'type.id'))
+        );
+      }
+
+      const studiesToRemove = _.difference(studies.toArray(), filteredStudies);
+      this.removeStudies(studiesToRemove);
     },
     filterDataObjects(filters) {
       const {

@@ -8,7 +8,7 @@ export default EmberObject.extend({
    * @virtual
    * @type {Object}
    */
-  typeMapping: undefined,
+  objectTypeMapping: undefined,
 
   /**
    * @virtual
@@ -70,15 +70,15 @@ export default EmberObject.extend({
   /**
    * @type {ComputedProperty<String>}
    */
-  typeName: computed('typeMapping', 'type.name', function typeName() {
+  typeName: computed('objectTypeMapping', 'type.name', function typeName() {
     const {
-      typeMapping,
+      objectTypeMapping,
       type,
-    } = this.getProperties('typeMapping', 'type');
+    } = this.getProperties('objectTypeMapping', 'type');
 
     if (type) {
       const typeId = get(type, 'id');
-      const typeFromMapping = (typeMapping || []).findBy('id', typeId);
+      const typeFromMapping = (objectTypeMapping || []).findBy('id', typeId);
       return typeFromMapping ? get(typeFromMapping, 'name') : get(type, 'name');
     }
   }),

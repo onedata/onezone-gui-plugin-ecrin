@@ -29,7 +29,12 @@ export default Service.extend({
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
-  typeMapping: or('configuration.typeMapping', raw([])),
+  studyTypeMapping: or('configuration.studyTypeMapping', raw([])),
+
+  /**
+   * @type {Ember.ComputedProperty<Array<Object>>}
+   */
+  objectTypeMapping: or('configuration.objectTypeMapping', raw([])),
 
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}
@@ -64,34 +69,34 @@ export default Service.extend({
   reloadAvailableEsValues() {
     const elasticsearch = this.get('elasticsearch');
     return elasticsearch.post('data_object', '_search', {
-      size: 0,
-      aggs: {
-        publishers: {
-          composite: {
-            sources: [{
-              name: {
-                terms: {
-                  field: 'managing_organization.name.raw',
+        size: 0,
+        aggs: {
+          publishers: {
+            composite: {
+              sources: [{
+                name: {
+                  terms: {
+                    field: 'managing_organization.name.raw',
+                  },
                 },
-              },
-            }, {
-              id: {
-                terms: {
-                  field: 'managing_organization.id',
+              }, {
+                id: {
+                  terms: {
+                    field: 'managing_organization.id',
+                  },
                 },
-              },
-            }],
-            size: 9999,
+              }],
+              size: 9999,
+            },
           },
         },
-      },
-    })
-    .then(publishersResult => {
-      const publishers = get(
-        publishersResult,
-        'aggregations.publishers.buckets'
-      ).mapBy('key').uniqBy('id');
-      this.set('publisherMapping', publishers);
-    });
+      })
+      .then(publishersResult => {
+        const publishers = get(
+          publishersResult,
+          'aggregations.publishers.buckets'
+        ).mapBy('key').uniqBy('id');
+        this.set('publisherMapping', publishers);
+      });
   },
 });
