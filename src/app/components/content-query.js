@@ -47,6 +47,8 @@ export default Component.extend(I18n, {
 
   dataObjects: computed(() => A()),
 
+  studyGenderEligibilityValues: reads('configuration.studyGenderEligibilityValues'),
+
   /**
    * @type {Ember.ComputedProperty<string>}
    */
@@ -120,6 +122,8 @@ export default Component.extend(I18n, {
         'study_status.id',
         'study_status.data_sharing_statement',
         'study_status.brief_description',
+        'study_topics.topic_value',
+        'study_topics.topic_source_type.id',
         'linked_data_objects',
       ];
     } else if (type === 'data_object') {
@@ -462,12 +466,24 @@ export default Component.extend(I18n, {
       this.loadDataObjectsForStudies(...arguments);
     },
     filterStudies(filters) {
-      const studies = this.get('studies');
-
       const {
+        studies,
+        studyGenderEligibilityValues,
+      } = this.getProperties(
+        'studies',
+        'studyGenderEligibilityValues'
+      );
+
+      let {
         type,
         status,
-      } = getProperties(filters, 'type', 'status');
+        genderEligibility,
+      } = getProperties(
+        filters,
+        'type',
+        'status',
+        'genderEligibility'
+      );
 
       let filteredStudies = studies.slice();
       if (type) {
@@ -479,6 +495,19 @@ export default Component.extend(I18n, {
         filteredStudies = filteredStudies.filter(study =>
           status.includes(get(study, 'status.id'))
         );
+      }
+      if (genderEligibility) {
+        let allowCustom = false;
+        if (genderEligibility.includes('Unknown')) {
+          allowCustom = true;
+          genderEligibility = genderEligibility.without('Unknown');
+        }
+        filteredStudies = filteredStudies.filter(study => {
+          const studyGenderEligibility = get(study, 'genderEligibility');
+          return genderEligibility.includes(studyGenderEligibility) ||
+            (allowCustom && !studyGenderEligibilityValues.includes(
+              studyGenderEligibility));
+        });
       }
 
       const studiesToRemove = _.difference(studies.toArray(), filteredStudies);

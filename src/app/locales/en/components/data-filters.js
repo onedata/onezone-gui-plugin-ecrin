@@ -4,6 +4,7 @@ export default {
   dataObjects: 'Data objects',
   studyType: 'Type',
   studyStatus: 'Status',
+  studyGenderEligibility: 'Gender eligibility',
   objectType: 'Type',
   accessType: 'Access type',
   year: 'Year',

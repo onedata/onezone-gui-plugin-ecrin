@@ -37,6 +37,11 @@ export default Service.extend({
   studyStatusMapping: or('configuration.studyStatusMapping', raw([])),
 
   /**
+   * @type {ComputedProperty<Array<String>>}
+   */
+  studyGenderEligibilityValues: or('configuration.studyGenderEligibilityValues', raw([])),
+
+  /**
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   objectTypeMapping: or('configuration.objectTypeMapping', raw([])),

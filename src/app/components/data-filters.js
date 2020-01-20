@@ -47,6 +47,17 @@ export default Component.extend(I18n, {
 
   studyStatusMapping: reads('configuration.studyStatusMapping'),
 
+  studyGenderEligibilityMapping: computed(
+    'configuration.studyGenderEligibilityValues.[]',
+    function studyGenderEligibilityMapping() {
+      const studyGenderEligibilityValues =
+        this.get('configuration.studyGenderEligibilityValues');
+      return studyGenderEligibilityValues
+        .map(gender => ({ name: gender }))
+        .concat([{ name: 'Unknown' }]);
+    }
+  ),
+
   objectTypeMapping: computed(
     'configuration.objectTypeMapping.@each.{name,class}',
     function objectTypeMapping() {
@@ -92,6 +103,11 @@ export default Component.extend(I18n, {
   /**
    * @type {Array<Object>}
    */
+  studyGenderEligibilityFilter: reads('studyGenderEligibilityMapping'),
+
+  /**
+   * @type {Array<Object>}
+   */
   objectTypeFilter: reads('objectTypeMapping'),
 
   /**
@@ -117,15 +133,19 @@ export default Component.extend(I18n, {
         studyStatusMapping,
         studyTypeFilter,
         studyStatusFilter,
+        studyGenderEligibilityFilter,
       } = this.getProperties(
         'onFilterStudies',
         'studyTypeMapping',
         'studyStatusMapping',
         'studyTypeFilter',
         'studyStatusFilter',
+        'studyGenderEligibilityFilter'
       );
 
-      const filters = {};
+      const filters = {
+        genderEligibility: studyGenderEligibilityFilter.mapBy('name'),
+      };
 
       if (studyTypeMapping && studyTypeMapping.length) {
         filters.type = studyTypeFilter.mapBy('id');

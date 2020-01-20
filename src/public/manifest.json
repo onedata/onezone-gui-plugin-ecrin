@@ -220,6 +220,11 @@
           "name": "Unknown status"
         }
       ],
+      "studyGenderEligibilityValues": [
+        "Both",
+        "Male only",
+        "Female only"
+      ],
       "objectTypeMapping": [
         {
           "name": "Study Protocol",

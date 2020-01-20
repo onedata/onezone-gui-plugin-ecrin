@@ -1,4 +1,4 @@
-import EmberObject, { computed, observer } from '@ember/object';
+import EmberObject, { computed, observer, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { A } from '@ember/array';
 import { and, or, raw, not, equal } from 'ember-awesome-macros';
@@ -85,6 +85,21 @@ export default EmberObject.extend({
    * @type {ComputedProperty<Object>}
    */
   status: reads('raw.study_status'),
+
+  /**
+   * @type {ComputedProperty<Array<Object>>}
+   */
+  studyTopics: or('raw.study_topics', []),
+
+  /**
+   * @type {ComputedProperty<String>}
+   */
+  genderEligibility: computed('studyTopics.[]', function genderEligibility() {
+    const studyTopics = this.get('studyTopics');
+    const genderEligibilityTopic =
+      studyTopics.find(topic => get(topic, 'topic_source_type.id') === 40);
+    return genderEligibilityTopic && get(genderEligibilityTopic, 'topic_value');
+  }),
 
   /**
    * @type {ComputedProperty<boolean>}

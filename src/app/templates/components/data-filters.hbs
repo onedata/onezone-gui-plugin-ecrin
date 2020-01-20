@@ -32,6 +32,13 @@
       selectedItems=studyStatusFilter
       onChange=(action (mut studyStatusFilter))}}
   </div>
+  <div class="form-group">
+    <label class="control-label">{{tt this "studyGenderEligibility"}}</label>
+    {{checkbox-filter
+      items=studyGenderEligibilityMapping
+      selectedItems=studyGenderEligibilityFilter
+      onChange=(action (mut studyGenderEligibilityFilter))}}
+  </div>
 {{else}}
   <div class="form-group">
     <label class="control-label">{{tt this "objectType"}}</label>
