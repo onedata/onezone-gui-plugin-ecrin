@@ -1,0 +1,11 @@
+.data-filters {
+  .filters-model-group {
+    display: flex;
+    align-items: center;
+
+    .control-label {
+      flex-grow: 1;
+      margin: 0;
+    }
+  }
+}

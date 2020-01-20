@@ -459,6 +459,9 @@ export default Component.extend(I18n, {
     loadDataObjectsForStudies() {
       this.loadDataObjectsForStudies(...arguments);
     },
+    filterStudies(filters) {
+
+    },
     filterDataObjects(filters) {
       const {
         studies,

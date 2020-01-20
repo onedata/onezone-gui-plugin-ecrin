@@ -28,9 +28,22 @@ export default Component.extend(I18n, {
    * @param {Object} filters
    * @returns {any}
    */
+  onFilterStudies: () => {},
+
+  /**
+   * @virtual
+   * @type {Function}
+   * @param {Object} filters
+   * @returns {any}
+   */
   onFilterDataObjects: () => {},
 
-  typeMapping: computed(
+  /**
+   * @type {study}
+   */
+  filtersModel: 'dataObject',
+
+  objectTypeMapping: computed(
     'configuration.typeMapping.@each.{name,class}',
     function typeMapping() {
       const mappingsBase = this.get('configuration.typeMapping');
@@ -65,7 +78,7 @@ export default Component.extend(I18n, {
   /**
    * @type {Array<Object>}
    */
-  typeFilter: reads('typeMapping'),
+  objectTypeFilter: reads('objectTypeMapping'),
 
   /**
    * @type {Array<Object>}
@@ -83,22 +96,29 @@ export default Component.extend(I18n, {
   publisherFilter: reads('publisherMapping'),
 
   actions: {
+    filterStudies() {
+      const {
+        onFilterStudies,
+      } = this.getProperties('onFilterStudies');
+
+      onFilterStudies();
+    },
     filterDataObjects() {
       const {
         onFilterDataObjects,
-        typeMapping,
+        objectTypeMapping,
         accessTypeMapping,
         publisherMapping,
-        typeFilter,
+        objectTypeFilter,
         accessTypeFilter,
         yearFilter,
         publisherFilter,
       } = this.getProperties(
         'onFilterDataObjects',
-        'typeMapping',
+        'objectTypeMapping',
         'accessTypeMapping',
         'publisherMapping',
-        'typeFilter',
+        'objectTypeFilter',
         'accessTypeFilter',
         'yearFilter',
         'publisherFilter'
@@ -108,8 +128,8 @@ export default Component.extend(I18n, {
         year: rangeToNumbers(yearFilter),
       };
 
-      if (typeMapping && typeMapping.length) {
-        filters.type = typeFilter.mapBy('id');
+      if (objectTypeMapping && objectTypeMapping.length) {
+        filters.type = objectTypeFilter.mapBy('id');
       }
 
       if (accessTypeMapping && accessTypeMapping.length) {

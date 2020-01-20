@@ -5,6 +5,7 @@
 <div class="query-content">
   {{data-filters
     dataObjects=dataObjects
+    onFilterStudies=(action "filterStudies")
     onFilterDataObjects=(action "filterDataObjects")
   }}
   {{query-results
