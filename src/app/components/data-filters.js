@@ -68,6 +68,8 @@ export default Component.extend(I18n, {
 
   studyPrimaryPurposeMapping: reads('configuration.studyPrimaryPurposeMapping'),
 
+  studyMaskingMapping: reads('configuration.studyMaskingMapping'),
+
   objectTypeMapping: computed(
     'configuration.objectTypeMapping.@each.{name,class}',
     function objectTypeMapping() {
@@ -126,14 +128,19 @@ export default Component.extend(I18n, {
   studyInterventionModelFilter: reads('studyInterventionModelMapping'),
 
   /**
-   * @type {Arrat<Object>}
+   * @type {Array<Object>}
    */
   studyAllocationTypeFilter: reads('studyAllocationTypeMapping'),
 
   /**
-   * @type {Arrat<Object>}
+   * @type {Array<Object>}
    */
   studyPrimaryPurposeFilter: reads('studyPrimaryPurposeMapping'),
+
+  /**
+   * @type {Array<Object>}
+   */
+  studyMaskingFilter: reads('studyMaskingMapping'),
 
   /**
    * @type {Array<Object>}
@@ -192,6 +199,7 @@ export default Component.extend(I18n, {
         'interventionModel',
         'allocationType',
         'primaryPurpose',
+        'masking',
       ].forEach(filterName => {
         const mapping = this.get(`study${_.upperFirst(filterName)}Mapping`);
         const filter = this.get(`study${_.upperFirst(filterName)}Filter`);

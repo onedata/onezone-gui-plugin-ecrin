@@ -57,6 +57,8 @@ export default Component.extend(I18n, {
 
   studyPrimaryPurposeMapping: reads('configuration.studyPrimaryPurposeMapping'),
 
+  studyMaskingMapping: reads('configuration.studyMaskingMapping'),
+
   /**
    * @type {Ember.ComputedProperty<string>}
    */
@@ -105,7 +107,8 @@ export default Component.extend(I18n, {
             'studyPhaseMapping',
             'studyInterventionModelMapping',
             'studyAllocationTypeMapping',
-            'studyPrimaryPurposeMapping'
+            'studyPrimaryPurposeMapping',
+            'studyMaskingMapping',
           );
           const newStudies = results.map(doc => Study.create(newStudyInjections, {
             raw: get(doc, '_source'),
@@ -493,13 +496,15 @@ export default Component.extend(I18n, {
         studyInterventionModelMapping,
         studyAllocationTypeMapping,
         studyPrimaryPurposeMapping,
+        studyMaskingMapping,
       } = this.getProperties(
         'studies',
         'studyGenderEligibilityValues',
         'studyPhaseMapping',
         'studyInterventionModelMapping',
         'studyAllocationTypeMapping',
-        'studyPrimaryPurposeMapping'
+        'studyPrimaryPurposeMapping',
+        'studyMaskingMapping'
       );
 
       let {
@@ -510,6 +515,7 @@ export default Component.extend(I18n, {
         interventionModel,
         allocationType,
         primaryPurpose,
+        masking,
       } = getProperties(
         filters,
         'type',
@@ -518,7 +524,8 @@ export default Component.extend(I18n, {
         'phase',
         'interventionModel',
         'allocationType',
-        'primaryPurpose'
+        'primaryPurpose',
+        'masking'
       );
 
       let filteredStudies = studies.slice();
@@ -579,6 +586,15 @@ export default Component.extend(I18n, {
           'primaryPurpose',
           studyPrimaryPurposeMapping,
           primaryPurpose
+        );
+      }
+      if (masking) {
+        filteredStudies = checkMatchToTopic(
+          filteredStudies,
+          'isInterventional',
+          'masking',
+          studyMaskingMapping,
+          masking
         );
       }
 

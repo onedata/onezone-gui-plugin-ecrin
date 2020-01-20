@@ -11,6 +11,7 @@ export default {
   studyInterventionModel: 'Intervention model',
   studyAllocationType: 'Allocation type',
   studyPrimaryPurpose: 'Primary purpose',
+  studyMasking: 'Masking',
   objectType: 'Type',
   accessType: 'Access type',
   year: 'Year',

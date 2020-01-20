@@ -43,6 +43,12 @@ export default EmberObject.extend({
   studyPrimaryPurposeMapping: undefined,
 
   /**
+   * @virtual
+   * @type {Array<Object>}
+   */
+  studyMaskingMapping: undefined,
+
+  /**
    * Raw study object (value of _source field from Elasticsearch response)
    * @virtual
    * @type {Object}
@@ -168,6 +174,11 @@ export default EmberObject.extend({
    * @type {ComputedProperty<Object>}
    */
   primaryPurpose: topicTypeComputed('primaryPurpose'),
+
+  /**
+   * @type {ComputedProperty<Object>}
+   */
+  masking: topicTypeComputed('masking'),
 
   /**
    * @type {ComputedProperty<boolean>}

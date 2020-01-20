@@ -62,15 +62,26 @@ export default Service.extend({
     raw([])
   ),
 
+  /**
+   * @type {ComputedProperty<Array<Object>>}
+   */
   studyAllocationTypeMapping: or(
     'configuration.studyAllocationTypeMapping',
     raw([])
   ),
 
+  /**
+   * @type {ComputedProperty<Array<Object>>}
+   */
   studyPrimaryPurposeMapping: or(
     'configuration.studyPrimaryPurposeMapping',
     raw([])
   ),
+
+  /**
+   * @type {ComputedProperty<Array<Object>>}
+   */
+  studyMaskingMapping: or('configuration.studyMaskingMapping', raw([])),
 
   /**
    * @type {Ember.ComputedProperty<Array<Object>>}

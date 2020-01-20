@@ -273,7 +273,8 @@
         },
         {
           "id": 24,
-          "name": "masking"
+          "name": "masking",
+          "isMaskingTopicType": true
         },
         {
           "id": 30,
@@ -754,6 +755,33 @@
         },
         {
           "id": 445,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyMaskingMapping": [
+        {
+          "id": 500,
+          "name": "None (Open Label)"
+        },
+        {
+          "id": 505,
+          "name": "Single"
+        },
+        {
+          "id": 510,
+          "name": "Double"
+        },
+        {
+          "id": 515,
+          "name": "Triple"
+        },
+        {
+          "id": 520,
+          "name": "Quadruple"
+        },
+        {
+          "id": 525,
           "name": "Not provided",
           "useForUnknown": true
         }
