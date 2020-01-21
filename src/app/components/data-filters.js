@@ -49,16 +49,7 @@ export default Component.extend(I18n, {
 
   studyStatusMapping: reads('configuration.studyStatusMapping'),
 
-  studyGenderEligibilityMapping: computed(
-    'configuration.studyGenderEligibilityValues.[]',
-    function studyGenderEligibilityMapping() {
-      const studyGenderEligibilityValues =
-        this.get('configuration.studyGenderEligibilityValues');
-      return studyGenderEligibilityValues
-        .map(gender => ({ name: gender }))
-        .concat([{ name: 'Unknown' }]);
-    }
-  ),
+  studyGenderEligibilityMapping: reads('configuration.studyGenderEligibilityMapping'),
 
   studyPhaseMapping: reads('configuration.studyPhaseMapping'),
 
@@ -69,6 +60,14 @@ export default Component.extend(I18n, {
   studyPrimaryPurposeMapping: reads('configuration.studyPrimaryPurposeMapping'),
 
   studyMaskingMapping: reads('configuration.studyMaskingMapping'),
+
+  studyObservationalModelMapping: reads('configuration.studyObservationalModelMapping'),
+
+  studyTimePerspectiveMapping: reads('configuration.studyTimePerspectiveMapping'),
+
+  studyBiospecimensRetainedMapping: reads(
+    'configuration.studyBiospecimensRetainedMapping'
+  ),
 
   objectTypeMapping: computed(
     'configuration.objectTypeMapping.@each.{name,class}',
@@ -145,6 +144,21 @@ export default Component.extend(I18n, {
   /**
    * @type {Array<Object>}
    */
+  studyObservationalModelFilter: reads('studyObservationalModelMapping'),
+
+  /**
+   * @type {Array<Object>}
+   */
+  studyTimePerspectiveFilter: reads('studyTimePerspectiveMapping'),
+
+  /**
+   * @type {Array<Object>}
+   */
+  studyBiospecimensRetainedFilter: reads('studyBiospecimensRetainedMapping'),
+
+  /**
+   * @type {Array<Object>}
+   */
   objectTypeFilter: reads('objectTypeMapping'),
 
   /**
@@ -180,26 +194,20 @@ export default Component.extend(I18n, {
 
   actions: {
     filterStudies() {
-      const {
-        onFilterStudies,
-        studyGenderEligibilityFilter,
-      } = this.getProperties(
-        'onFilterStudies',
-        'studyGenderEligibilityFilter',
-      );
-
-      const filters = {
-        genderEligibility: studyGenderEligibilityFilter.mapBy('name'),
-      };
+      const filters = {};
 
       [
         'type',
         'status',
+        'genderEligibility',
         'phase',
         'interventionModel',
         'allocationType',
         'primaryPurpose',
         'masking',
+        'observationalModel',
+        'timePerspective',
+        'biospecimensRetained',
       ].forEach(filterName => {
         const mapping = this.get(`study${_.upperFirst(filterName)}Mapping`);
         const filter = this.get(`study${_.upperFirst(filterName)}Filter`);
@@ -208,7 +216,7 @@ export default Component.extend(I18n, {
         }
       });
 
-      onFilterStudies(filters);
+      this.get('onFilterStudies')(filters);
     },
     filterDataObjects() {
       const {

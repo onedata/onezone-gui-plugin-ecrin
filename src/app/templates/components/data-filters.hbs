@@ -84,7 +84,29 @@
   {{#if hasObservationalStudyTypeSelected}}
     <div class="panel panel-default observational-only-filters">
       <div class="panel-heading">{{tt this "observationalStudiesFilters"}}</div>
-      <div class="panel-body"></div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label class="control-label">{{tt this "studyObservationalModel"}}</label>
+          {{checkbox-filter
+            items=studyObservationalModelMapping
+            selectedItems=studyObservationalModelFilter
+            onChange=(action (mut studyObservationalModelFilter))}}
+        </div>
+        <div class="form-group">
+          <label class="control-label">{{tt this "studyTimePerspective"}}</label>
+          {{checkbox-filter
+            items=studyTimePerspectiveMapping
+            selectedItems=studyTimePerspectiveFilter
+            onChange=(action (mut studyTimePerspectiveFilter))}}
+        </div>
+        <div class="form-group">
+          <label class="control-label">{{tt this "studyBiospecimensRetained"}}</label>
+          {{checkbox-filter
+            items=studyBiospecimensRetainedMapping
+            selectedItems=studyBiospecimensRetainedFilter
+            onChange=(action (mut studyBiospecimensRetainedFilter))}}
+        </div>
+      </div>
     </div>
   {{/if}}
 {{else}}

@@ -49,6 +49,24 @@ export default EmberObject.extend({
   studyMaskingMapping: undefined,
 
   /**
+   * @virtual
+   * @type {Array<Object>}
+   */
+  studyObservationalModelMapping: undefined,
+
+  /**
+   * @virtual
+   * @type {Array<Object>}
+   */
+  studyTimePerspectiveMapping: undefined,
+
+  /**
+   * @virtual
+   * @type {Array<Object>}
+   */
+  studyBiospecimensRetainedMapping: undefined,
+
+  /**
    * Raw study object (value of _source field from Elasticsearch response)
    * @virtual
    * @type {Object}
@@ -135,25 +153,9 @@ export default EmberObject.extend({
   studyTopics: or('raw.study_topics', []),
 
   /**
-   * @type {ComputedProperty<String>}
+   * @type {ComputedProperty<Object>}
    */
-  genderEligibility: computed('studyTopics.[]', function genderEligibility() {
-    const {
-      studyTopics,
-      studyTopicTypeMapping,
-    } = this.getProperties(
-      'studyTopics',
-      'studyTopicTypeMapping'
-    );
-    const genderTopicFromMapping =
-      studyTopicTypeMapping.findBy('isPhaseTopicType', true);
-    if (genderTopicFromMapping) {
-      const genderTopicTypeId = get(genderTopicFromMapping, 'id');
-      const genderEligibilityTopic = studyTopics
-        .find(topic => get(topic, 'topic_source_type.id') === genderTopicTypeId);
-      return genderEligibilityTopic && get(genderEligibilityTopic, 'topic_value');
-    }
-  }),
+  genderEligibility: topicTypeComputed('genderEligibility'),
 
   /**
    * @type {ComputedProperty<Object>}
@@ -181,6 +183,21 @@ export default EmberObject.extend({
   masking: topicTypeComputed('masking'),
 
   /**
+   * @type {ComputedProperty<Object>}
+   */
+  observationalModel: topicTypeComputed('observationalModel'),
+
+  /**
+   * @type {ComputedProperty<Object>}
+   */
+  timePerspective: topicTypeComputed('timePerspective'),
+
+  /**
+   * @type {ComputedProperty<Object>}
+   */
+  biospecimensRetained: topicTypeComputed('biospecimensRetained'),
+
+  /**
    * @type {ComputedProperty<boolean>}
    */
   isInterventional: computed(
@@ -192,6 +209,21 @@ export default EmberObject.extend({
         this.get('studyTypeMapping').findBy('isInterventional', true);
       return interventionalTypeId !== undefined &&
         get(interventionalTypeId, 'id') === studyTypeId;
+    }
+  ),
+
+  /**
+   * @type {ComputedProperty<boolean>}
+   */
+  isObservational: computed(
+    'type.id',
+    'studyTypeMapping.@each.isInterventional',
+    function isObservational() {
+      const studyTypeId = this.get('type.id');
+      const observationalTypeId =
+        this.get('studyTypeMapping').findBy('isObservational', true);
+      return observationalTypeId !== undefined &&
+        get(observationalTypeId, 'id') === studyTypeId;
     }
   ),
 

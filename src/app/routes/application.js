@@ -24,10 +24,10 @@ export default Route.extend({
       configuration,
     } = this.getProperties('appProxy', 'configuration');
 
-    return get(appProxy, 'appProxyLoadingPromise').then(() => 
+    return get(appProxy, 'appProxyLoadingPromise').then(() =>
       Promise.all([
         configuration.reloadConfiguration(),
-        configuration.reloadAvailableEsValues(),
+        // configuration.reloadAvailableEsValues(),
       ]).then(() => result)
     );
   },

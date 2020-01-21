@@ -47,7 +47,7 @@ export default Component.extend(I18n, {
 
   dataObjects: computed(() => A()),
 
-  studyGenderEligibilityValues: reads('configuration.studyGenderEligibilityValues'),
+  studyGenderEligibilityMapping: reads('configuration.studyGenderEligibilityMapping'),
 
   studyPhaseMapping: reads('configuration.studyPhaseMapping'),
 
@@ -58,6 +58,14 @@ export default Component.extend(I18n, {
   studyPrimaryPurposeMapping: reads('configuration.studyPrimaryPurposeMapping'),
 
   studyMaskingMapping: reads('configuration.studyMaskingMapping'),
+
+  studyObservationalModelMapping: reads('configuration.studyObservationalModelMapping'),
+
+  studyTimePerspectiveMapping: reads('configuration.studyTimePerspectiveMapping'),
+
+  studyBiospecimensRetainedMapping: reads(
+    'configuration.studyBiospecimensRetainedMapping'
+  ),
 
   /**
    * @type {Ember.ComputedProperty<string>}
@@ -109,6 +117,9 @@ export default Component.extend(I18n, {
             'studyAllocationTypeMapping',
             'studyPrimaryPurposeMapping',
             'studyMaskingMapping',
+            'studyObservationalModelMapping',
+            'studyTimePerspectiveMapping',
+            'studyBiospecimensRetainedMapping'
           );
           const newStudies = results.map(doc => Study.create(newStudyInjections, {
             raw: get(doc, '_source'),
@@ -491,20 +502,26 @@ export default Component.extend(I18n, {
     filterStudies(filters) {
       const {
         studies,
-        studyGenderEligibilityValues,
+        studyGenderEligibilityMapping,
         studyPhaseMapping,
         studyInterventionModelMapping,
         studyAllocationTypeMapping,
         studyPrimaryPurposeMapping,
         studyMaskingMapping,
+        studyObservationalModelMapping,
+        studyTimePerspectiveMapping,
+        studyBiospecimensRetainedMapping,
       } = this.getProperties(
         'studies',
-        'studyGenderEligibilityValues',
+        'studyGenderEligibilityMapping',
         'studyPhaseMapping',
         'studyInterventionModelMapping',
         'studyAllocationTypeMapping',
         'studyPrimaryPurposeMapping',
-        'studyMaskingMapping'
+        'studyMaskingMapping',
+        'studyObservationalModelMapping',
+        'studyTimePerspectiveMapping',
+        'studyBiospecimensRetainedMapping'
       );
 
       let {
@@ -516,6 +533,9 @@ export default Component.extend(I18n, {
         allocationType,
         primaryPurpose,
         masking,
+        observationalModel,
+        timePerspective,
+        biospecimensRetained,
       } = getProperties(
         filters,
         'type',
@@ -525,7 +545,10 @@ export default Component.extend(I18n, {
         'interventionModel',
         'allocationType',
         'primaryPurpose',
-        'masking'
+        'masking',
+        'observationalModel',
+        'timePerspective',
+        'biospecimensRetained'
       );
 
       let filteredStudies = studies.slice();
@@ -540,17 +563,13 @@ export default Component.extend(I18n, {
         );
       }
       if (genderEligibility) {
-        let allowCustom = false;
-        if (genderEligibility.includes('Unknown')) {
-          allowCustom = true;
-          genderEligibility = genderEligibility.without('Unknown');
-        }
-        filteredStudies = filteredStudies.filter(study => {
-          const studyGenderEligibility = get(study, 'genderEligibility');
-          return genderEligibility.includes(studyGenderEligibility) ||
-            (allowCustom && !studyGenderEligibilityValues.includes(
-              studyGenderEligibility));
-        });
+        filteredStudies = checkMatchToTopic(
+          filteredStudies,
+          undefined,
+          'genderEligibility',
+          studyGenderEligibilityMapping,
+          genderEligibility
+        );
       }
       if (phase) {
         filteredStudies = checkMatchToTopic(
@@ -595,6 +614,33 @@ export default Component.extend(I18n, {
           'masking',
           studyMaskingMapping,
           masking
+        );
+      }
+      if (observationalModel) {
+        filteredStudies = checkMatchToTopic(
+          filteredStudies,
+          'isObservational',
+          'observationalModel',
+          studyObservationalModelMapping,
+          observationalModel
+        );
+      }
+      if (timePerspective) {
+        filteredStudies = checkMatchToTopic(
+          filteredStudies,
+          'isObservational',
+          'timePerspective',
+          studyTimePerspectiveMapping,
+          timePerspective
+        );
+      }
+      if (biospecimensRetained) {
+        filteredStudies = checkMatchToTopic(
+          filteredStudies,
+          'isObservational',
+          'biospecimensRetained',
+          studyBiospecimensRetainedMapping,
+          biospecimensRetained
         );
       }
 

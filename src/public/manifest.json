@@ -278,15 +278,18 @@
         },
         {
           "id": 30,
-          "name": "observational model"
+          "name": "observational model",
+          "isObservationalModelTopicType": true
         },
         {
           "id": 31,
-          "name": "time perspective"
+          "name": "time perspective",
+          "isTimePerspectiveTopicType": true
         },
         {
           "id": 32,
-          "name": "biospecimens retained"
+          "name": "biospecimens retained",
+          "isBiospecimensRetainedTopicType": true
         },
         {
           "id": 40,
@@ -626,10 +629,24 @@
           "name": "not yet known"
         }
       ],
-      "studyGenderEligibilityValues": [
-        "Both",
-        "Male only",
-        "Female only"
+      "studyGenderEligibilityMapping": [
+        {
+          "id": 1000,
+          "name": "Both"
+        },
+        {
+          "id": 1005,
+          "name": "Male only"
+        },
+        {
+          "id": 1010,
+          "name": "Female only"
+        },
+        {
+          "id": 1015,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
       ],
       "studyPhaseMapping": [
         {
@@ -782,6 +799,83 @@
         },
         {
           "id": 525,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyObservationalModelMapping": [
+        {
+          "id": 600,
+          "name": "Cohort"
+        },
+        {
+          "id": 605,
+          "name": "Case-Control"
+        },
+        {
+          "id": 610,
+          "name": "Case-Only"
+        },
+        {
+          "id": 615,
+          "name": "Case-Crossover"
+        },
+        {
+          "id": 620,
+          "name": "Ecologic or Community Studies"
+        },
+        {
+          "id": 625,
+          "name": "Family-Based"
+        },
+        {
+          "id": 630,
+          "name": "Other"
+        },
+        {
+          "id": 635,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyTimePerspectiveMapping": [
+        {
+          "id": 700,
+          "name": "Retrospective"
+        },
+        {
+          "id": 705,
+          "name": "Prospective"
+        },
+        {
+          "id": 710,
+          "name": "Cross-sectional"
+        },
+        {
+          "id": 715,
+          "name": "Other"
+        },
+        {
+          "id": 720,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyBiospecimensRetainedMapping": [
+        {
+          "id": 800,
+          "name": "None Retained"
+        },
+        {
+          "id": 805,
+          "name": "Samples With DNA"
+        },
+        {
+          "id": 810,
+          "name": "Samples Without DNA"
+        },
+        {
+          "id": 815,
           "name": "Not provided",
           "useForUnknown": true
         }
