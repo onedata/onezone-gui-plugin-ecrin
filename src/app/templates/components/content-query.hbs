@@ -8,9 +8,10 @@
     onFilterStudies=(action "filterStudies")
     onFilterDataObjects=(action "filterDataObjects")
   }}
-  {{query-results
+  {{#query-results
     studies=studies
-    removeStudies=(action "removeStudies")
-    loadDataObjectsForStudies=(action "loadDataObjectsForStudies")}}
+    removeStudies=(action "removeStudies")}}
+    {{promise-proxy-container proxy=fetchDataPromiseObject isLoading=false}}
+  {{/query-results}}
 </div>
 {{yield}}

@@ -77,67 +77,66 @@ export default Component.extend(I18n, {
    */
   hasMeaningfulStudySearchParams: reads('studySearchParams.hasMeaningfulParams'),
 
-  searchStudies() {
-    const mode = this.get('mode');
+  fetchDataPromiseObject: computed(() => PromiseObject.create({ promise: resolve() })),
 
-    let promise = resolve([]);
+  searchStudies() {
+    const {
+      mode,
+      fetchDataPromiseObject,
+    } = this.getProperties('mode', 'fetchDataPromiseObject');
+
+    let promise = get(fetchDataPromiseObject, 'isSettled') ?
+      resolve() : fetchDataPromiseObject;
     switch (mode) {
       case 'specificStudy':
-        promise = this.fetchSpecificStudy();
+        promise = promise.then(() => this.fetchSpecificStudy());
         break;
       case 'studyCharact':
-        promise = this.fetchStudyCharact();
+        promise = promise.then(() => this.fetchStudyCharact());
         break;
       case 'viaPubPaper':
-        promise = this.fetchViaPubPaper();
+        promise = promise.then(() => this.fetchViaPubPaper());
         break;
     }
-    return this.extractResultsFromResponse(promise)
+    promise = promise
+      .then(results => this.extractResultsFromResponse(results))
       .then(newStudies => this.loadDataObjectsForStudies(newStudies));
+    return this.set('fetchDataPromiseObject', PromiseObject.create({ promise }));
   },
 
   /**
-   * @param {Promise} promise 
+   * @param {Object} results 
    * @returns {Promise}
    */
-  extractResultsFromResponse(promise) {
-    return promise.then(results => {
-        if (results) {
-          results = get(results, 'hits.hits') || [];
-          const {
-            studies: alreadyFetchedStudies,
-            configuration,
-          } = this.getProperties('studies', 'configuration');
-          const newStudyInjections = getProperties(
-            configuration,
-            'studyTypeMapping',
-            'studyTopicTypeMapping',
-            'studyGenderEligibilityMapping',
-            'studyPhaseMapping',
-            'studyInterventionModelMapping',
-            'studyAllocationTypeMapping',
-            'studyPrimaryPurposeMapping',
-            'studyMaskingMapping',
-            'studyObservationalModelMapping',
-            'studyTimePerspectiveMapping',
-            'studyBiospecimensRetainedMapping'
-          );
-          const newStudies = results.map(doc => Study.create(newStudyInjections, {
-            raw: get(doc, '_source'),
-          }));
-          alreadyFetchedStudies.pushObjects(newStudies);
-          return newStudies;
-        } else {
-          return [];
-        }
-      })
-      .catch(error => {
-        if (get(error, 'status') === 404) {
-          return [];
-        } else {
-          throw error;
-        }
-      });
+  extractResultsFromResponse(results) {
+    if (results) {
+      results = get(results, 'hits.hits') || [];
+      const {
+        studies: alreadyFetchedStudies,
+        configuration,
+      } = this.getProperties('studies', 'configuration');
+      const newStudyInjections = getProperties(
+        configuration,
+        'studyTypeMapping',
+        'studyTopicTypeMapping',
+        'studyGenderEligibilityMapping',
+        'studyPhaseMapping',
+        'studyInterventionModelMapping',
+        'studyAllocationTypeMapping',
+        'studyPrimaryPurposeMapping',
+        'studyMaskingMapping',
+        'studyObservationalModelMapping',
+        'studyTimePerspectiveMapping',
+        'studyBiospecimensRetainedMapping'
+      );
+      const newStudies = results.map(doc => Study.create(newStudyInjections, {
+        raw: get(doc, '_source'),
+      }));
+      alreadyFetchedStudies.pushObjects(newStudies);
+      return newStudies;
+    } else {
+      return [];
+    }
   },
 
   /**
@@ -496,9 +495,6 @@ export default Component.extend(I18n, {
     },
     removeStudies(studiesToRemove) {
       this.removeStudies(studiesToRemove);
-    },
-    loadDataObjectsForStudies() {
-      this.loadDataObjectsForStudies(...arguments);
     },
     filterStudies(filters) {
       const {

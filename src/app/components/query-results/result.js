@@ -9,7 +9,7 @@
  */
 
 import Component from '@ember/component';
-import { observer, get } from '@ember/object';
+import { get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { inject as service } from '@ember/service';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
@@ -46,13 +46,6 @@ export default Component.extend(I18n, {
   /**
    * @virtual
    * @type {Function}
-   * @returns {Promise}
-   */
-  loadDataObjects: () => {},
-
-  /**
-   * @virtual
-   * @type {Function}
    * @returns {any}
    */
   remove: () => {},
@@ -81,24 +74,6 @@ export default Component.extend(I18n, {
    * @type {Ember.ComputedProperty<Array<Object>>}
    */
   publisherMapping: reads('configuration.publisherMapping'),
-
-  isExpandedObserver: observer(
-    'isExpanded',
-    function isExpandedObserver() {
-      const {
-        isExpanded,
-        loadDataObjects,
-      } = this.getProperties('isExpanded', 'loadDataObjects');
-      if (isExpanded) {
-        loadDataObjects();
-      }
-    }
-  ),
-  init() {
-    this._super(...arguments);
-
-    this.isExpandedObserver();
-  },
 
   actions: {
     toggleDataObjectExpansion(dataObject) {

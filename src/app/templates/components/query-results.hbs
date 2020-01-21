@@ -15,15 +15,10 @@
             study=study
             isExpanded=(eq study.id expandedResultId)
             remove=(action "removeStudy" study)
-            loadDataObjects=(action loadDataObjectsForStudies (array study))}}
+          }}
         {{/acc.item}}
       </div>
     {{/each}}
   {{/bs-accordion}}
-  {{loading-container
-    isLoading=bottomLoading
-    errorReason=results.error
-    sizeClass="sm"
-    spinnerBlockClass="horizontal-align-middle"}}
+  {{yield}}
 </div>
-{{yield}}
