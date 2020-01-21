@@ -17,67 +17,59 @@
     </div>
   {{/bs-button-group}}
 </div>
-{{#if (eq filtersModel "study")}}
-  <div class="form-group">
-    <label class="control-label">{{tt this "studyType"}}</label>
+<div class={{if (not-eq filtersModel "study") "hidden"}}>
+  {{#filter-collapse label=(tt this "studyType")}}
     {{checkbox-filter
       items=studyTypeMapping
       selectedItems=studyTypeFilter
       onChange=(action (mut studyTypeFilter))}}
-  </div>
-  <div class="form-group">
-    <label class="control-label">{{tt this "studyStatus"}}</label>
+  {{/filter-collapse}}
+  {{#filter-collapse label=(tt this "studyStatus")}}
     {{checkbox-filter
       items=studyStatusMapping
       selectedItems=studyStatusFilter
       onChange=(action (mut studyStatusFilter))}}
-  </div>
-  <div class="form-group">
-    <label class="control-label">{{tt this "studyGenderEligibility"}}</label>
+  {{/filter-collapse}}
+  {{#filter-collapse label=(tt this "studyGenderEligibility")}}
     {{checkbox-filter
       items=studyGenderEligibilityMapping
       selectedItems=studyGenderEligibilityFilter
       onChange=(action (mut studyGenderEligibilityFilter))}}
-  </div>
+  {{/filter-collapse}}
   {{#if hasInterventionalStudyTypeSelected}}
     <div class="panel panel-default interventional-only-filters">
       <div class="panel-heading">{{tt this "interventionalStudiesFilters"}}</div>
       <div class="panel-body">
-        <div class="form-group">
-          <label class="control-label">{{tt this "studyPhase"}}</label>
+        {{#filter-collapse label=(tt this "studyPhase")}}
           {{checkbox-filter
             items=studyPhaseMapping
             selectedItems=studyPhaseFilter
             onChange=(action (mut studyPhaseFilter))}}
-        </div>
-        <div class="form-group">
-          <label class="control-label">{{tt this "studyInterventionModel"}}</label>
+        {{/filter-collapse}}
+        {{#filter-collapse label=(tt this "studyInterventionModel")}}
           {{checkbox-filter
             items=studyInterventionModelMapping
             selectedItems=studyInterventionModelFilter
             onChange=(action (mut studyInterventionModelFilter))}}
-        </div>
-        <div class="form-group">
-          <label class="control-label">{{tt this "studyAllocationType"}}</label>
+        {{/filter-collapse}}
+        {{#filter-collapse label=(tt this "studyAllocationType")}}
           {{checkbox-filter
             items=studyAllocationTypeMapping
             selectedItems=studyAllocationTypeFilter
             onChange=(action (mut studyAllocationTypeFilter))}}
-        </div>
-        <div class="form-group">
-          <label class="control-label">{{tt this "studyPrimaryPurpose"}}</label>
+        {{/filter-collapse}}
+        {{#filter-collapse label=(tt this "studyPrimaryPurpose")}}
           {{checkbox-filter
             items=studyPrimaryPurposeMapping
             selectedItems=studyPrimaryPurposeFilter
             onChange=(action (mut studyPrimaryPurposeFilter))}}
-        </div>
-        <div class="form-group">
-          <label class="control-label">{{tt this "studyMasking"}}</label>
+        {{/filter-collapse}}
+        {{#filter-collapse label=(tt this "studyMasking")}}
           {{checkbox-filter
             items=studyMaskingMapping
             selectedItems=studyMaskingFilter
             onChange=(action (mut studyMaskingFilter))}}
-        </div>
+        {{/filter-collapse}}
       </div>
     </div>
   {{/if}}
@@ -85,47 +77,42 @@
     <div class="panel panel-default observational-only-filters">
       <div class="panel-heading">{{tt this "observationalStudiesFilters"}}</div>
       <div class="panel-body">
-        <div class="form-group">
-          <label class="control-label">{{tt this "studyObservationalModel"}}</label>
+        {{#filter-collapse label=(tt this "studyObservationalModel")}}
           {{checkbox-filter
             items=studyObservationalModelMapping
             selectedItems=studyObservationalModelFilter
             onChange=(action (mut studyObservationalModelFilter))}}
-        </div>
-        <div class="form-group">
-          <label class="control-label">{{tt this "studyTimePerspective"}}</label>
+        {{/filter-collapse}}
+        {{#filter-collapse label=(tt this "studyTimePerspective")}}
           {{checkbox-filter
             items=studyTimePerspectiveMapping
             selectedItems=studyTimePerspectiveFilter
             onChange=(action (mut studyTimePerspectiveFilter))}}
-        </div>
-        <div class="form-group">
-          <label class="control-label">{{tt this "studyBiospecimensRetained"}}</label>
+        {{/filter-collapse}}
+        {{#filter-collapse label=(tt this "studyBiospecimensRetained")}}
           {{checkbox-filter
             items=studyBiospecimensRetainedMapping
             selectedItems=studyBiospecimensRetainedFilter
             onChange=(action (mut studyBiospecimensRetainedFilter))}}
-        </div>
+        {{/filter-collapse}}
       </div>
     </div>
   {{/if}}
-{{else}}
-  <div class="form-group">
-    <label class="control-label">{{tt this "objectType"}}</label>
+</div>
+<div class={{if (not-eq filtersModel "dataObject") "hidden"}}>
+  {{#filter-collapse label=(tt this "objectType")}}
     {{checkbox-filter
       items=objectTypeMapping
       selectedItems=objectTypeFilter
       onChange=(action (mut objectTypeFilter))}}
-  </div>
-  <div class="form-group">
-    <label class="control-label">{{tt this "accessType"}}</label>
+  {{/filter-collapse}}
+  {{#filter-collapse label=(tt this "accessType")}}
     {{checkbox-filter
       items=accessTypeMapping
       selectedItems=accessTypeFilter
       onChange=(action (mut accessTypeFilter))}}
-  </div>
-  <div class="form-group form-group-sm">
-    <label class="control-label" for="year-filter-input">{{tt this "year"}}</label>
+  {{/filter-collapse}}
+  {{#filter-collapse label=(tt this "year") class="form-group-sm"}}
     <input
       id="year-filter-input"
       class="form-control"
@@ -133,14 +120,13 @@
       value={{yearFilter}}
       oninput={{action (action (mut yearFilter)) value="target.value"}}
       onkeydown={{invoke-on-enter (action "filterDataObjects")}}>
-  </div>
-  <div class="form-group">
-    <label class="control-label">{{tt this "publisher"}}</label>
+  {{/filter-collapse}}
+  {{#filter-collapse label=(tt this "publisher")}}
     {{checkbox-filter
       items=publisherMapping
       selectedItems=publisherFilter
       onChange=(action (mut publisherFilter))}}
-  </div>
-{{/if}}
+  {{/filter-collapse}}
+</div>
 {{#bs-button size="sm" type="default" class="pull-right" onClick=(action (if (eq filtersModel "study") "filterStudies" "filterDataObjects"))}}{{tt this "filter"}}{{/bs-button}}
 {{yield}}

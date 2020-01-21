@@ -1,0 +1,15 @@
+.filter-collapse {
+  .component-label {
+    position: relative;
+
+    .expand-icon {
+      position: absolute;
+      right: 0;
+      font-size: 1.5em;
+
+      &::before {
+        font-weight: bold;
+      }
+    }
+  }
+}

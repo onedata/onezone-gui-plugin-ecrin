@@ -8,4 +8,25 @@
       margin: 0;
     }
   }
+
+  .panel-body {
+    padding: 0 $padding-small-horizontal
+  }
+
+  .form-group {
+    padding-top: $padding-base-vertical;
+    margin-bottom: $padding-base-vertical;
+
+    + .form-group {
+      border-top: 1px solid $main-border-color;
+    }
+
+    // &:last-of-type {
+    //   border-bottom: 0;
+    // }
+  }
+
+  .filters-model-group {
+    padding-top: 0;
+  }
 }
