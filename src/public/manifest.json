@@ -632,15 +632,15 @@
       "studyGenderEligibilityMapping": [
         {
           "id": 1000,
-          "name": "Both"
+          "name": "Female"
         },
         {
           "id": 1005,
-          "name": "Male only"
+          "name": "Male"
         },
         {
           "id": 1010,
-          "name": "Female only"
+          "name": "All"
         },
         {
           "id": 1015,
@@ -659,7 +659,7 @@
         },
         {
           "id": 115,
-          "name": "Phase 1/Phase 2"
+          "name": "Phase 1, Phase 2"
         },
         {
           "id": 120,
@@ -667,7 +667,7 @@
         },
         {
           "id": 125,
-          "name": "Phase 2/Phase 3"
+          "name": "Phase 2, Phase 3"
         },
         {
           "id": 130,
@@ -1577,6 +1577,9 @@
               "id": {
                 "type": "integer"
               },
+              "file_type": {
+                "type": "keyword"
+              },
               "display_title": {
                 "type": "object",
                 "properties": {
@@ -1587,6 +1590,12 @@
                     "type": "keyword"
                   }
                 }
+              },
+              "brief_description": {
+                "type": "text"
+              },
+              "data_sharing_statement": {
+                "type": "text"
               },
               "study_identifiers": {
                 "type": "nested",
@@ -1715,34 +1724,28 @@
                   },
                   "name": {
                     "type": "text"
+                  }
+                }
+              },
+              "related_studies": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
                   },
-                  "brief_description": {
-                    "type": "text"
-                  },
-                  "data_sharing_statement": {
-                    "type": "text"
-                  },
-                  "related_studies": {
-                    "type": "nested",
+                  "relationship_type": {
+                    "type": "object",
                     "properties": {
                       "id": {
                         "type": "integer"
                       },
-                      "relationship_type": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "integer"
-                          },
-                          "name": {
-                            "type": "text"
-                          }
-                        }
-                      },
-                      "target_study_id": {
-                        "type": "integer"
+                      "name": {
+                        "type": "text"
                       }
                     }
+                  },
+                  "target_study_id": {
+                    "type": "integer"
                   }
                 }
               },
@@ -1783,6 +1786,9 @@
             "properties": {
               "id": {
                 "type": "integer"
+              },
+              "file_type": {
+                "type": "keyword"
               },
               "doi": {
                 "type": "text"
@@ -2051,7 +2057,6 @@
                 }
               },
               "object_dates": {
-                "type": "nested",
                 "properties": {
                   "id": {
                     "type": "integer"

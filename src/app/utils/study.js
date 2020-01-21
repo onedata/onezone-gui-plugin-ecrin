@@ -22,6 +22,12 @@ export default EmberObject.extend({
    * @virtual
    * @type {Array<Object>}
    */
+  studyGenderEligibilityMapping: undefined,
+
+  /**
+   * @virtual
+   * @type {Array<Object>}
+   */
   studyPhaseMapping: undefined,
 
   /**
@@ -120,12 +126,12 @@ export default EmberObject.extend({
   /**
    * @type {ComputedProperty<String>}
    */
-  description: reads('status.brief_description'),
+  description: reads('raw.brief_description'),
 
   /**
    * @type {ComputedProperty<String>}
    */
-  dataSharingStatement: reads('status.data_sharing_statement'),
+  dataSharingStatement: reads('raw.data_sharing_statement'),
 
   /**
    * @type {ComputedProperty<Array<number>>}
