@@ -1578,10 +1578,9 @@
                 "type": "integer"
               },
               "file_type": {
-                "type": "keyword"
+                "type": "text"
               },
               "display_title": {
-                "type": "object",
                 "properties": {
                   "title": {
                     "type": "text"
@@ -1590,12 +1589,6 @@
                     "type": "keyword"
                   }
                 }
-              },
-              "brief_description": {
-                "type": "text"
-              },
-              "data_sharing_statement": {
-                "type": "text"
               },
               "study_identifiers": {
                 "type": "nested",
@@ -1727,6 +1720,12 @@
                   }
                 }
               },
+              "brief_description": {
+                "type": "text"
+              },
+              "data_sharing_statement": {
+                "type": "text"
+              },
               "related_studies": {
                 "type": "nested",
                 "properties": {
@@ -1788,7 +1787,7 @@
                 "type": "integer"
               },
               "file_type": {
-                "type": "keyword"
+                "type": "text"
               },
               "doi": {
                 "type": "text"
@@ -2057,6 +2056,7 @@
                 }
               },
               "object_dates": {
+                "type": "nested",
                 "properties": {
                   "id": {
                     "type": "integer"
@@ -2272,7 +2272,7 @@
                 }
               },
               "related_studies": {
-                "type": "integer"
+                "type": "keyword"
               }
             }
           }
