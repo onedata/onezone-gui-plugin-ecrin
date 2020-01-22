@@ -86,6 +86,7 @@ export default Component.extend(I18n, {
     function publisherMapping() {
       return this.get('dataObjects')
         .mapBy('managingOrganisation')
+        .compact()
         .uniqBy('id')
         .map(publisher => {
           const publisherCopy = Object.assign({}, publisher);

@@ -47,6 +47,10 @@ export default Component.extend(I18n, {
 
   dataObjects: computed(() => A()),
 
+  studyTypeMapping: reads('configuration.studyTypeMapping'),
+
+  studyStatusMapping: reads('configuration.studyStatusMapping'),
+
   studyGenderEligibilityMapping: reads('configuration.studyGenderEligibilityMapping'),
 
   studyPhaseMapping: reads('configuration.studyPhaseMapping'),
@@ -66,6 +70,10 @@ export default Component.extend(I18n, {
   studyBiospecimensRetainedMapping: reads(
     'configuration.studyBiospecimensRetainedMapping'
   ),
+
+  objectTypeMapping: reads('configuration.objectTypeMapping'),
+
+  accessTypeMapping: reads('configuration.accessTypeMapping'),
 
   /**
    * @type {Ember.ComputedProperty<string>}
@@ -527,6 +535,8 @@ export default Component.extend(I18n, {
     filterStudies(filters) {
       const {
         studies,
+        studyTypeMapping,
+        studyStatusMapping,
         studyGenderEligibilityMapping,
         studyPhaseMapping,
         studyInterventionModelMapping,
@@ -538,6 +548,8 @@ export default Component.extend(I18n, {
         studyBiospecimensRetainedMapping,
       } = this.getProperties(
         'studies',
+        'studyTypeMapping',
+        'studyStatusMapping',
         'studyGenderEligibilityMapping',
         'studyPhaseMapping',
         'studyInterventionModelMapping',
@@ -578,17 +590,25 @@ export default Component.extend(I18n, {
 
       let filteredStudies = studies.slice();
       if (type) {
-        filteredStudies = filteredStudies.filter(study =>
-          type.includes(get(study, 'type.id'))
+        filteredStudies = checkMatchOfCategorizedValue(
+          filteredStudies,
+          undefined,
+          'type',
+          studyTypeMapping,
+          type
         );
       }
       if (status) {
-        filteredStudies = filteredStudies.filter(study =>
-          status.includes(get(study, 'status.id'))
+        filteredStudies = checkMatchOfCategorizedValue(
+          filteredStudies,
+          undefined,
+          'status',
+          studyStatusMapping,
+          status
         );
       }
       if (genderEligibility) {
-        filteredStudies = checkMatchToTopic(
+        filteredStudies = checkMatchOfCategorizedValue(
           filteredStudies,
           undefined,
           'genderEligibility',
@@ -597,7 +617,7 @@ export default Component.extend(I18n, {
         );
       }
       if (phase) {
-        filteredStudies = checkMatchToTopic(
+        filteredStudies = checkMatchOfCategorizedValue(
           filteredStudies,
           'isInterventional',
           'phase',
@@ -606,7 +626,7 @@ export default Component.extend(I18n, {
         );
       }
       if (interventionModel) {
-        filteredStudies = checkMatchToTopic(
+        filteredStudies = checkMatchOfCategorizedValue(
           filteredStudies,
           'isInterventional',
           'interventionModel',
@@ -615,7 +635,7 @@ export default Component.extend(I18n, {
         );
       }
       if (allocationType) {
-        filteredStudies = checkMatchToTopic(
+        filteredStudies = checkMatchOfCategorizedValue(
           filteredStudies,
           'isInterventional',
           'allocationType',
@@ -624,7 +644,7 @@ export default Component.extend(I18n, {
         );
       }
       if (primaryPurpose) {
-        filteredStudies = checkMatchToTopic(
+        filteredStudies = checkMatchOfCategorizedValue(
           filteredStudies,
           'isInterventional',
           'primaryPurpose',
@@ -633,7 +653,7 @@ export default Component.extend(I18n, {
         );
       }
       if (masking) {
-        filteredStudies = checkMatchToTopic(
+        filteredStudies = checkMatchOfCategorizedValue(
           filteredStudies,
           'isInterventional',
           'masking',
@@ -642,7 +662,7 @@ export default Component.extend(I18n, {
         );
       }
       if (observationalModel) {
-        filteredStudies = checkMatchToTopic(
+        filteredStudies = checkMatchOfCategorizedValue(
           filteredStudies,
           'isObservational',
           'observationalModel',
@@ -651,7 +671,7 @@ export default Component.extend(I18n, {
         );
       }
       if (timePerspective) {
-        filteredStudies = checkMatchToTopic(
+        filteredStudies = checkMatchOfCategorizedValue(
           filteredStudies,
           'isObservational',
           'timePerspective',
@@ -660,7 +680,7 @@ export default Component.extend(I18n, {
         );
       }
       if (biospecimensRetained) {
-        filteredStudies = checkMatchToTopic(
+        filteredStudies = checkMatchOfCategorizedValue(
           filteredStudies,
           'isObservational',
           'biospecimensRetained',
@@ -676,7 +696,14 @@ export default Component.extend(I18n, {
       const {
         studies,
         dataObjects,
-      } = this.getProperties('studies', 'dataObjects');
+        objectTypeMapping,
+        accessTypeMapping,
+      } = this.getProperties(
+        'studies',
+        'dataObjects',
+        'objectTypeMapping',
+        'accessTypeMapping'
+      );
 
       const {
         type,
@@ -687,13 +714,21 @@ export default Component.extend(I18n, {
 
       let filteredDataObjects = dataObjects.slice();
       if (type) {
-        filteredDataObjects = filteredDataObjects.filter(dataObject =>
-          type.includes(get(dataObject, 'type.id'))
+        filteredDataObjects = checkMatchOfCategorizedValue(
+          filteredDataObjects,
+          undefined,
+          'type',
+          objectTypeMapping,
+          type
         );
       }
       if (accessType) {
-        filteredDataObjects = filteredDataObjects.filter(dataObject =>
-          accessType.includes(get(dataObject, 'accessType.id'))
+        filteredDataObjects = checkMatchOfCategorizedValue(
+          filteredDataObjects,
+          undefined,
+          'accessType',
+          accessTypeMapping,
+          accessType
         );
       }
       if (year && year.length) {
@@ -729,7 +764,13 @@ function getIdOfOptionForUnknownValues(mapping) {
   return optionForUnknown && get(optionForUnknown, 'id');
 }
 
-function checkMatchToTopic(studies, preflightCheckFlag, topicName, mapping, filter) {
+function checkMatchOfCategorizedValue(
+  studies,
+  preflightCheckFlag,
+  topicName,
+  mapping,
+  filter
+) {
   const unknownOptionId = getIdOfOptionForUnknownValues(mapping);
   const knownIds = mapping.mapBy('id').without(unknownOptionId);
   const allowCustom = filter.includes(unknownOptionId);

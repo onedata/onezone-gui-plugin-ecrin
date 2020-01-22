@@ -165,7 +165,8 @@
         },
         {
           "name": "Not yet known",
-          "id": 0
+          "id": 0,
+          "useForUnknown": true
         }
       ],
       "studyStatusMapping": [
@@ -219,7 +220,8 @@
         },
         {
           "id": 0,
-          "name": "Unknown status"
+          "name": "Unknown status",
+          "useForUnknown": true
         }
       ],
       "studyTopicTypeMapping": [
@@ -1479,7 +1481,8 @@
         {
           "name": "Not yet known",
           "class": "Not yet known",
-          "id": 0
+          "id": 0,
+          "useForUnknown": true
         }
       ],
       "accessTypeMapping": [
@@ -1541,7 +1544,8 @@
         {
           "name": "Not yet known",
           "id": 0,
-          "indicator": "yellow"
+          "indicator": "yellow",
+          "useForUnknown": true
         }
       ]
     },
