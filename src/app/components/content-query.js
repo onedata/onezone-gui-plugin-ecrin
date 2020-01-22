@@ -264,9 +264,23 @@ export default Component.extend(I18n, {
       const filtersArray = [];
       if (studyTitleContains) {
         filtersArray.push({
-          simple_query_string: {
-            query: studyTitleContains,
-            fields: ['display_title.title'],
+          bool: {
+            should: [{
+              simple_query_string: {
+                query: studyTitleContains,
+                fields: ['display_title.title'],
+              },
+            }, {
+              nested: {
+                path: 'study_titles',
+                query: {
+                  simple_query_string: {
+                    query: studyTitleContains,
+                    fields: ['study_titles.title_text'],
+                  },
+                },
+              },
+            }],
           },
         });
       }
@@ -339,9 +353,23 @@ export default Component.extend(I18n, {
       });
     } else if (dataObjectTitle) {
       filters.push({
-        simple_query_string: {
-          query: dataObjectTitle,
-          fields: ['display_title'],
+        bool: {
+          should: [{
+            simple_query_string: {
+              query: dataObjectTitle,
+              fields: ['display_title'],
+            },
+          }, {
+            nested: {
+              path: 'object_titles',
+              query: {
+                simple_query_string: {
+                  query: dataObjectTitle,
+                  fields: ['object_titles.title_text'],
+                },
+              },
+            },
+          }],
         },
       });
     } else {
