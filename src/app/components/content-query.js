@@ -25,6 +25,7 @@ import Study from 'onezone-gui-plugin-ecrin/utils/study';
 import DataObject from 'onezone-gui-plugin-ecrin/utils/data-object';
 import { A } from '@ember/array';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
+import { isBlank } from '@ember/utils';
 
 export default Component.extend(I18n, {
   classNames: ['content-query', 'content'],
@@ -137,9 +138,16 @@ export default Component.extend(I18n, {
         'studyTimePerspectiveMapping',
         'studyBiospecimensRetainedMapping'
       );
-      const newStudies = results.map(doc => Study.create(newStudyInjections, {
-        raw: get(doc, '_source'),
-      }));
+      const alreadyFetchedStudiesIds = alreadyFetchedStudies.mapBy('id');
+      const newStudies = results
+        .mapBy('_source')
+        .filter(doc => {
+          const studyId = get(doc, 'id');
+          return !isBlank(studyId) && !alreadyFetchedStudiesIds.includes(studyId);
+        })
+        .map(doc => Study.create(newStudyInjections, {
+          raw: doc,
+        }));
       alreadyFetchedStudies.pushObjects(newStudies);
       return newStudies;
     } else {
