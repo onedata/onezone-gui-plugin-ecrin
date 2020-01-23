@@ -15,9 +15,9 @@ export default {
   studyObservationalModel: 'Observational model',
   studyTimePerspective: 'Time perspective',
   studyBiospecimensRetained: 'Biospecimens retained',
-  objectType: 'Type',
-  accessType: 'Access type',
-  year: 'Year',
-  publisher: 'Publisher / provider',
+  dataObjectType: 'Type',
+  dataObjectAccessType: 'Access type',
+  dataObjectYear: 'Year',
+  dataObjectPublisher: 'Publisher / provider',
   filter: 'Filter',
 };

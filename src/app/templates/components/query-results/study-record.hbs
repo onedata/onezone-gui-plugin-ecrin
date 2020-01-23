@@ -52,7 +52,7 @@
     {{#each study.dataObjects as |dataObject|}}
       <div class="data-object-record">
         <div class="data-object-type">
-          <div class="object-type-name">{{dataObject.typeName}}</div>
+          <div class="object-type-name">{{dataObject.type.name}}</div>
           <a {{action "toggleDataObjectExpansion" dataObject}} class="show-more-link">
             {{tt this (if (contains dataObject study.expandedDataObjects) "showLess" "showMore")}}
           </a>
@@ -80,7 +80,7 @@
           {{/if}}
         </div>
         <div class="data-object-year">{{or dataObject.year "-"}}</div>
-        <div class="data-object-status"><span class="data-object-status-icon {{dataObject.accessTypeIndicator}}"></span></div>
+        <div class="data-object-status"><span class="data-object-status-icon {{dataObject.accessType.indicator}}"></span></div>
         <div class="data-object-checkbox">
           {{one-checkbox
             checked=(contains dataObject study.selectedDataObjects)

@@ -1,7 +1,7 @@
 /**
  * A component, which shows whole layout of query parameters and results
  * 
- * @module components/content-query
+ * @module components/content-index
  * @author Michał Borzęcki
  * @copyright (C) 2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
@@ -28,16 +28,15 @@ import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
 import { isBlank } from '@ember/utils';
 
 export default Component.extend(I18n, {
-  classNames: ['content-query', 'content'],
+  classNames: ['content-index', 'content'],
 
   elasticsearch: service(),
   configuration: service(),
-  router: service(),
 
   /**
    * @override
    */
-  i18nPrefix: 'components.contentQuery',
+  i18nPrefix: 'components.contentIndex',
 
   /**
    * @type {StudySearchParams}
@@ -47,44 +46,6 @@ export default Component.extend(I18n, {
   studies: computed(() => A()),
 
   dataObjects: computed(() => A()),
-
-  studyTypeMapping: reads('configuration.studyTypeMapping'),
-
-  studyStatusMapping: reads('configuration.studyStatusMapping'),
-
-  studyGenderEligibilityMapping: reads('configuration.studyGenderEligibilityMapping'),
-
-  studyPhaseMapping: reads('configuration.studyPhaseMapping'),
-
-  studyInterventionModelMapping: reads('configuration.studyInterventionModelMapping'),
-
-  studyAllocationTypeMapping: reads('configuration.studyAllocationTypeMapping'),
-
-  studyPrimaryPurposeMapping: reads('configuration.studyPrimaryPurposeMapping'),
-
-  studyMaskingMapping: reads('configuration.studyMaskingMapping'),
-
-  studyObservationalModelMapping: reads('configuration.studyObservationalModelMapping'),
-
-  studyTimePerspectiveMapping: reads('configuration.studyTimePerspectiveMapping'),
-
-  studyBiospecimensRetainedMapping: reads(
-    'configuration.studyBiospecimensRetainedMapping'
-  ),
-
-  objectTypeMapping: reads('configuration.objectTypeMapping'),
-
-  accessTypeMapping: reads('configuration.accessTypeMapping'),
-
-  /**
-   * @type {Ember.ComputedProperty<string>}
-   */
-  mode: reads('studySearchParams.mode'),
-
-  /**
-   * @type {ComputedProperty<boolean>}
-   */
-  hasMeaningfulStudySearchParams: reads('studySearchParams.hasMeaningfulParams'),
 
   /**
    * @type {ComputedProperty<PromiseObject>}
@@ -97,28 +58,28 @@ export default Component.extend(I18n, {
   isFetchingData: reads('fetchDataPromiseObject.isPending'),
 
   searchStudies() {
-    const {
-      mode,
-      fetchDataPromiseObject,
-    } = this.getProperties('mode', 'fetchDataPromiseObject');
+    if (this.get('studySearchParams.hasMeaningfulParams')) {
+      const fetchDataPromiseObject = this.get('fetchDataPromiseObject');
+      let promise = get(fetchDataPromiseObject, 'isSettled') ?
+        resolve() : fetchDataPromiseObject;
 
-    let promise = get(fetchDataPromiseObject, 'isSettled') ?
-      resolve() : fetchDataPromiseObject;
-    switch (mode) {
-      case 'specificStudy':
-        promise = promise.then(() => this.fetchSpecificStudy());
-        break;
-      case 'studyCharact':
-        promise = promise.then(() => this.fetchStudyCharact());
-        break;
-      case 'viaPubPaper':
-        promise = promise.then(() => this.fetchViaPubPaper());
-        break;
+      switch (this.get('studySearchParams.mode')) {
+        case 'specificStudy':
+          promise = promise.then(() => this.fetchSpecificStudy());
+          break;
+        case 'studyCharact':
+          promise = promise.then(() => this.fetchStudyCharact());
+          break;
+        case 'viaPubPaper':
+          promise = promise.then(() => this.fetchViaPubPaper());
+          break;
+      }
+
+      promise = promise
+        .then(results => this.extractResultsFromResponse(results))
+        .then(newStudies => this.loadDataObjectsForStudies(newStudies));
+      this.set('fetchDataPromiseObject', PromiseObject.create({ promise }));
     }
-    promise = promise
-      .then(results => this.extractResultsFromResponse(results))
-      .then(newStudies => this.loadDataObjectsForStudies(newStudies));
-    return this.set('fetchDataPromiseObject', PromiseObject.create({ promise }));
   },
 
   /**
@@ -132,20 +93,6 @@ export default Component.extend(I18n, {
         studies: alreadyFetchedStudies,
         configuration,
       } = this.getProperties('studies', 'configuration');
-      const newStudyInjections = getProperties(
-        configuration,
-        'studyTypeMapping',
-        'studyTopicTypeMapping',
-        'studyGenderEligibilityMapping',
-        'studyPhaseMapping',
-        'studyInterventionModelMapping',
-        'studyAllocationTypeMapping',
-        'studyPrimaryPurposeMapping',
-        'studyMaskingMapping',
-        'studyObservationalModelMapping',
-        'studyTimePerspectiveMapping',
-        'studyBiospecimensRetainedMapping'
-      );
       const alreadyFetchedStudiesIds = alreadyFetchedStudies.mapBy('id');
       const newStudies = results
         .mapBy('_source')
@@ -153,7 +100,8 @@ export default Component.extend(I18n, {
           const studyId = get(doc, 'id');
           return !isBlank(studyId) && !alreadyFetchedStudiesIds.includes(studyId);
         })
-        .map(doc => Study.create(newStudyInjections, {
+        .map(doc => Study.create({
+          configuration,
           raw: doc,
         }));
       alreadyFetchedStudies.pushObjects(newStudies);
@@ -213,46 +161,41 @@ export default Component.extend(I18n, {
       'studySearchParams',
     );
     const body = this.constructQueryBodyBase('study');
+    const {
+      studyIdType,
+      studyId,
+    } = getProperties(
+      studySearchParams,
+      'studyIdType',
+      'studyId'
+    );
+    const studyIdTypeId = get(studyIdType, 'id');
 
-    if (get(studySearchParams, 'hasMeaningfulParams')) {
-      const {
-        studyIdType,
-        studyId,
-      } = getProperties(
-        studySearchParams,
-        'studyIdType',
-        'studyId'
-      );
-      const studyIdTypeId = get(studyIdType, 'id');
-
-      set(body, 'query', {
-        bool: {
-          filter: [{
-            nested: {
-              path: 'study_identifiers',
-              query: {
-                bool: {
-                  must: [{
-                    term: {
-                      'study_identifiers.identifier_type.id': studyIdTypeId,
-                    },
-                  }, {
-                    term: {
-                      'study_identifiers.identifier_value': studyId,
-                    },
-                  }],
-                },
+    set(body, 'query', {
+      bool: {
+        filter: [{
+          nested: {
+            path: 'study_identifiers',
+            query: {
+              bool: {
+                must: [{
+                  term: {
+                    'study_identifiers.identifier_type.id': studyIdTypeId,
+                  },
+                }, {
+                  term: {
+                    'study_identifiers.identifier_value': studyId,
+                  },
+                }],
               },
             },
-          }],
-          must_not: this.generateExcludeFetchedStudiesClause(),
-        },
-      });
+          },
+        }],
+        must_not: this.generateExcludeFetchedStudiesClause(),
+      },
+    });
 
-      return elasticsearch.post('study', '_search', body);
-    } else {
-      return resolve(null);
-    }
+    return elasticsearch.post('study', '_search', body);
   },
 
   /**
@@ -273,67 +216,62 @@ export default Component.extend(I18n, {
         must_not: this.generateExcludeFetchedStudiesClause(),
       },
     };
-
-    if (get(studySearchParams, 'hasMeaningfulParams')) {
-      const {
-        studyTitleContains,
-        studyTopicsInclude,
-        studyTitleTopicOperator,
-      } = getProperties(
-        studySearchParams,
-        'studyTitleContains',
-        'studyTopicsInclude',
-        'studyTitleTopicOperator',
-      );
-      const filtersArray = [];
-      if (studyTitleContains) {
-        filtersArray.push({
-          bool: {
-            should: [{
-              simple_query_string: {
-                query: studyTitleContains,
-                fields: ['display_title.title'],
-              },
-            }, {
-              nested: {
-                path: 'study_titles',
-                query: {
-                  simple_query_string: {
-                    query: studyTitleContains,
-                    fields: ['study_titles.title_text'],
-                  },
+    const {
+      studyTitleContains,
+      studyTopicsInclude,
+      studyTitleTopicOperator,
+    } = getProperties(
+      studySearchParams,
+      'studyTitleContains',
+      'studyTopicsInclude',
+      'studyTitleTopicOperator',
+    );
+    const filtersArray = [];
+    if (studyTitleContains) {
+      filtersArray.push({
+        bool: {
+          should: [{
+            simple_query_string: {
+              query: studyTitleContains,
+              fields: ['display_title.title'],
+            },
+          }, {
+            nested: {
+              path: 'study_titles',
+              query: {
+                simple_query_string: {
+                  query: studyTitleContains,
+                  fields: ['study_titles.title_text'],
                 },
               },
-            }],
-          },
-        });
-      }
-      if (studyTopicsInclude) {
-        filtersArray.push({
-          nested: {
-            path: 'study_topics',
-            query: {
-              simple_query_string: {
-                query: studyTopicsInclude,
-                fields: ['study_topics.topic_value'],
-              },
+            },
+          }],
+        },
+      });
+    }
+    if (studyTopicsInclude) {
+      filtersArray.push({
+        nested: {
+          path: 'study_topics',
+          query: {
+            simple_query_string: {
+              query: studyTopicsInclude,
+              fields: ['study_topics.topic_value'],
             },
           },
-        });
-      }
-      if (studyTitleTopicOperator === 'or') {
-        Object.assign(body.query.bool, {
-          should: filtersArray,
-        });
-      } else {
-        Object.assign(body.query.bool, {
-          filter: filtersArray,
-        });
-      }
-      return elasticsearch.post('study', '_search', body);
-    } else {
-      return resolve(null);
+        },
+      });
     }
+    if (studyTitleTopicOperator === 'or') {
+      Object.assign(body.query.bool, {
+        should: filtersArray,
+      });
+    } else {
+      Object.assign(body.query.bool, {
+        filter: filtersArray,
+      });
+    }
+    return elasticsearch.post('study', '_search', body);
   },
 
   /**
@@ -481,11 +419,6 @@ export default Component.extend(I18n, {
           },
         },
       }).then(results => {
-        const newDataObjectInjections = getProperties(
-          configuration,
-          'objectTypeMapping',
-          'accessTypeMapping'
-        );
         const hits = results.hits.hits;
         const newDataObjects = hits.map(doHit => {
           const existingDataObjectInstance =
@@ -493,7 +426,8 @@ export default Component.extend(I18n, {
           if (existingDataObjectInstance) {
             return existingDataObjectInstance;
           } else {
-            return DataObject.create(newDataObjectInjections, {
+            return DataObject.create({
+              configuration,
               raw: get(doHit, '_source'),
             });
           }
@@ -549,48 +483,10 @@ export default Component.extend(I18n, {
       this.removeStudies(studiesToRemove);
     },
     filterStudies(filters) {
-      const {
-        studies,
-        studyTypeMapping,
-        studyStatusMapping,
-        studyGenderEligibilityMapping,
-        studyPhaseMapping,
-        studyInterventionModelMapping,
-        studyAllocationTypeMapping,
-        studyPrimaryPurposeMapping,
-        studyMaskingMapping,
-        studyObservationalModelMapping,
-        studyTimePerspectiveMapping,
-        studyBiospecimensRetainedMapping,
-      } = this.getProperties(
-        'studies',
-        'studyTypeMapping',
-        'studyStatusMapping',
-        'studyGenderEligibilityMapping',
-        'studyPhaseMapping',
-        'studyInterventionModelMapping',
-        'studyAllocationTypeMapping',
-        'studyPrimaryPurposeMapping',
-        'studyMaskingMapping',
-        'studyObservationalModelMapping',
-        'studyTimePerspectiveMapping',
-        'studyBiospecimensRetainedMapping'
-      );
+      const studies = this.get('studies');
 
-      let {
-        type,
-        status,
-        genderEligibility,
-        phase,
-        interventionModel,
-        allocationType,
-        primaryPurpose,
-        masking,
-        observationalModel,
-        timePerspective,
-        biospecimensRetained,
-      } = getProperties(
-        filters,
+      let filteredStudies = studies.slice();
+      [
         'type',
         'status',
         'genderEligibility',
@@ -601,109 +497,15 @@ export default Component.extend(I18n, {
         'masking',
         'observationalModel',
         'timePerspective',
-        'biospecimensRetained'
-      );
-
-      let filteredStudies = studies.slice();
-      if (type) {
+        'biospecimensRetained',
+      ].forEach(fieldName => {
+        const filter = get(filters, fieldName);
         filteredStudies = checkMatchOfCategorizedValue(
           filteredStudies,
-          undefined,
-          'type',
-          studyTypeMapping,
-          type
+          fieldName,
+          filter
         );
-      }
-      if (status) {
-        filteredStudies = checkMatchOfCategorizedValue(
-          filteredStudies,
-          undefined,
-          'status',
-          studyStatusMapping,
-          status
-        );
-      }
-      if (genderEligibility) {
-        filteredStudies = checkMatchOfCategorizedValue(
-          filteredStudies,
-          undefined,
-          'genderEligibility',
-          studyGenderEligibilityMapping,
-          genderEligibility
-        );
-      }
-      if (phase) {
-        filteredStudies = checkMatchOfCategorizedValue(
-          filteredStudies,
-          'isInterventional',
-          'phase',
-          studyPhaseMapping,
-          phase
-        );
-      }
-      if (interventionModel) {
-        filteredStudies = checkMatchOfCategorizedValue(
-          filteredStudies,
-          'isInterventional',
-          'interventionModel',
-          studyInterventionModelMapping,
-          interventionModel
-        );
-      }
-      if (allocationType) {
-        filteredStudies = checkMatchOfCategorizedValue(
-          filteredStudies,
-          'isInterventional',
-          'allocationType',
-          studyAllocationTypeMapping,
-          allocationType
-        );
-      }
-      if (primaryPurpose) {
-        filteredStudies = checkMatchOfCategorizedValue(
-          filteredStudies,
-          'isInterventional',
-          'primaryPurpose',
-          studyPrimaryPurposeMapping,
-          primaryPurpose
-        );
-      }
-      if (masking) {
-        filteredStudies = checkMatchOfCategorizedValue(
-          filteredStudies,
-          'isInterventional',
-          'masking',
-          studyMaskingMapping,
-          masking
-        );
-      }
-      if (observationalModel) {
-        filteredStudies = checkMatchOfCategorizedValue(
-          filteredStudies,
-          'isObservational',
-          'observationalModel',
-          studyObservationalModelMapping,
-          observationalModel
-        );
-      }
-      if (timePerspective) {
-        filteredStudies = checkMatchOfCategorizedValue(
-          filteredStudies,
-          'isObservational',
-          'timePerspective',
-          studyTimePerspectiveMapping,
-          timePerspective
-        );
-      }
-      if (biospecimensRetained) {
-        filteredStudies = checkMatchOfCategorizedValue(
-          filteredStudies,
-          'isObservational',
-          'biospecimensRetained',
-          studyBiospecimensRetainedMapping,
-          biospecimensRetained
-        );
-      }
+      });
 
       const studiesToRemove = _.difference(studies.toArray(), filteredStudies);
       this.removeStudies(studiesToRemove);
@@ -712,41 +514,28 @@ export default Component.extend(I18n, {
       const {
         studies,
         dataObjects,
-        objectTypeMapping,
-        accessTypeMapping,
       } = this.getProperties(
         'studies',
         'dataObjects',
-        'objectTypeMapping',
-        'accessTypeMapping'
       );
 
       const {
-        type,
-        accessType,
         year,
         publisher,
-      } = getProperties(filters, 'type', 'accessType', 'year', 'publisher');
+      } = getProperties(filters, 'year', 'publisher');
 
       let filteredDataObjects = dataObjects.slice();
-      if (type) {
+      [
+        'type',
+        'accessType',
+      ].forEach(fieldName => {
+        const filter = get(filters, fieldName);
         filteredDataObjects = checkMatchOfCategorizedValue(
           filteredDataObjects,
-          undefined,
-          'type',
-          objectTypeMapping,
-          type
+          fieldName,
+          filter
         );
-      }
-      if (accessType) {
-        filteredDataObjects = checkMatchOfCategorizedValue(
-          filteredDataObjects,
-          undefined,
-          'accessType',
-          accessTypeMapping,
-          accessType
-        );
-      }
+      });
       if (year && year.length) {
         filteredDataObjects = filteredDataObjects.filter(dataObject => {
           const doYear = get(dataObject, 'year');
@@ -775,31 +564,8 @@ export default Component.extend(I18n, {
   },
 });
 
-function getIdOfOptionForUnknownValues(mapping) {
-  const optionForUnknown = mapping.findBy('useForUnknown', true);
-  return optionForUnknown && get(optionForUnknown, 'id');
-}
-
-function checkMatchOfCategorizedValue(
-  studies,
-  preflightCheckFlag,
-  topicName,
-  mapping,
-  filter
-) {
-  const unknownOptionId = getIdOfOptionForUnknownValues(mapping);
-  const knownIds = mapping.mapBy('id').without(unknownOptionId);
-  const allowCustom = filter.includes(unknownOptionId);
-  filter = filter.without(unknownOptionId);
-
-  return studies.filter(study => {
-    const fulfillsPreflight = preflightCheckFlag ? get(study, preflightCheckFlag) :
-      true;
-    const studyTopicId = get(study, `${topicName}.id`);
-
-    return !fulfillsPreflight || (
-      filter.includes(studyTopicId) ||
-      (allowCustom && !knownIds.includes(studyTopicId))
-    );
-  });
+function checkMatchOfCategorizedValue(records, fieldName, filter) {
+  return records.filter(record =>
+    !record.isSupportingField(fieldName) || filter.includes(get(record, fieldName))
+  );
 }

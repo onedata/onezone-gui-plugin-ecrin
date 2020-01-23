@@ -1,26 +1,36 @@
 .content-index {
-  flex-grow: 1;
-  background-image: url($root-url + 'images/world-map-light.svg');
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  text-align: center;
-  .ecrin-logo {
-    display: inline-block;
-    margin-top: 60px;
-    margin-bottom: 25px;
-    transform: scale(1.2);
+  @media (min-width: $screen-sm-min) {
+    display: flex;
+    flex-direction: column;
+    
+    .query-parameters {
+      flex-grow: 0;
+    }
+
+    .query-content {
+      display: flex;
+      flex-grow: 1;
+      align-items: stretch;
+      min-height: 0;
+    }
+
+    .data-filters {
+      min-width: 0;
+      flex-grow: 0;
+      flex-shrink: 0;
+      flex-basis: 300px;
+      margin-right: $padding-small-horizontal;
+    }
+
+    .query-results {
+      flex-grow: 1;
+      min-width: 0;
+    }
   }
-  h1 {
-    font-weight: bold;
-    font-size: 2.5em;
-  }
-  h2 {
-    margin-top: $padding-large-vertical;
-    font-family: 'Open Sans Semibold';
-    font-size: 1.3em;
-  }
-  .query-parameters {
-    margin-top: 100px;
+
+  @media (max-width: $screen-xs-max) {
+    .query-parameters, .data-filters {
+      margin-bottom: $padding-base-vertical;
+    }
   }
 }

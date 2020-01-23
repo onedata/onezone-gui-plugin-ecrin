@@ -4,73 +4,49 @@ import { A } from '@ember/array';
 import { and, or, raw, not, equal } from 'ember-awesome-macros';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 import _ from 'lodash';
+import categorizedValueComputed from 'onezone-gui-plugin-ecrin/utils/categorized-value-computed';
 
-export default EmberObject.extend({
+const interventionalOnlyStudyTopicTypes = [
+  'phase',
+  'interventionModel',
+  'allocationType',
+  'primaryPurpose',
+  'masking',
+];
+
+const observationalOnlyStudyTopicTypes = [
+  'observationalModel',
+  'timePerspective',
+  'biospecimensRetained',
+];
+
+const categorizedTopicTypes = interventionalOnlyStudyTopicTypes
+  .concat(observationalOnlyStudyTopicTypes)
+  .concat(['genderEligibility']);
+
+const topicFields = {};
+categorizedTopicTypes.forEach(topicField => {
+  topicFields[topicField] = topicTypeComputed(topicField);
+});
+
+export default EmberObject.extend(topicFields, {
   /**
    * @virtual
-   * @type {Array<Object>}
+   * @type {Ember.Service}
    */
-  studyTypeMapping: undefined,
-
-  /**
-   * @virtual
-   * @type {Array<Object>}
-   */
-  studyTopicTypeMapping: undefined,
-
-  /**
-   * @virtual
-   * @type {Array<Object>}
-   */
-  studyGenderEligibilityMapping: undefined,
-
-  /**
-   * @virtual
-   * @type {Array<Object>}
-   */
-  studyPhaseMapping: undefined,
-
-  /**
-   * @virtual
-   * @type {Array<Object>}
-   */
-  studyInterventionModelMapping: undefined,
-
-  /**
-   * @virtual
-   * @type {Array<Object>}
-   */
-  studyAllocationTypeMapping: undefined,
+  configuration: undefined,
 
   /**
    * @virtual
    * @type {Array<Object>}
    */
-  studyPrimaryPurposeMapping: undefined,
+  studyTypeMapping: reads('configuration.studyTypeMapping'),
 
   /**
    * @virtual
    * @type {Array<Object>}
    */
-  studyMaskingMapping: undefined,
-
-  /**
-   * @virtual
-   * @type {Array<Object>}
-   */
-  studyObservationalModelMapping: undefined,
-
-  /**
-   * @virtual
-   * @type {Array<Object>}
-   */
-  studyTimePerspectiveMapping: undefined,
-
-  /**
-   * @virtual
-   * @type {Array<Object>}
-   */
-  studyBiospecimensRetainedMapping: undefined,
+  studyTopicTypeMapping: reads('configuration.studyTopicTypeMapping'),
 
   /**
    * Raw study object (value of _source field from Elasticsearch response)
@@ -146,62 +122,17 @@ export default EmberObject.extend({
   /**
    * @type {ComputedProperty<Object>}
    */
-  type: reads('raw.study_type'),
+  type: categorizedValueComputed('study_type', 'studyType'),
 
   /**
    * @type {ComputedProperty<Object>}
    */
-  status: reads('raw.study_status'),
+  status: categorizedValueComputed('study_status', 'studyStatus'),
 
   /**
    * @type {ComputedProperty<Array<Object>>}
    */
   studyTopics: or('raw.study_topics', []),
-
-  /**
-   * @type {ComputedProperty<Object>}
-   */
-  genderEligibility: topicTypeComputed('genderEligibility'),
-
-  /**
-   * @type {ComputedProperty<Object>}
-   */
-  phase: topicTypeComputed('phase'),
-
-  /**
-   * @type {ComputedProperty<Object>}
-   */
-  interventionModel: topicTypeComputed('interventionModel'),
-
-  /**
-   * @type {ComputedProperty<Object>}
-   */
-  allocationType: topicTypeComputed('allocationType'),
-
-  /**
-   * @type {ComputedProperty<Object>}
-   */
-  primaryPurpose: topicTypeComputed('primaryPurpose'),
-
-  /**
-   * @type {ComputedProperty<Object>}
-   */
-  masking: topicTypeComputed('masking'),
-
-  /**
-   * @type {ComputedProperty<Object>}
-   */
-  observationalModel: topicTypeComputed('observationalModel'),
-
-  /**
-   * @type {ComputedProperty<Object>}
-   */
-  timePerspective: topicTypeComputed('timePerspective'),
-
-  /**
-   * @type {ComputedProperty<Object>}
-   */
-  biospecimensRetained: topicTypeComputed('biospecimensRetained'),
 
   /**
    * @type {ComputedProperty<boolean>}
@@ -283,6 +214,16 @@ export default EmberObject.extend({
     });
     this.get('expandedDataObjects').clear();
   },
+
+  isSupportingField(fieldName) {
+    if (interventionalOnlyStudyTopicTypes.includes(fieldName)) {
+      return this.get('isInterventional');
+    } else if (observationalOnlyStudyTopicTypes.includes(fieldName)) {
+      return this.get('isObservational');
+    } else {
+      return true;
+    }
+  },
 });
 
 function topicTypeComputed(topicTypeName) {
@@ -292,15 +233,17 @@ function topicTypeComputed(topicTypeName) {
       studyTopics,
     } = this.getProperties('studyTopicTypeMapping', 'studyTopics');
     const specifiedTopicMapping =
-      this.get(`study${_.upperFirst(topicTypeName)}Mapping`);
+      this.get(`configuration.study${_.upperFirst(topicTypeName)}Mapping`);
     const topicFromMapping = studyTopicTypeMapping
       .findBy(`is${_.upperFirst(topicTypeName)}TopicType`, true);
     if (topicFromMapping) {
       const topicTypeId = get(topicFromMapping, 'id');
       const topic = studyTopics
         .find(topic => get(topic, 'topic_source_type.id') === topicTypeId);
+      const unknownValue =
+        this.get(`configuration.study${_.upperFirst(topicTypeName)}UnknownValue`);
       return topic &&
-        specifiedTopicMapping.findBy('name', get(topic, 'topic_value'));
+        specifiedTopicMapping.findBy('name', get(topic, 'topic_value')) || unknownValue;
     }
   });
 }

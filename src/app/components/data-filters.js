@@ -8,7 +8,38 @@ import { A } from '@ember/array';
 import { array, raw } from 'ember-awesome-macros';
 import _ from 'lodash';
 
-export default Component.extend(I18n, {
+const studyCategorizedFilters = [
+  'type',
+  'status',
+  'genderEligibility',
+  'phase',
+  'interventionModel',
+  'allocationType',
+  'primaryPurpose',
+  'masking',
+  'observationalModel',
+  'timePerspective',
+  'biospecimensRetained',
+];
+
+const dataObjectCategorizedFilters = [
+  'type',
+  'accessType',
+];
+
+const filtersFields = {};
+studyCategorizedFilters.forEach(filterName => {
+  const upperFirstFilterName = _.upperFirst(filterName);
+  filtersFields[`study${upperFirstFilterName}Filter`] =
+    reads(`configuration.study${upperFirstFilterName}Mapping`);
+});
+dataObjectCategorizedFilters.forEach(filterName => {
+  const upperFirstFilterName = _.upperFirst(filterName);
+  filtersFields[`dataObject${upperFirstFilterName}Filter`] =
+    reads(`configuration.dataObject${upperFirstFilterName}Mapping`);
+});
+
+export default Component.extend(I18n, filtersFields, {
   classNames: ['data-filters', 'clearfix'],
 
   configuration: service(),
@@ -52,45 +83,9 @@ export default Component.extend(I18n, {
    */
   filtersModel: 'dataObject',
 
-  studyTypeMapping: reads('configuration.studyTypeMapping'),
-
-  studyStatusMapping: reads('configuration.studyStatusMapping'),
-
-  studyGenderEligibilityMapping: reads('configuration.studyGenderEligibilityMapping'),
-
-  studyPhaseMapping: reads('configuration.studyPhaseMapping'),
-
-  studyInterventionModelMapping: reads('configuration.studyInterventionModelMapping'),
-
-  studyAllocationTypeMapping: reads('configuration.studyAllocationTypeMapping'),
-
-  studyPrimaryPurposeMapping: reads('configuration.studyPrimaryPurposeMapping'),
-
-  studyMaskingMapping: reads('configuration.studyMaskingMapping'),
-
-  studyObservationalModelMapping: reads('configuration.studyObservationalModelMapping'),
-
-  studyTimePerspectiveMapping: reads('configuration.studyTimePerspectiveMapping'),
-
-  studyBiospecimensRetainedMapping: reads(
-    'configuration.studyBiospecimensRetainedMapping'
-  ),
-
-  objectTypeMapping: computed(
-    'configuration.objectTypeMapping.@each.{name,class}',
-    function objectTypeMapping() {
-      const mappingsBase = this.get('configuration.objectTypeMapping');
-      return mappingsBase.map(type => Object.assign({}, type, {
-        name: `${get(type, 'name')} [${get(type, 'class')}]`,
-      }));
-    }
-  ),
-
-  accessTypeMapping: reads('configuration.accessTypeMapping'),
-
-  publisherMapping: computed(
+  dataObjectPublisherMapping: computed(
     'dataObjects.@each.managingOrganisation',
-    function publisherMapping() {
+    function dataObjectPublisherMapping() {
       return this.get('dataObjects')
         .mapBy('managingOrganisation')
         .compact()
@@ -110,79 +105,14 @@ export default Component.extend(I18n, {
   ),
 
   /**
-   * @type {Array<Object>}
-   */
-  studyTypeFilter: reads('studyTypeMapping'),
-
-  /**
-   * @type {Array<Object>}
-   */
-  studyStatusFilter: reads('studyStatusMapping'),
-
-  /**
-   * @type {Array<Object>}
-   */
-  studyGenderEligibilityFilter: reads('studyGenderEligibilityMapping'),
-
-  /**
-   * @type {Array<Object>}
-   */
-  studyPhaseFilter: reads('studyPhaseMapping'),
-
-  /**
-   * @type {Array<Object>}
-   */
-  studyInterventionModelFilter: reads('studyInterventionModelMapping'),
-
-  /**
-   * @type {Array<Object>}
-   */
-  studyAllocationTypeFilter: reads('studyAllocationTypeMapping'),
-
-  /**
-   * @type {Array<Object>}
-   */
-  studyPrimaryPurposeFilter: reads('studyPrimaryPurposeMapping'),
-
-  /**
-   * @type {Array<Object>}
-   */
-  studyMaskingFilter: reads('studyMaskingMapping'),
-
-  /**
-   * @type {Array<Object>}
-   */
-  studyObservationalModelFilter: reads('studyObservationalModelMapping'),
-
-  /**
-   * @type {Array<Object>}
-   */
-  studyTimePerspectiveFilter: reads('studyTimePerspectiveMapping'),
-
-  /**
-   * @type {Array<Object>}
-   */
-  studyBiospecimensRetainedFilter: reads('studyBiospecimensRetainedMapping'),
-
-  /**
-   * @type {Array<Object>}
-   */
-  objectTypeFilter: reads('objectTypeMapping'),
-
-  /**
-   * @type {Array<Object>}
-   */
-  accessTypeFilter: reads('accessTypeMapping'),
-
-  /**
    * @type {string}
    */
-  yearFilter: '',
+  dataObjectYearFilter: '',
 
   /**
    * @type {Array<Object>}
    */
-  publisherFilter: reads('publisherMapping'),
+  dataObjectPublisherFilter: reads('dataObjectPublisherMapping'),
 
   /**
    * @type {ComputedProperty<boolean>}
@@ -203,24 +133,11 @@ export default Component.extend(I18n, {
   actions: {
     filterStudies() {
       const filters = {};
-
-      [
-        'type',
-        'status',
-        'genderEligibility',
-        'phase',
-        'interventionModel',
-        'allocationType',
-        'primaryPurpose',
-        'masking',
-        'observationalModel',
-        'timePerspective',
-        'biospecimensRetained',
-      ].forEach(filterName => {
-        const mapping = this.get(`study${_.upperFirst(filterName)}Mapping`);
-        const filter = this.get(`study${_.upperFirst(filterName)}Filter`);
-        if (mapping && mapping.length) {
-          filters[filterName] = filter.mapBy('id');
+      studyCategorizedFilters.forEach(filterName => {
+        const mappingSize =
+          this.get(`configuration.study${_.upperFirst(filterName)}Mapping.length`);
+        if (mappingSize) {
+          filters[filterName] = this.get(`study${_.upperFirst(filterName)}Filter`);
         }
       });
 
@@ -229,38 +146,32 @@ export default Component.extend(I18n, {
     filterDataObjects() {
       const {
         onFilterDataObjects,
-        objectTypeMapping,
-        accessTypeMapping,
-        publisherMapping,
-        objectTypeFilter,
-        accessTypeFilter,
-        yearFilter,
-        publisherFilter,
+        dataObjectPublisherMapping,
+        dataObjectYearFilter,
+        dataObjectPublisherFilter,
       } = this.getProperties(
         'onFilterDataObjects',
-        'objectTypeMapping',
-        'accessTypeMapping',
-        'publisherMapping',
-        'objectTypeFilter',
-        'accessTypeFilter',
-        'yearFilter',
-        'publisherFilter'
+        'dataObjectPublisherMapping',
+        'dataObjectYearFilter',
+        'dataObjectPublisherFilter'
       );
 
       const filters = {
-        year: rangeToNumbers(yearFilter),
+        year: rangeToNumbers(dataObjectYearFilter),
       };
 
-      if (objectTypeMapping && objectTypeMapping.length) {
-        filters.type = objectTypeFilter.mapBy('id');
-      }
+      dataObjectCategorizedFilters.forEach(filterName => {
+        const mappingSize = this.get(
+          `configuration.dataObject${_.upperFirst(filterName)}Mapping.length`
+        );
+        if (mappingSize) {
+          filters[filterName] =
+            this.get(`dataObject${_.upperFirst(filterName)}Filter`);
+        }
+      });
 
-      if (accessTypeMapping && accessTypeMapping.length) {
-        filters.accessType = accessTypeFilter.mapBy('id');
-      }
-
-      if (publisherMapping && publisherMapping.length) {
-        filters.publisher = publisherFilter.mapBy('id');
+      if (dataObjectPublisherMapping && dataObjectPublisherMapping.length) {
+        filters.publisher = dataObjectPublisherFilter.mapBy('id');
       }
 
       onFilterDataObjects(filters);

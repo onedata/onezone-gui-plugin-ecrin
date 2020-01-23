@@ -15,7 +15,11 @@
   {{#each filteredItems as |item index|}}
     <li class="checkbox-item">
       <label class="item-name" for={{concat elementId "-" index}}>
-        {{#truncated-string}}{{item.name}}{{/truncated-string}}
+        {{#if hasBlock}}
+          {{yield item}}
+        {{else}}
+          {{#truncated-string}}{{item.name}}{{/truncated-string}}
+        {{/if}}
       </label>
       {{one-checkbox
         inputId=(concat elementId "-" index)

@@ -18,7 +18,7 @@
     {{#each studiesChunksArray as |study|}}
       <div class="data-row" data-row-id={{study.id}}>
         {{#acc.item value=study.id as |accItem|}}
-          {{query-results/result
+          {{query-results/study-record
             item=accItem
             study=study
             isExpanded=(eq study.id expandedResultId)

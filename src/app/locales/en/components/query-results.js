@@ -1,7 +1,7 @@
 export default {
   results: 'Results',
   clearStudyList: 'Clear study list',
-  result: {
+  studyRecord: {
     loading: 'Loading...',
     studyDescription: 'Description',
     studyDataSharingStatement: 'Data sharing statement',

@@ -31,21 +31,21 @@
   <div class={{if (not-eq filtersModel "study") "hidden"}}>
     {{#filter-collapse label=(tt this "studyType")}}
       {{checkbox-filter
-        items=studyTypeMapping
+        items=configuration.studyTypeMapping
         selectedItems=studyTypeFilter
         disabled=isFetchingData
         onChange=(action (mut studyTypeFilter))}}
     {{/filter-collapse}}
     {{#filter-collapse label=(tt this "studyStatus")}}
       {{checkbox-filter
-        items=studyStatusMapping
+        items=configuration.studyStatusMapping
         selectedItems=studyStatusFilter
         disabled=isFetchingData
         onChange=(action (mut studyStatusFilter))}}
     {{/filter-collapse}}
     {{#filter-collapse label=(tt this "studyGenderEligibility")}}
       {{checkbox-filter
-        items=studyGenderEligibilityMapping
+        items=configuration.studyGenderEligibilityMapping
         selectedItems=studyGenderEligibilityFilter
         disabled=isFetchingData
         onChange=(action (mut studyGenderEligibilityFilter))}}
@@ -56,35 +56,35 @@
         <div class="panel-body">
           {{#filter-collapse label=(tt this "studyPhase")}}
             {{checkbox-filter
-              items=studyPhaseMapping
+              items=configuration.studyPhaseMapping
               selectedItems=studyPhaseFilter
               disabled=isFetchingData
               onChange=(action (mut studyPhaseFilter))}}
           {{/filter-collapse}}
           {{#filter-collapse label=(tt this "studyInterventionModel")}}
             {{checkbox-filter
-              items=studyInterventionModelMapping
+              items=configuration.studyInterventionModelMapping
               selectedItems=studyInterventionModelFilter
               disabled=isFetchingData
               onChange=(action (mut studyInterventionModelFilter))}}
           {{/filter-collapse}}
           {{#filter-collapse label=(tt this "studyAllocationType")}}
             {{checkbox-filter
-              items=studyAllocationTypeMapping
+              items=configuration.studyAllocationTypeMapping
               selectedItems=studyAllocationTypeFilter
               disabled=isFetchingData
               onChange=(action (mut studyAllocationTypeFilter))}}
           {{/filter-collapse}}
           {{#filter-collapse label=(tt this "studyPrimaryPurpose")}}
             {{checkbox-filter
-              items=studyPrimaryPurposeMapping
+              items=configuration.studyPrimaryPurposeMapping
               selectedItems=studyPrimaryPurposeFilter
               disabled=isFetchingData
               onChange=(action (mut studyPrimaryPurposeFilter))}}
           {{/filter-collapse}}
           {{#filter-collapse label=(tt this "studyMasking")}}
             {{checkbox-filter
-              items=studyMaskingMapping
+              items=configuration.studyMaskingMapping
               selectedItems=studyMaskingFilter
               disabled=isFetchingData
               onChange=(action (mut studyMaskingFilter))}}
@@ -98,21 +98,21 @@
         <div class="panel-body">
           {{#filter-collapse label=(tt this "studyObservationalModel")}}
             {{checkbox-filter
-              items=studyObservationalModelMapping
+              items=configuration.studyObservationalModelMapping
               selectedItems=studyObservationalModelFilter
               disabled=isFetchingData
               onChange=(action (mut studyObservationalModelFilter))}}
           {{/filter-collapse}}
           {{#filter-collapse label=(tt this "studyTimePerspective")}}
             {{checkbox-filter
-              items=studyTimePerspectiveMapping
+              items=configuration.studyTimePerspectiveMapping
               selectedItems=studyTimePerspectiveFilter
               disabled=isFetchingData
               onChange=(action (mut studyTimePerspectiveFilter))}}
           {{/filter-collapse}}
           {{#filter-collapse label=(tt this "studyBiospecimensRetained")}}
             {{checkbox-filter
-              items=studyBiospecimensRetainedMapping
+              items=configuration.studyBiospecimensRetainedMapping
               selectedItems=studyBiospecimensRetainedFilter
               disabled=isFetchingData
               onChange=(action (mut studyBiospecimensRetainedFilter))}}
@@ -122,37 +122,41 @@
     {{/if}}
   </div>
   <div class={{if (not-eq filtersModel "dataObject") "hidden"}}>
-    {{#filter-collapse label=(tt this "objectType")}}
-      {{checkbox-filter
-        items=objectTypeMapping
-        selectedItems=objectTypeFilter
+    {{#filter-collapse label=(tt this "dataObjectType")}}
+      {{#checkbox-filter
+        items=configuration.dataObjectTypeMapping
+        selectedItems=dataObjectTypeFilter
         disabled=isFetchingData
-        onChange=(action (mut objectTypeFilter))}}
+        onChange=(action (mut dataObjectTypeFilter))
+        as |item|
+      }}
+        {{#truncated-string}}{{item.name}} [{{item.class}}]{{/truncated-string}}
+      {{/checkbox-filter}}
     {{/filter-collapse}}
-    {{#filter-collapse label=(tt this "accessType")}}
+    {{#filter-collapse label=(tt this "dataObjectAccessType")}}
       {{checkbox-filter
-        items=accessTypeMapping
-        selectedItems=accessTypeFilter
+        items=configuration.dataObjectAccessTypeMapping
+        selectedItems=dataObjectAccessTypeFilter
         disabled=isFetchingData
-        onChange=(action (mut accessTypeFilter))}}
+        onChange=(action (mut dataObjectAccessTypeFilter))}}
     {{/filter-collapse}}
-    {{#filter-collapse label=(tt this "year") class="form-group-sm"}}
+    {{#filter-collapse label=(tt this "dataObjectYear") class="form-group-sm"}}
       <input
         id="year-filter-input"
         class="form-control"
         type="text"
-        value={{yearFilter}}
-        oninput={{action (action (mut yearFilter)) value="target.value"}}
+        value={{dataObjectYearFilter}}
+        oninput={{action (action (mut dataObjectYearFilter)) value="target.value"}}
         onkeydown={{invoke-on-enter (action "filterDataObjects")}}
         disabled={{isFetchingData}}
       >
     {{/filter-collapse}}
-    {{#filter-collapse label=(tt this "publisher")}}
+    {{#filter-collapse label=(tt this "dataObjectPublisher")}}
       {{checkbox-filter
-        items=publisherMapping
-        selectedItems=publisherFilter
+        items=dataObjectPublisherMapping
+        selectedItems=dataObjectPublisherFilter
         disabled=isFetchingData
-        onChange=(action (mut publisherFilter))}}
+        onChange=(action (mut dataObjectPublisherFilter))}}
     {{/filter-collapse}}
   </div>
 </div>

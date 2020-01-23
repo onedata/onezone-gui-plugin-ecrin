@@ -882,7 +882,7 @@
           "useForUnknown": true
         }
       ],
-      "objectTypeMapping": [
+      "dataObjectTypeMapping": [
         {
           "name": "Study Protocol",
           "class": "Text",
@@ -1485,7 +1485,7 @@
           "useForUnknown": true
         }
       ],
-      "accessTypeMapping": [
+      "dataObjectAccessTypeMapping": [
         {
           "name": "Public on-screen access",
           "id": 12,

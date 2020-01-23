@@ -9,22 +9,7 @@
 
 import Service, { inject as service } from '@ember/service';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
-import { or, raw } from 'ember-awesome-macros';
-import _ from 'lodash';
-
-const interventionalOnlyStudyTopicTypes = [
-  'phase',
-  'interventionModel',
-  'allocationType',
-  'primaryPurpose',
-  'masking',
-];
-
-const observationalOnlyStudyTopicTypes = [
-  'observationalModel',
-  'timePerspective',
-  'biospecimensRetained',
-];
+import { or, raw, array } from 'ember-awesome-macros';
 
 const mappingFields = [
   'studyIdType',
@@ -32,23 +17,30 @@ const mappingFields = [
   'studyStatus',
   'studyTopicType',
   'studyGenderEligibility',
-  'objectType',
-  'accessType',
-].concat([
-  ...interventionalOnlyStudyTopicTypes,
-  ...observationalOnlyStudyTopicTypes,
-].map(topicType => `study${_.upperFirst(topicType)}`));
+  'studyPhase',
+  'studyInterventionModel',
+  'studyAllocationType',
+  'studyPrimaryPurpose',
+  'studyMasking',
+  'studyObservationalModel',
+  'studyTimePerspective',
+  'studyBiospecimensRetained',
+  'dataObjectType',
+  'dataObjectAccessType',
+];
 
 const serviceFields = {};
 
 mappingFields.forEach(mappingField => {
   serviceFields[`${mappingField}Mapping`] =
     or(`configuration.${mappingField}Mapping`, raw([]));
+
+  serviceFields[`${mappingField}UnknownValue`] =
+    array.findBy(`${mappingField}Mapping`, raw('useForUnknown'));
 });
 
 export default Service.extend(serviceFields, {
   appProxy: service(),
-  elasticsearch: service(),
 
   /**
    * @type {Object|undefined}

@@ -2,7 +2,7 @@
  * A component used internally by query-result component, that shows
  * one record of query results (one study).
  * 
- * @module components/query-reslts/result
+ * @module components/query-reslts/study-record
  * @author Michał Borzęcki
  * @copyright (C) 2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
@@ -10,20 +10,15 @@
 
 import Component from '@ember/component';
 import { get } from '@ember/object';
-import { reads } from '@ember/object/computed';
-import { inject as service } from '@ember/service';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 
 export default Component.extend(I18n, {
-  classNames: ['query-results-result'],
-
-  elasticsearch: service(),
-  configuration: service(),
+  classNames: ['study-record'],
 
   /**
    * @override
    */
-  i18nPrefix: 'components.queryResults.result',
+  i18nPrefix: 'components.queryResults.studyRecord',
 
   /**
    * True if application is in the middle of data fetching process
@@ -56,31 +51,6 @@ export default Component.extend(I18n, {
    * @returns {any}
    */
   remove: () => {},
-
-  /**
-   * @type {ComputedProperty<string>}
-   */
-  studyDescription: reads('study.study_status.brief_description'),
-
-  /**
-   * @type {ComputedProperty<string>}
-   */
-  studyDataSharingStatement: reads('study.study_status.data_sharing_statement'),
-
-  /**
-   * @type {Ember.ComputedProperty<Array<Object>>}
-   */
-  objectTypeMapping: reads('configuration.objectTypeMapping'),
-
-  /**
-   * @type {Ember.ComputedProperty<Array<Object>>}
-   */
-  accessTypeMapping: reads('configuration.accessTypeMapping'),
-
-  /**
-   * @type {Ember.ComputedProperty<Array<Object>>}
-   */
-  publisherMapping: reads('configuration.publisherMapping'),
 
   actions: {
     toggleDataObjectExpansion(dataObject) {
