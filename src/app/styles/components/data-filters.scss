@@ -20,13 +20,19 @@
     + .form-group {
       border-top: 1px solid $main-border-color;
     }
-
-    // &:last-of-type {
-    //   border-bottom: 0;
-    // }
   }
 
   .filters-model-group {
     padding-top: 0;
+  }
+
+  @media (min-width: $screen-sm-min) {
+    display: flex;
+    flex-direction: column;
+
+    .filters-container {
+      overflow: auto;
+      margin-bottom: $padding-base-vertical;
+    }
   }
 }
