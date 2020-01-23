@@ -44,6 +44,12 @@ export default Component.extend(I18n, {
   selectedItems: computed(() => A()),
 
   /**
+   * @virtual optional
+   * @type {boolean}
+   */
+  disabled: false,
+
+  /**
    * @virtual
    * @type {Function}
    * @param {Array<Object>} selectedItems
@@ -76,31 +82,35 @@ export default Component.extend(I18n, {
 
   actions: {
     toggleItem(item) {
-      const {
-        selectedItems,
-        onChange,
-      } = this.getProperties('selectedItems', 'onChange');
+      if (!this.get('disabled')) {
+        const {
+          selectedItems,
+          onChange,
+        } = this.getProperties('selectedItems', 'onChange');
 
-      let newSelectedItems;
-      if (selectedItems.includes(item)) {
-        newSelectedItems = selectedItems.without(item);
-      } else {
-        newSelectedItems = selectedItems.concat([item]);
+        let newSelectedItems;
+        if (selectedItems.includes(item)) {
+          newSelectedItems = selectedItems.without(item);
+        } else {
+          newSelectedItems = selectedItems.concat([item]);
+        }
+
+        onChange(newSelectedItems);
       }
-
-      onChange(newSelectedItems);
     },
     toggleAllItems() {
-      const {
-        onChange,
-        filteredItems,
-        areAllItemsSelected,
-      } = this.getProperties('filteredItems', 'onChange', 'areAllItemsSelected');
+      if (!this.get('disabled')) {
+        const {
+          onChange,
+          filteredItems,
+          areAllItemsSelected,
+        } = this.getProperties('filteredItems', 'onChange', 'areAllItemsSelected');
 
-      if (areAllItemsSelected) {
-        onChange([]);
-      } else {
-        onChange(filteredItems.slice(0));
+        if (areAllItemsSelected) {
+          onChange([]);
+        } else {
+          onChange(filteredItems.slice(0));
+        }
       }
     },
   },

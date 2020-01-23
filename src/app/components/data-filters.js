@@ -9,7 +9,7 @@ import { array, raw } from 'ember-awesome-macros';
 import _ from 'lodash';
 
 export default Component.extend(I18n, {
-  classNames: ['data-filters'],
+  classNames: ['data-filters', 'clearfix'],
 
   configuration: service(),
 
@@ -17,6 +17,13 @@ export default Component.extend(I18n, {
    * @override
    */
   i18nPrefix: 'components.dataFilters',
+
+  /**
+   * True if application is in the middle of data fetching process
+   * @virtual optional
+   * @type {boolean}
+   */
+  isFetchingData: false,
 
   /**
    * @virtual

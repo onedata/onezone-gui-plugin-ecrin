@@ -29,6 +29,13 @@ export default Component.extend(I18n, {
    */
   i18nPrefix: 'components.queryResults',
 
+  /**
+   * True if application is in the middle of data fetching process
+   * @virtual optional
+   * @type {boolean}
+   */
+  isFetchingData: false,
+
   studies: computed(() => A()),
 
   /**

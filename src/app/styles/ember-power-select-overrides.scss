@@ -75,3 +75,9 @@ $ember-power-select-multiple-option-line-height: $line-height-base;
 .ember-power-select-options[role=listbox] {
   max-height: 250px;
 }
+
+.ember-power-select-trigger[aria-disabled=true] {
+  box-shadow: none;
+  background-color: $input-bg-disabled;
+  opacity: 0.6;
+}

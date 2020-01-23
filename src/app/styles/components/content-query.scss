@@ -28,4 +28,10 @@
       min-width: 0;
     }
   }
+
+  @media (max-width: $screen-xs-max) {
+    .query-parameters, .data-filters {
+      margin-bottom: $padding-base-vertical;
+    }
+  }
 }

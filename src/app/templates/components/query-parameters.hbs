@@ -7,6 +7,7 @@
         options=modeOptions
         onchange=(action onChange "mode")
         searchEnabled=false
+        disabled=isFetchingData
         as |mode|}}
         {{tt this (concat "modes." mode)}}
       {{/power-select}}
@@ -19,6 +20,7 @@
           options=studyIdTypeMapping
           onchange=(action onChange "studyIdType")
           matcher=entryMatcher
+          disabled=isFetchingData
           as |studyIdType|}}
           {{studyIdType.name}}
         {{/power-select}}
@@ -31,7 +33,8 @@
           type="text"
           value={{studySearchParams.studyId}}
           onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "studyId") value="target.value"}}>
+          oninput={{action (action onChange "studyId") value="target.value"}}
+          disabled={{isFetchingData}}>
       </div>
     {{else if (eq studySearchParams.mode "studyCharact")}}
       <div class="col-xs-12 col-sm-3 form-group">
@@ -42,7 +45,8 @@
           type="text"
           value={{studySearchParams.studyTitleContains}}
           onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "studyTitleContains") value="target.value"}}>
+          oninput={{action (action onChange "studyTitleContains") value="target.value"}}
+          disabled={{isFetchingData}}>
       </div>
       <div class="col-xs-12 col-sm-2 form-group">
           <label class="control-label hidden-xs">&nbsp;</label>
@@ -51,6 +55,7 @@
             selected=studySearchParams.studyTitleTopicOperator
             onchange=(action onChange "studyTitleTopicOperator")
             searchEnabled=false
+            disabled=isFetchingData
             as |studyTitleTopicOperator|}}
             {{tt this (concat "studyTitleTopicOperatorOptions." studyTitleTopicOperator)}}
           {{/power-select}}
@@ -63,7 +68,8 @@
           type="text"
           value={{studySearchParams.studyTopicsInclude}}
           onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "studyTopicsInclude") value="target.value"}}>
+          oninput={{action (action onChange "studyTopicsInclude") value="target.value"}}
+          disabled={{isFetchingData}}>
       </div>
     {{else if (eq studySearchParams.mode "viaPubPaper")}}
       <div class="col-xs-12 col-sm-4 form-group">
@@ -74,7 +80,8 @@
           type="text"
           value={{studySearchParams.doi}}
           onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "doi") value="target.value"}}>
+          oninput={{action (action onChange "doi") value="target.value"}}
+          disabled={{isFetchingData}}>
       </div>
       <div class="col-xs-12 col-sm-4 form-group">
         <label class="control-label" for="data-object-title-input">{{tt this "dataObjectTitle"}}</label>
@@ -84,9 +91,17 @@
           type="text"
           value={{studySearchParams.dataObjectTitle}}
           onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "dataObjectTitle") value="target.value"}}>
+          oninput={{action (action onChange "dataObjectTitle") value="target.value"}}
+          disabled={{isFetchingData}}>
       </div>
     {{/if}}
   </div>
-  {{#bs-button type="primary" class="pull-right find-button" onClick=onFind}}{{tt this "find"}}{{/bs-button}}
+  {{#bs-button
+    type="primary"
+    class="pull-right find-button"
+    onClick=onFind
+    disabled=isFetchingData
+  }}
+    {{tt this "find"}}
+  {{/bs-button}}
 </div>

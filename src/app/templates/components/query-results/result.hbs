@@ -9,15 +9,15 @@
       {{one-icon icon=(if study.hasAllElementsExpanded "arrow-up" "arrow-down")}}
     </li>
   {{/if}}
-  <li class="result-action remove-action" {{action remove}}>{{one-icon icon="x"}}</li>
+  <li class="result-action remove-action {{if isFetchingData "disabled"}}" {{action "remove"}}>{{one-icon icon="x"}}</li>
 </ul>
 {{#item.body}}
   <div class="data-object-records">
     {{#if study.description}}
       <div class="data-object-record study-info">
         <div class="data-object-type">
-          {{tt this "studyDescription"}}<br/>
-          <a {{action (mut study.isDescriptionExpanded) (not study.isDescriptionExpanded)}}>
+          <div class="object-type-name">{{tt this "studyDescription"}}</div>
+          <a {{action (mut study.isDescriptionExpanded) (not study.isDescriptionExpanded)}} class="show-more-link">
             {{tt this (if study.isDescriptionExpanded "showLess" "showMore")}}
           </a>
         </div>
@@ -34,8 +34,8 @@
   {{#if study.dataSharingStatement}}
       <div class="data-object-record study-info">
         <div class="data-object-type">
-          {{tt this "studyDataSharingStatement"}}<br/>
-          <a {{action (mut study.isDataSharingStatementExpanded) (not study.isDataSharingStatementExpanded)}}>
+          <div class="object-type-name">{{tt this "studyDataSharingStatement"}}</div>
+          <a {{action (mut study.isDataSharingStatementExpanded) (not study.isDataSharingStatementExpanded)}} class="show-more-link">
             {{tt this (if study.isDataSharingStatementExpanded "showLess" "showMore")}}
           </a>
         </div>
@@ -52,8 +52,8 @@
     {{#each study.dataObjects as |dataObject|}}
       <div class="data-object-record">
         <div class="data-object-type">
-          {{dataObject.typeName}}<br/>
-          <a {{action "toggleDataObjectExpansion" dataObject}}>
+          <div class="object-type-name">{{dataObject.typeName}}</div>
+          <a {{action "toggleDataObjectExpansion" dataObject}} class="show-more-link">
             {{tt this (if (contains dataObject study.expandedDataObjects) "showLess" "showMore")}}
           </a>
         </div>

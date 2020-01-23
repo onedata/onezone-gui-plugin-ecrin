@@ -1,14 +1,17 @@
 {{query-parameters
+  isFetchingData=isFetchingData
   studySearchParams=studySearchParams
   onChange=(action "parameterChanged")
   onFind=(action "find")}}
 <div class="query-content">
   {{data-filters
     dataObjects=dataObjects
+    isFetchingData=isFetchingData
     onFilterStudies=(action "filterStudies")
     onFilterDataObjects=(action "filterDataObjects")
   }}
   {{#query-results
+    isFetchingData=isFetchingData
     studies=studies
     removeStudies=(action "removeStudies")}}
     {{promise-proxy-container proxy=fetchDataPromiseObject isLoading=false}}

@@ -25,6 +25,13 @@ export default Component.extend(I18n, {
   i18nPrefix: 'components.queryParameters',
 
   /**
+   * True if application is in the middle of data fetching process
+   * @virtual optional
+   * @type {boolean}
+   */
+  isFetchingData: false,
+
+  /**
    * @virtual
    * @type {Utils.StudySearchParams}
    */

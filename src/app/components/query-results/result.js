@@ -26,6 +26,13 @@ export default Component.extend(I18n, {
   i18nPrefix: 'components.queryResults.result',
 
   /**
+   * True if application is in the middle of data fetching process
+   * @virtual optional
+   * @type {boolean}
+   */
+  isFetchingData: false,
+
+  /**
    * @virtual
    * @type {Object}
    */
@@ -98,6 +105,16 @@ export default Component.extend(I18n, {
         selectedDataObjects.removeObject(dataObject);
       } else {
         selectedDataObjects.addObject(dataObject);
+      }
+    },
+    remove() {
+      const {
+        isFetchingData,
+        remove,
+      } = this.getProperties('isFetchingData', 'remove');
+
+      if (!isFetchingData) {
+        return remove();
       }
     },
   },

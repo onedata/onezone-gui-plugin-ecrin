@@ -112,5 +112,9 @@ a {
       color: darken($color-one-mint, 20%);
     }
   }
+  &.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+  }
 }
 

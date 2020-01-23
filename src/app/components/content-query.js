@@ -86,7 +86,15 @@ export default Component.extend(I18n, {
    */
   hasMeaningfulStudySearchParams: reads('studySearchParams.hasMeaningfulParams'),
 
+  /**
+   * @type {ComputedProperty<PromiseObject>}
+   */
   fetchDataPromiseObject: computed(() => PromiseObject.create({ promise: resolve() })),
+
+  /**
+   * @type {ComputedProperty<boolean>}
+   */
+  isFetchingData: reads('fetchDataPromiseObject.isPending'),
 
   searchStudies() {
     const {

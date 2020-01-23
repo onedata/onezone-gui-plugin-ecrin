@@ -53,6 +53,10 @@
     &:hover {
       color: $main-text-color;
     }
+    &.disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
   }
 
   .data-object-record {
@@ -70,8 +74,22 @@
   .data-object-type {
     flex-basis: 10em;
     @media (max-width: $screen-xs-max) {
-      width: 7em;
+      display: flex;
+      flex-basis: initial;
+      flex-grow: 1;
+
+      .object-type-name {
+        flex-grow: 1;
+      }
+
+      .show-more-link {
+        margin-left: $padding-small-horizontal;
+      }
     }
+  }
+
+  .show-more-link {
+    white-space: nowrap;
   }
 
   .data-object-description {
@@ -86,16 +104,15 @@
   }
 
   .data-object-year {
-    flex-basis: 4em;
+    flex-basis: 3.5em;
     color: $main-text-light-color;
-    @media (max-width: $screen-xs-max) {
-      width: 3em;
-    }
+    text-align: right;
   }
 
   .data-object-status {
-    flex-basis: 30px;
+    // flex-basis: 30px;
     text-align: left;
+    margin-left: $padding-small-horizontal;
   }
 
   .data-object-status-icon {
@@ -119,6 +136,8 @@
   }
 
   .data-object-checkbox {
+    margin-left: $padding-small-horizontal;
+
     .one-checkbox {
       vertical-align: middle;
     }
@@ -170,6 +189,11 @@
   @media (max-width: $screen-xs-max) {
     .data-object-record {
       flex-wrap: wrap;
+    }
+
+    .data-object-description {
+      padding: 0;
+      order: 5;
     }
   }
 }
