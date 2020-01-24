@@ -1,16 +1,43 @@
 <div class="studies-list-header clearfix">
-  {{tt this "results"}}: <span class="one-label">{{studies.length}}</span>
-  {{#if studies.length}}
-    {{#bs-button
-      type="danger"
+  <div class="results-counter">
+    {{tt this "results"}}: <span class="one-label">{{studies.length}}</span>
+  </div>
+  <div class="results-actions">
+    {{!-- {{#bs-button
+      type="default"
       size="sm"
-      onClick=(action "removeAllStudies")
-      class="pull-right"
+      onClick=(action "loadStudies")
       disabled=isFetchingData
     }}
-      {{tt this "clearStudyList"}}
-    {{/bs-button}}
-  {{/if}}
+      {{tt this "load"}}
+    {{/bs-button}} --}}
+    {{#if studies.length}}
+      {{#bs-button
+        type="default"
+        size="sm"
+        onClick=(action "saveStudies")
+        disabled=isFetchingData
+      }}
+        {{tt this "save"}}
+      {{/bs-button}}
+      {{!-- {{#bs-button
+        type="default"
+        size="sm"
+        onClick=(action "exportStudiesToPdf")
+        disabled=isFetchingData
+      }}
+        {{tt this "exportToPdf"}}
+      {{/bs-button}} --}}
+      {{#bs-button
+        type="danger"
+        size="sm"
+        onClick=(action "removeAllStudies")
+        disabled=isFetchingData
+      }}
+        {{tt this "clear"}}
+      {{/bs-button}}
+    {{/if}}
+  </div>
 </div>
 <div class="studies-list">
   <div class="data-start-row" style={{firstRowStyle}}></div>

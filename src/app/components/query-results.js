@@ -231,5 +231,14 @@ export default Component.extend(I18n, {
       removeStudies(studies.slice());
       this.set('expandedResultId', null);
     },
+    loadStudies() {
+      console.log('load study');
+    },
+    saveStudies() {
+      console.log('save study');
+    },
+    exportStudiesToPdf() {
+      console.log('export to pdf');
+    },
   },
 });

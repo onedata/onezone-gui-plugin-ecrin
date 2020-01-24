@@ -74,7 +74,7 @@ export default Component.extend(I18n, filtersFields, {
   /**
    * @type {study}
    */
-  filtersModel: 'dataObject',
+  filtersModel: 'study',
 
   dataObjectPublisherMapping: undefined,
 

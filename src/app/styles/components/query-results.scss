@@ -1,4 +1,25 @@
 .query-results {
+  .studies-list-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .results-counter {
+    flex-grow: 1;
+    margin-right: $padding-xs-horizontal;
+  }
+
+  .results-actions {
+    .btn {
+      margin-right: $padding-xs-horizontal;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
   .panel {
     margin-bottom: $padding-small-vertical;
   }

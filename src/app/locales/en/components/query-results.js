@@ -1,6 +1,9 @@
 export default {
   results: 'Results',
-  clearStudyList: 'Clear study list',
+  load: 'Load...',
+  save: 'Save...',
+  exportToPdf: 'Export to pdf',
+  clear: 'Clear',
   studyRecord: {
     loading: 'Loading...',
     studyDescription: 'Description',
