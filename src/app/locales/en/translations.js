@@ -5,6 +5,7 @@ import pageHeader from './components/page-header';
 import queryParameters from './components/query-parameters';
 import queryResults from './components/query-results';
 import resourceLoadError from './components/resource-load-error';
+import saveDialog from './components/save-dialog';
 
 export default {
   components: {
@@ -15,5 +16,6 @@ export default {
     queryParameters,
     queryResults,
     resourceLoadError,
+    saveDialog,
   },
 };

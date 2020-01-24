@@ -74,6 +74,11 @@ export default Component.extend(I18n, {
   removeStudies: () => {},
 
   /**
+   * @type {boolean}
+   */
+  isSaveDialogOpened: false,
+
+  /**
    * @type {Ember.ComputedProperty<number>}
    */
   firstRowHeight: computed('rowHeight', 'studiesChunksArray._start',
@@ -231,11 +236,17 @@ export default Component.extend(I18n, {
       removeStudies(studies.slice());
       this.set('expandedResultId', null);
     },
+    openLoadStudiesDialog() {
+      console.log('load study dialog');
+    },
     loadStudies() {
       console.log('load study');
     },
-    saveStudies() {
-      console.log('save study');
+    saveStudies(name) {
+      console.log('save as ' + name);
+      return resolve().then(() => safeExec(this, () => {
+        this.set('isSaveDialogOpened', false);
+      }));
     },
     exportStudiesToPdf() {
       console.log('export to pdf');

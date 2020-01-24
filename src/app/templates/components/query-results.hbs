@@ -6,7 +6,7 @@
     {{!-- {{#bs-button
       type="default"
       size="sm"
-      onClick=(action "loadStudies")
+      onClick=(action "openLoadStudiesDialog")
       disabled=isFetchingData
     }}
       {{tt this "load"}}
@@ -15,7 +15,7 @@
       {{#bs-button
         type="default"
         size="sm"
-        onClick=(action "saveStudies")
+        onClick=(action (mut isSaveDialogOpened) true)
         disabled=isFetchingData
       }}
         {{tt this "save"}}
@@ -39,6 +39,11 @@
     {{/if}}
   </div>
 </div>
+{{save-dialog
+  isOpened=isSaveDialogOpened
+  onSave=(action "saveStudies")
+  onCancel=(action (mut isSaveDialogOpened) false)
+}}
 <div class="studies-list">
   <div class="data-start-row" style={{firstRowStyle}}></div>
   {{#bs-accordion onChange=(action "resultExpanded") as |acc|}}

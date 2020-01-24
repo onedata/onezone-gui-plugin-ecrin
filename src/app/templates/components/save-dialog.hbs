@@ -1,0 +1,39 @@
+{{#bs-modal
+  open=isOpened
+  onHide=onCancel
+  backdropClose=(not isSaving)
+  as |modal|
+}}
+  {{#modal.header}}
+    <h1>{{tt this "header"}}</h1>
+  {{/modal.header}}
+  {{#modal.body}}
+    <div class="form-group">
+      <label class="control-label" for="save-name-input">{{tt this "name"}}:</label>
+      <input
+        id="save-name-input"
+        class="form-control"
+        type="text"
+        value={{resultsName}}
+        oninput={{action (action (mut resultsName)) value="target.value"}}
+        onkeydown={{invoke-on-enter (action "save")}}
+        disabled={{isSaving}}
+      >
+    </div>
+  {{/modal.body}}
+  {{#modal.footer}}
+    {{#bs-button
+      onClick=onCancel
+      disabled=isSaving
+    }}
+      {{tt this "cancel"}}
+    {{/bs-button}}
+    {{#bs-button
+      onClick=(action "save")
+      type="primary"
+      disabled=(or isSaving (not resultsName))
+    }}
+      {{tt this "save"}}
+    {{/bs-button}}
+  {{/modal.footer}}
+{{/bs-modal}}
