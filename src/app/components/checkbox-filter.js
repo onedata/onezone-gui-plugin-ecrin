@@ -1,5 +1,5 @@
 import Component from '@ember/component';
-import { computed, observer, get } from '@ember/object';
+import { computed, get } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { A } from '@ember/array';
 import { equal } from 'ember-awesome-macros';
@@ -66,19 +66,6 @@ export default Component.extend(I18n, {
    * @type {ComputedProperty<boolean>}
    */
   areAllItemsSelected: equal('selectedItems.length', 'filteredItems.length'),
-
-  itemsObserver: observer('items', function itemsObserver() {
-    const {
-      onChange,
-      items,
-      selectedItems,
-    } = this.getProperties('onChange', 'items', 'selectedItems');
-
-    const newSelectedItems = selectedItems.filter(item => items.includes(item));
-    if (get(newSelectedItems, 'length') !== get(selectedItems, 'length')) {
-      onChange(newSelectedItems);
-    }
-  }),
 
   actions: {
     toggleItem(item) {

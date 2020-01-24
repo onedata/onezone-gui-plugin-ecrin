@@ -228,7 +228,7 @@ export default Component.extend(I18n, {
         studies,
       } = this.getProperties('removeStudies', 'studies');
 
-      removeStudies(studies);
+      removeStudies(studies.slice());
       this.set('expandedResultId', null);
     },
   },

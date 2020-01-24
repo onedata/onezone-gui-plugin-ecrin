@@ -2,9 +2,8 @@ import Component from '@ember/component';
 import rangeToNumbers from 'onezone-gui-plugin-ecrin/utils/range-to-numbers';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { inject as service } from '@ember/service';
-import { computed, get } from '@ember/object';
+import { observer, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
-import { A } from '@ember/array';
 import { array, raw } from 'ember-awesome-macros';
 import _ from 'lodash';
 
@@ -58,12 +57,6 @@ export default Component.extend(I18n, filtersFields, {
 
   /**
    * @virtual
-   * @type {Array<Util.DataObject>}
-   */
-  dataObjects: computed(() => A()),
-
-  /**
-   * @virtual
    * @type {Function}
    * @param {Object} filters
    * @returns {any}
@@ -83,26 +76,9 @@ export default Component.extend(I18n, filtersFields, {
    */
   filtersModel: 'dataObject',
 
-  dataObjectPublisherMapping: computed(
-    'dataObjects.@each.managingOrganisation',
-    function dataObjectPublisherMapping() {
-      return this.get('dataObjects')
-        .mapBy('managingOrganisation')
-        .compact()
-        .uniqBy('id')
-        .map(publisher => {
-          const publisherCopy = Object.assign({}, publisher);
-          const name = get(publisher, 'name');
-          if (typeof name === 'object' && name[0]) {
-            publisherCopy.name = name[0];
-          } else if (typeof name !== 'string') {
-            publisherCopy.name = null;
-          }
-          return publisherCopy;
-        })
-        .rejectBy('name', null);
-    }
-  ),
+  dataObjectPublisherMapping: undefined,
+
+  prevDataObjectPublisherMapping: undefined,
 
   /**
    * @type {string}
@@ -112,7 +88,7 @@ export default Component.extend(I18n, filtersFields, {
   /**
    * @type {Array<Object>}
    */
-  dataObjectPublisherFilter: reads('dataObjectPublisherMapping'),
+  dataObjectPublisherFilter: undefined,
 
   /**
    * @type {ComputedProperty<boolean>}
@@ -130,6 +106,48 @@ export default Component.extend(I18n, filtersFields, {
     raw('isObservational')
   ),
 
+  dataObjectPublisherMappingObserver: observer(
+    'dataObjectPublisherMapping.[]',
+    function dataObjectPublisherMappingObserver() {
+      const {
+        prevDataObjectPublisherMapping,
+        dataObjectPublisherMapping,
+        dataObjectPublisherFilter,
+      } = this.getProperties(
+        'prevDataObjectPublisherMapping',
+        'dataObjectPublisherMapping',
+        'dataObjectPublisherFilter'
+      );
+
+      const oldPublishersIds = prevDataObjectPublisherMapping.mapBy('id');
+      const newPublishersIds = dataObjectPublisherMapping.mapBy('id');
+      const newPublishers = _.difference(newPublishersIds, oldPublishersIds)
+        .map(id => dataObjectPublisherMapping.findBy('id', id));
+      const filterInNewMapping = dataObjectPublisherFilter
+        .map(publisher =>
+          dataObjectPublisherMapping.findBy('id', get(publisher, 'id'))
+        )
+        .compact()
+        .addObjects(newPublishers);
+
+      this.setProperties({
+        prevDataObjectPublisherMapping: dataObjectPublisherMapping.slice(),
+        dataObjectPublisherFilter: filterInNewMapping,
+      });
+    }
+  ),
+
+  init() {
+    this._super(...arguments);
+
+    const dataObjectPublisherMapping =
+      (this.get('dataObjectPublisherMapping') || []).slice();
+    this.setProperties({
+      prevDataObjectPublisherMapping: dataObjectPublisherMapping,
+      dataObjectPublisherFilter: dataObjectPublisherMapping,
+    });
+  },
+
   actions: {
     filterStudies() {
       const filters = {};
@@ -146,18 +164,17 @@ export default Component.extend(I18n, filtersFields, {
     filterDataObjects() {
       const {
         onFilterDataObjects,
-        dataObjectPublisherMapping,
         dataObjectYearFilter,
         dataObjectPublisherFilter,
       } = this.getProperties(
         'onFilterDataObjects',
-        'dataObjectPublisherMapping',
         'dataObjectYearFilter',
         'dataObjectPublisherFilter'
       );
 
       const filters = {
         year: rangeToNumbers(dataObjectYearFilter),
+        publisher: dataObjectPublisherFilter,
       };
 
       dataObjectCategorizedFilters.forEach(filterName => {
@@ -169,10 +186,6 @@ export default Component.extend(I18n, filtersFields, {
             this.get(`dataObject${_.upperFirst(filterName)}Filter`);
         }
       });
-
-      if (dataObjectPublisherMapping && dataObjectPublisherMapping.length) {
-        filters.publisher = dataObjectPublisherFilter.mapBy('id');
-      }
 
       onFilterDataObjects(filters);
     },

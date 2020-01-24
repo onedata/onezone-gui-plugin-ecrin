@@ -47,6 +47,42 @@ export default Component.extend(I18n, {
 
   dataObjects: computed(() => A()),
 
+  dataObjectPublisherUnknownValue: Object.freeze({
+    id: -1,
+    name: 'Not provided',
+    useForUnknown: true,
+  }),
+
+  dataObjectPublisherMapping: computed(
+    'dataObjects.@each.managingOrganisation',
+    'dataObjectPublisherUnknownValue',
+    function dataObjectPublisherMapping() {
+      const {
+        dataObjects,
+        dataObjectPublisherUnknownValue,
+      } = this.getProperties(
+        'dataObjects',
+        'dataObjectPublisherUnknownValue'
+      );
+      return dataObjects
+        .mapBy('managingOrganisation')
+        .compact()
+        .uniqBy('id')
+        .map(publisher => {
+          const publisherCopy = Object.assign({}, publisher);
+          const name = get(publisher, 'name');
+          if (typeof name === 'object' && name[0]) {
+            publisherCopy.name = name[0];
+          } else if (typeof name !== 'string') {
+            publisherCopy.name = null;
+          }
+          return publisherCopy;
+        })
+        .rejectBy('name', null)
+        .concat([dataObjectPublisherUnknownValue]);
+    }
+  ),
+
   /**
    * @type {ComputedProperty<PromiseObject>}
    */
@@ -135,6 +171,12 @@ export default Component.extend(I18n, {
     } else if (type === 'data_object') {
       _source = [
         'id',
+        'display_title',
+        'managing_organisation',
+        'object_type',
+        'publication_year',
+        'access_type',
+        'object_instances',
         'related_studies',
       ];
     }
@@ -408,33 +450,34 @@ export default Component.extend(I18n, {
     let fetchDataObjectsPromise;
 
     if (idsOfDataObjectsToFetch.length) {
-      fetchDataObjectsPromise = elasticsearch.post('data_object', '_search', {
-        query: {
-          bool: {
-            filter: [{
-              terms: {
-                id: idsOfDataObjectsToFetch,
-              },
-            }],
-          },
+      const body = this.constructQueryBodyBase('data_object');
+      body.query = {
+        bool: {
+          filter: [{
+            terms: {
+              id: idsOfDataObjectsToFetch,
+            },
+          }],
         },
-      }).then(results => {
-        const hits = results.hits.hits;
-        const newDataObjects = hits.map(doHit => {
-          const existingDataObjectInstance =
-            dataObjects.findBy('id', get(doHit, '_source.id'));
-          if (existingDataObjectInstance) {
-            return existingDataObjectInstance;
-          } else {
-            return DataObject.create({
-              configuration,
-              raw: get(doHit, '_source'),
-            });
-          }
+      };
+      fetchDataObjectsPromise = elasticsearch.post('data_object', '_search', body)
+        .then(results => {
+          const hits = results.hits.hits;
+          const newDataObjects = hits.map(doHit => {
+            const existingDataObjectInstance =
+              dataObjects.findBy('id', get(doHit, '_source.id'));
+            if (existingDataObjectInstance) {
+              return existingDataObjectInstance;
+            } else {
+              return DataObject.create({
+                configuration,
+                raw: get(doHit, '_source'),
+              });
+            }
+          });
+          dataObjects.addObjects(newDataObjects);
+          return dataObjects;
         });
-        dataObjects.addObjects(newDataObjects);
-        return dataObjects;
-      });
     } else {
       fetchDataObjectsPromise = resolve(dataObjects);
     }
@@ -514,9 +557,13 @@ export default Component.extend(I18n, {
       const {
         studies,
         dataObjects,
+        dataObjectPublisherMapping,
+        dataObjectPublisherUnknownValue,
       } = this.getProperties(
         'studies',
         'dataObjects',
+        'dataObjectPublisherMapping',
+        'dataObjectPublisherUnknownValue'
       );
 
       const {
@@ -547,9 +594,15 @@ export default Component.extend(I18n, {
         });
       }
       if (publisher) {
-        filteredDataObjects = filteredDataObjects.filter(dataObject =>
-          publisher.includes(get(dataObject, 'managingOrganisation.id'))
-        );
+        const allowUnknownValue = publisher.isAny('useForUnknown');
+        const knownIds = dataObjectPublisherMapping
+          .mapBy('id')
+          .without(get(dataObjectPublisherUnknownValue, 'id'));
+        filteredDataObjects = filteredDataObjects.filter(dataObject => {
+          const doPublisherId = get(dataObject, 'managingOrganisation.id');
+          return publisher.isAny('id', doPublisherId) ||
+            (allowUnknownValue && !knownIds.includes(doPublisherId));
+        });
       }
 
       studies.forEach(study => {
