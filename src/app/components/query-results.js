@@ -23,6 +23,7 @@ export default Component.extend(I18n, {
   classNames: ['query-results'],
 
   media: service(),
+  indexeddbStorage: service(),
 
   /**
    * @override
@@ -243,10 +244,24 @@ export default Component.extend(I18n, {
       console.log('load study');
     },
     saveStudies(name) {
-      console.log('save as ' + name);
-      return resolve().then(() => safeExec(this, () => {
-        this.set('isSaveDialogOpened', false);
-      }));
+      const {
+        indexeddbStorage,
+        studies,
+      } = this.getProperties('indexeddbStorage', 'studies');
+
+      const resultsToSave = {
+        name,
+        timestamp: Math.floor(Date.now() / 1000),
+        studies: studies.map(study => ({
+          id: get(study, 'id'),
+          dataObjects: get(study, 'selectedDataObjects').mapBy('id'),
+        })),
+      };
+
+      return indexeddbStorage.saveResults(resultsToSave)
+        .then(() => safeExec(this, () => {
+          this.set('isSaveDialogOpened', false);
+        }));
     },
     exportStudiesToPdf() {
       console.log('export to pdf');

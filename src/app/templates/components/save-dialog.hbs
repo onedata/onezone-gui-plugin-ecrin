@@ -1,6 +1,7 @@
 {{#bs-modal
   open=isOpened
   onHide=onCancel
+  onShown=(action "shown")
   backdropClose=(not isSaving)
   as |modal|
 }}
@@ -20,6 +21,9 @@
         disabled={{isSaving}}
       >
     </div>
+    {{#if lastSaveError}}
+      {{resource-load-error message=(concat (tt this "saveError") ": " lastSaveError)}}
+    {{/if}}
   {{/modal.body}}
   {{#modal.footer}}
     {{#bs-button

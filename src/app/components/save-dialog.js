@@ -2,6 +2,7 @@ import Component from '@ember/component';
 import { observer } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
+import $ from 'jquery';
 
 export default Component.extend(I18n, {
   /**
@@ -26,6 +27,11 @@ export default Component.extend(I18n, {
   isSaving: false,
 
   /**
+   * @type {string}
+   */
+  lastSaveError: null,
+
+  /**
    * @type {Function}
    * @param {string} resultsName
    * @returns {Promise}
@@ -46,12 +52,17 @@ export default Component.extend(I18n, {
   }),
 
   actions: {
+    shown() {
+      $('#save-name-input').focus();
+    },
     save() {
       const {
         onSave,
         resultsName,
       } = this.getProperties('resultsName', 'onSave');
       onSave(resultsName)
+        .then(() => safeExec(this, () => this.set('lastSaveError', null)))
+        .catch(error => safeExec(this, () => this.set('lastSaveError', error)))
         .finally(() => safeExec(this, () => this.set('isSaving', false)));
     },
   },

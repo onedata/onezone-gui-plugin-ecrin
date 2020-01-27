@@ -6,6 +6,7 @@ import queryParameters from './components/query-parameters';
 import queryResults from './components/query-results';
 import resourceLoadError from './components/resource-load-error';
 import saveDialog from './components/save-dialog';
+import indexeddbStorage from './services/indexeddb-storage';
 
 export default {
   components: {
@@ -17,5 +18,8 @@ export default {
     queryResults,
     resourceLoadError,
     saveDialog,
+  },
+  services: {
+    indexeddbStorage,
   },
 };
