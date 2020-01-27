@@ -673,6 +673,9 @@ export default Component.extend(I18n, {
       this.removeStudies(this.get('studies'));
       return this.loadStudiesFromSavedResults(results);
     },
+    removeSavedResults(results) {
+      return this.get('indexeddbStorage').removeResults(results);
+    },
   },
 });
 

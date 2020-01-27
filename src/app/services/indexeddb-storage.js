@@ -1,5 +1,5 @@
 import Service from '@ember/service';
-import EmberObject, { computed, observer } from '@ember/object';
+import EmberObject, { computed, observer, get } from '@ember/object';
 import { Promise, resolve, reject } from 'rsvp';
 import { A } from '@ember/array';
 import { next } from '@ember/runloop';
@@ -179,9 +179,7 @@ export default Service.extend(I18n, {
           console.error('Cannot save record to IndexedDB database:', event);
           reject(this.t('cannotSaveError'));
         };
-
-        const objectStore = transaction.objectStore(resultsObjectStoreName);
-        objectStore.add(results);
+        transaction.objectStore(resultsObjectStoreName).add(results);
       }));
 
     this.queueNewQuery(promise);
@@ -195,8 +193,7 @@ export default Service.extend(I18n, {
         const resultsObjectStoreName = this.get('resultsObjectStoreName');
         const transaction =
           dbInstance.transaction(resultsObjectStoreName, 'readonly');
-        const objectStore = transaction.objectStore(resultsObjectStoreName);
-        const request = objectStore.getAll();
+        const request = transaction.objectStore(resultsObjectStoreName).getAll();
 
         transaction.oncomplete = () => resolve(request.result);
         transaction.onerror = event => {
@@ -208,6 +205,31 @@ export default Service.extend(I18n, {
     this.queueNewQuery(promise);
 
     return promise;
+  },
+
+  removeResults(results) {
+    const idToRemove = results && get(results, 'id');
+    if (typeof idToRemove === 'number') {
+      const promise = this.openDatabase()
+        .then(dbInstance => new Promise((resolve, reject) => {
+          const resultsObjectStoreName = this.get('resultsObjectStoreName');
+          const transaction =
+            dbInstance.transaction(resultsObjectStoreName, 'readwrite');
+          transaction.oncomplete = resolve;
+          transaction.onerror = event => {
+            console.error('Cannot remove record from IndexedDB database:', event);
+            reject(this.t('cannotRemoveError'));
+          };
+
+          transaction.objectStore(resultsObjectStoreName).delete(idToRemove);
+        }));
+
+      this.queueNewQuery(promise);
+
+      return promise;
+    } else {
+      return resolve();
+    }
   },
 });
 

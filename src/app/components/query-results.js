@@ -61,6 +61,14 @@ export default Component.extend(I18n, {
   loadSavedResultsList: () => {},
 
   /**
+   * @virtual
+   * @type {Function}
+   * @param {Object} results
+   * @returns {Promise<any>}
+   */
+  removeSavedResults: () => {},
+
+  /**
    * @type {number}
    */
   rowHeight: 43,

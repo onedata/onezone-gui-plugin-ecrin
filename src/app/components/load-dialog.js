@@ -31,6 +31,11 @@ export default Component.extend(I18n, {
   isLoading: false,
 
   /**
+   * @type {boolean}
+   */
+  isRemoving: false,
+
+  /**
    * @type {string}
    */
   lastError: null,
@@ -50,10 +55,18 @@ export default Component.extend(I18n, {
   /**
    * @virtual
    * @type {Function}
-   * @param {string} resultsName
+   * @param {Object} results
    * @returns {Promise}
    */
   onLoad: () => {},
+
+  /**
+   * @virtual
+   * @type {Function}
+   * @param {Object} results
+   * @returns {Promise}
+   */
+  onRemove: () => {},
 
   /**
    * @virtual
@@ -149,6 +162,21 @@ export default Component.extend(I18n, {
       onLoad(selectedResults)
         .catch(error => safeExec(this, () => this.set('lastError', error)))
         .finally(() => safeExec(this, () => this.set('isLoading', false)));
+    },
+    remove(results) {
+      const {
+        onRemove,
+        resultsList,
+      } = this.getProperties('resultsList', 'onRemove');
+
+      this.setProperties({
+        isRemoving: true,
+        lastError: null,
+      });
+      onRemove(results)
+        .then(() => resultsList.removeObject(results))
+        .catch(error => safeExec(this, () => this.set('lastError', error)))
+        .finally(() => safeExec(this, () => this.set('isRemoving', false)));
     },
   },
 });

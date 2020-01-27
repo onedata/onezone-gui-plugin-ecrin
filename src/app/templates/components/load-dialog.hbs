@@ -20,7 +20,7 @@
           oninput={{action (action (mut filter)) value="target.value"}}
           disabled={{isLoading}}
         >
-        <ul class="selector">
+        <ul class="selector {{if (or isLoading isRemoving) "disabled"}}">
           {{#each (sort-by "timestamp:desc" filteredResultsList) as |results|}}
             <li
               class="selector-item {{if (eq selectedResults results) "selected"}}"
@@ -32,6 +32,7 @@
                   {{moment-format (unix results.timestamp) "YYYY/MM/DD HH:mm"}}
                 </span>
               {{/if}}
+              {{one-icon class="selector-icon-remove" icon="x" click=(action "remove" results)}}
             </li>
           {{else}}
             <li class="selector-item nothing-to-load-item">{{tt this "nothingToLoad"}}</li>
@@ -46,14 +47,14 @@
   {{#modal.footer}}
     {{#bs-button
       onClick=onCancel
-      disabled=isLoading
+      disabled=(or isLoading isRemoving)
     }}
       {{tt this "cancel"}}
     {{/bs-button}}
     {{#bs-button
       onClick=(action "load")
       type="primary"
-      disabled=(or isLoading (not selectedResults))
+      disabled=(or isLoading isRemoving (not selectedResults))
     }}
       {{tt this "load"}}
     {{/bs-button}}
