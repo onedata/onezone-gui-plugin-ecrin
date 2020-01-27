@@ -23,7 +23,6 @@ export default Component.extend(I18n, {
   classNames: ['query-results'],
 
   media: service(),
-  indexeddbStorage: service(),
 
   /**
    * @override
@@ -38,6 +37,28 @@ export default Component.extend(I18n, {
   isFetchingData: false,
 
   studies: computed(() => A()),
+
+  /**
+   * @virtual
+   * @type {Function}
+   * @returns {Promise<any>}
+   */
+  saveResults: () => {},
+
+  /**
+   * @virtual
+   * @type {Function}
+   * @param {Object} results
+   * @returns {Promise<any>}
+   */
+  loadSavedResults: () => {},
+
+  /**
+   * @virtual
+   * @type {Function}
+   * @returns {Promise<Array<Object>>}
+   */
+  loadSavedResultsList: () => {},
 
   /**
    * @type {number}
@@ -78,6 +99,11 @@ export default Component.extend(I18n, {
    * @type {boolean}
    */
   isSaveDialogOpened: false,
+
+  /**
+   * @type {boolean}
+   */
+  isLoadDialogOpened: false,
 
   /**
    * @type {Ember.ComputedProperty<number>}
@@ -240,25 +266,14 @@ export default Component.extend(I18n, {
     openLoadStudiesDialog() {
       console.log('load study dialog');
     },
-    loadStudies() {
-      console.log('load study');
+    loadSavedResults(results) {
+      return this.get('loadSavedResults')(results)
+        .then(() => safeExec(this, () => {
+          this.set('isLoadDialogOpened', false);
+        }));
     },
-    saveStudies(name) {
-      const {
-        indexeddbStorage,
-        studies,
-      } = this.getProperties('indexeddbStorage', 'studies');
-
-      const resultsToSave = {
-        name,
-        timestamp: Math.floor(Date.now() / 1000),
-        studies: studies.map(study => ({
-          id: get(study, 'id'),
-          dataObjects: get(study, 'selectedDataObjects').mapBy('id'),
-        })),
-      };
-
-      return indexeddbStorage.saveResults(resultsToSave)
+    saveResults(name) {
+      return this.get('saveResults')(name)
         .then(() => safeExec(this, () => {
           this.set('isSaveDialogOpened', false);
         }));

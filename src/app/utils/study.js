@@ -115,6 +115,12 @@ export default EmberObject.extend(topicFields, {
   dataObjectsIds: or('raw.linked_data_objects', raw([])),
 
   /**
+   * Used to narrow list of data objects allowed to be loaded for this study
+   * @type {ComputedProperty<Array<number>>}
+   */
+  dataObjectsIdsToFetch: reads('dataObjectsIds'),
+
+  /**
    * @type {ComputedProperty<Ember.A<Util.DataObject>>}
    */
   dataObjects: reads('dataObjectsPromiseObject.content'),

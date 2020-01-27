@@ -1,0 +1,47 @@
+.load-dialog {
+  .filter-input {
+    margin-bottom: $padding-small-horizontal;
+  }
+
+  .selector {
+    padding: 0;
+    list-style-type: none;
+    border: 1px solid $main-border-color;
+    max-height: 300px;
+    overflow: auto;
+  }
+
+  .selector-item {
+    display: flex;
+    padding: $padding-base-vertical $padding-base-horizontal;
+
+    &:hover, &.selected {
+      background-color: $color-one-default;
+      color: #ffffff;
+      
+      .selector-item-timestamp {
+        color: inherit;
+      }
+    }
+
+    &.nothing-to-load-item {
+      pointer-events: none;
+      font-style: italic;
+    }
+
+    + .selector-item {
+      border-top: 1px solid $main-border-color;
+    }
+
+    .selector-item-name {
+      flex-grow: 1;
+      min-width: 0;
+    }
+
+    .selector-item-timestamp {
+      white-space: nowrap;
+      font-size: 80%;
+      color: $gray-light;
+    }
+  }
+}

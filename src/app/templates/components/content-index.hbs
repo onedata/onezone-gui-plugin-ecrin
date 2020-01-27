@@ -13,7 +13,10 @@
   {{#query-results
     isFetchingData=isFetchingData
     studies=studies
-    removeStudies=(action "removeStudies")}}
+    removeStudies=(action "removeStudies")
+    saveResults=(action "saveResults")
+    loadSavedResultsList=(action "loadSavedResultsList")
+    loadSavedResults=(action "loadSavedResults")}}
     {{promise-proxy-container proxy=fetchDataPromiseObject isLoading=false}}
   {{/query-results}}
 </div>

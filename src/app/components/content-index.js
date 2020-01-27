@@ -32,6 +32,7 @@ export default Component.extend(I18n, {
 
   elasticsearch: service(),
   configuration: service(),
+  indexeddbStorage: service(),
 
   /**
    * @override
@@ -442,7 +443,7 @@ export default Component.extend(I18n, {
     const idsOfFetchedDataObjects = dataObjects.mapBy('id');
     const idsOfDataObjectsToFetch = _.difference(
       _.uniq(_.flatten(
-        studiesWithoutFetchedDataObjects.mapBy('dataObjectsIds')
+        studiesWithoutFetchedDataObjects.mapBy('dataObjectsIdsToFetch')
       )),
       idsOfFetchedDataObjects
     );
@@ -485,8 +486,9 @@ export default Component.extend(I18n, {
     studiesWithoutFetchedDataObjects.forEach(study => {
       set(study, 'dataObjectsPromiseObject', PromiseObject.create({
         promise: fetchDataObjectsPromise.then(dataObjects => {
-          const dataObjectsIds = get(study, 'dataObjectsIds');
-          return dataObjectsIds
+          const dataObjectsIdsToFetch =
+            get(study, 'dataObjectsIdsToFetch');
+          return dataObjectsIdsToFetch
             .map(id => dataObjects.findBy('id', id))
             .compact();
         }),
@@ -507,12 +509,45 @@ export default Component.extend(I18n, {
     const dataObjectsMaybeToRemove = _.uniq(_.flatten(
       studiesToRemove.mapBy('dataObjects').compact()
     ));
-    const usedDataObjectIds = _.flatten(studies.mapBy('dataObjectsIds'));
+    const usedDataObjectIds = _.flatten(studies.mapBy('dataObjectsIdsToFetch'));
     const dataObjectsToRemove = dataObjectsMaybeToRemove.filter(dataObject => {
       const doId = get(dataObject, 'id');
       return !usedDataObjectIds.includes(doId);
     });
     dataObjects.removeObjects(dataObjectsToRemove);
+  },
+
+  loadStudiesFromSavedResults(results) {
+    const savedStudies = get(results, 'studies');
+    const elasticsearch = this.get('elasticsearch');
+    const body = Object.assign(this.constructQueryBodyBase('study'), {
+      query: {
+        bool: {
+          filter: [{
+            terms: {
+              id: savedStudies.mapBy('id'),
+            },
+          }],
+        },
+      },
+    });
+
+    return elasticsearch.post('study', '_search', body)
+      .then(results => {
+        const studies = this.extractResultsFromResponse(results);
+        studies.forEach(study => {
+          const correspondingSavedStudy =
+            savedStudies.findBy('id', get(study, 'id'));
+          if (correspondingSavedStudy) {
+            const dataObjectsIdsToFetch = _.intersection(
+              get(study, 'dataObjectsIds'),
+              get(correspondingSavedStudy, 'dataObjects')
+            );
+            set(study, 'dataObjectsIdsToFetch', dataObjectsIdsToFetch);
+          }
+        });
+        return this.loadDataObjectsForStudies(studies);
+      });
   },
 
   actions: {
@@ -613,6 +648,30 @@ export default Component.extend(I18n, {
           )
         );
       });
+    },
+    saveResults(name) {
+      const {
+        indexeddbStorage,
+        studies,
+      } = this.getProperties('indexeddbStorage', 'studies');
+
+      const resultsToSave = {
+        name,
+        timestamp: Math.floor(Date.now() / 1000),
+        studies: studies.map(study => ({
+          id: get(study, 'id'),
+          dataObjects: get(study, 'selectedDataObjects').mapBy('id'),
+        })),
+      };
+
+      return indexeddbStorage.saveResults(resultsToSave);
+    },
+    loadSavedResultsList() {
+      return this.get('indexeddbStorage').loadResultsList();
+    },
+    loadSavedResults(results) {
+      this.removeStudies(this.get('studies'));
+      return this.loadStudiesFromSavedResults(results);
     },
   },
 });

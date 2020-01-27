@@ -246,6 +246,7 @@ label {
       margin: 0;
       transition: initial;
       border-radius: $border-radius-large;
+      max-height: 100%;
 
       @media (max-width: $screen-xs-max) {
         width: 90%;

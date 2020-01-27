@@ -3,14 +3,14 @@
     {{tt this "results"}}: <span class="one-label">{{studies.length}}</span>
   </div>
   <div class="results-actions">
-    {{!-- {{#bs-button
+    {{#bs-button
       type="default"
       size="sm"
-      onClick=(action "openLoadStudiesDialog")
+      onClick=(action (mut isLoadDialogOpened) true)
       disabled=isFetchingData
     }}
       {{tt this "load"}}
-    {{/bs-button}} --}}
+    {{/bs-button}}
     {{#if studies.length}}
       {{#bs-button
         type="default"
@@ -41,8 +41,14 @@
 </div>
 {{save-dialog
   isOpened=isSaveDialogOpened
-  onSave=(action "saveStudies")
+  onSave=(action "saveResults")
   onCancel=(action (mut isSaveDialogOpened) false)
+}}
+{{load-dialog
+  isOpened=isLoadDialogOpened
+  onLoadList=loadSavedResultsList
+  onLoad=(action "loadSavedResults")
+  onCancel=(action (mut isLoadDialogOpened) false)
 }}
 <div class="studies-list">
   <div class="data-start-row" style={{firstRowStyle}}></div>

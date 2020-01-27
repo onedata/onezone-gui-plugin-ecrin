@@ -17,6 +17,11 @@ export default Service.extend(I18n, {
   dbName: 'EcrinPluginDb',
 
   /**
+   * @type {string}
+   */
+  resultsObjectStoreName: 'results',
+
+  /**
    * @type {number}
    */
   dbVersion: 1,
@@ -54,7 +59,8 @@ export default Service.extend(I18n, {
     function closeDatabaseTrigger() {
       if (this.get('pendingQueries.length') === 0) {
         next(() => {
-          // Double check in next runloop frame to avoid races
+          // Double check in next runloop frame to avoid races with
+          // consecutive queries
           if (this.get('pendingQueries.length') === 0) {
             this.closeDatabase();
           }
@@ -64,7 +70,7 @@ export default Service.extend(I18n, {
   ),
 
   /**
-   * @returns {Promise}
+   * @returns {Promise<IDBDatabase>}
    */
   openDatabase() {
     const {
@@ -86,7 +92,13 @@ export default Service.extend(I18n, {
           indexedDB,
           dbName,
           dbVersion,
-        } = this.getProperties('indexedDB', 'dbName', 'dbVersion');
+          resultsObjectStoreName,
+        } = this.getProperties(
+          'indexedDB',
+          'dbName',
+          'dbVersion',
+          'resultsObjectStoreName'
+        );
         const request = indexedDB.open(dbName, dbVersion);
         const upgradeFinishedPromiseContainer = {
           promise: resolve(),
@@ -105,7 +117,7 @@ export default Service.extend(I18n, {
             // eslint-disable-next-line promise/param-names
             new Promise(resolveUpgrade => {
               const objectStore = dbInstance
-                .createObjectStore('results', {
+                .createObjectStore(resultsObjectStoreName, {
                   keyPath: 'id',
                   autoIncrement: true,
                 });
@@ -158,16 +170,39 @@ export default Service.extend(I18n, {
    */
   saveResults(results) {
     const promise = this.openDatabase()
-      .then(databaseInstance => new Promise((resolve, reject) => {
-        const transaction = databaseInstance.transaction('results', 'readwrite');
+      .then(dbInstance => new Promise((resolve, reject) => {
+        const resultsObjectStoreName = this.get('resultsObjectStoreName');
+        const transaction =
+          dbInstance.transaction(resultsObjectStoreName, 'readwrite');
         transaction.oncomplete = resolve;
         transaction.onerror = event => {
           console.error('Cannot save record to IndexedDB database:', event);
           reject(this.t('cannotSaveError'));
         };
 
-        const objectStore = transaction.objectStore('results');
+        const objectStore = transaction.objectStore(resultsObjectStoreName);
         objectStore.add(results);
+      }));
+
+    this.queueNewQuery(promise);
+
+    return promise;
+  },
+
+  loadResultsList() {
+    const promise = this.openDatabase()
+      .then(dbInstance => new Promise((resolve, reject) => {
+        const resultsObjectStoreName = this.get('resultsObjectStoreName');
+        const transaction =
+          dbInstance.transaction(resultsObjectStoreName, 'readonly');
+        const objectStore = transaction.objectStore(resultsObjectStoreName);
+        const request = objectStore.getAll();
+
+        transaction.oncomplete = () => resolve(request.result);
+        transaction.onerror = event => {
+          console.error('Cannot load records from IndexedDB database:', event);
+          reject(this.t('cannotLoadError'));
+        };
       }));
 
     this.queueNewQuery(promise);

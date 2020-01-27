@@ -48,6 +48,7 @@ export default Component.extend(I18n, {
     this.setProperties({
       resultsName: '',
       isSaving: false,
+      lastSaveError: null,
     });
   }),
 
@@ -60,8 +61,12 @@ export default Component.extend(I18n, {
         onSave,
         resultsName,
       } = this.getProperties('resultsName', 'onSave');
+
+      this.setProperties({
+        isSaving: true,
+        lastSaveError: null,
+      });
       onSave(resultsName)
-        .then(() => safeExec(this, () => this.set('lastSaveError', null)))
         .catch(error => safeExec(this, () => this.set('lastSaveError', error)))
         .finally(() => safeExec(this, () => this.set('isSaving', false)));
     },
