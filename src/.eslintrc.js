@@ -55,7 +55,7 @@ module.exports = {
 
     'promise/always-return': 'off', // default: error
     'promise/no-return-wrap': 'error',
-    'promise/param-names': 'error',
+    'promise/param-names': 'off', // default: error
     'promise/catch-or-return': 'off', // default: error
     'promise/no-native': 'error',
     'promise/no-nesting': 'off', // default: warn

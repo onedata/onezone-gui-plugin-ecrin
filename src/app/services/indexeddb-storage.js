@@ -1,3 +1,12 @@
+/**
+ * Provides operations for persisting search results inside IndexedDB.
+ * 
+ * @module services/indexeddb-storage
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Service from '@ember/service';
 import EmberObject, { computed, observer, get } from '@ember/object';
 import { Promise, resolve, reject } from 'rsvp';
@@ -14,12 +23,12 @@ export default Service.extend(I18n, {
   /**
    * @type {String}
    */
-  dbName: 'EcrinPluginDb',
+  dbName: 'EcrinPlugin',
 
   /**
    * @type {string}
    */
-  resultsObjectStoreName: 'results',
+  resultsObjectStoreName: 'Results',
 
   /**
    * @type {number}
@@ -42,12 +51,14 @@ export default Service.extend(I18n, {
   dbInstance: null,
 
   /**
+   * If not empty then database is opening at the moment.
    * @type {Promise}
    */
   openingDatabasePromise: null,
 
   /**
-   * @type {Ember.A}
+   * Connection to database is opened when this array is not empty.
+   * @type {Ember.A<IndexedDbQuery>}
    */
   pendingQueries: computed(() => A()),
 
@@ -76,9 +87,17 @@ export default Service.extend(I18n, {
     const {
       dbInstance,
       openingDatabasePromise,
+      indexedDB,
+      dbName,
+      dbVersion,
+      resultsObjectStoreName,
     } = this.getProperties(
       'dbInstance',
-      'openingDatabasePromise'
+      'openingDatabasePromise',
+      'indexedDB',
+      'dbName',
+      'dbVersion',
+      'resultsObjectStoreName'
     );
 
     if (openingDatabasePromise) {
@@ -86,23 +105,12 @@ export default Service.extend(I18n, {
     } else if (dbInstance) {
       return resolve(dbInstance);
     } else {
-      // eslint-disable-next-line promise/param-names
       const openingDatabasePromise = new Promise((resolveConnect, rejectConnect) => {
-        const {
-          indexedDB,
-          dbName,
-          dbVersion,
-          resultsObjectStoreName,
-        } = this.getProperties(
-          'indexedDB',
-          'dbName',
-          'dbVersion',
-          'resultsObjectStoreName'
-        );
+        // Creating object to ensure that the same promise will be referenced
+        // across different scopes.
+        const upgradeFinishedPromiseContainer = { promise: resolve() };
+
         const request = indexedDB.open(dbName, dbVersion);
-        const upgradeFinishedPromiseContainer = {
-          promise: resolve(),
-        };
         request.onsuccess = event => {
           next(() => {
             upgradeFinishedPromiseContainer.promise
@@ -114,7 +122,6 @@ export default Service.extend(I18n, {
           const dbInstance = event.target.result;
 
           upgradeFinishedPromiseContainer.promise =
-            // eslint-disable-next-line promise/param-names
             new Promise(resolveUpgrade => {
               const objectStore = dbInstance
                 .createObjectStore(resultsObjectStoreName, {
@@ -125,15 +132,15 @@ export default Service.extend(I18n, {
               objectStore.transaction.oncomplete = resolveUpgrade;
             });
         };
-      }).then(event => {
-        const dbInstance = event.target.result;
-        return this.set('dbInstance', dbInstance);
-      }).catch(event => {
+      }).then(event =>
+        this.set('dbInstance', event.target.result)
+      ).catch(event => {
         console.error('Cannot open IndexedDB database:', event);
         return reject(this.t('openDatabaseError'));
-      }).finally(() => {
-        this.set('openingDatabasePromise', null);
-      });
+      }).finally(() =>
+        this.set('openingDatabasePromise', null)
+      );
+
       return this.set('openingDatabasePromise', openingDatabasePromise);
     }
   },
@@ -155,12 +162,27 @@ export default Service.extend(I18n, {
   queueNewQuery(queryPromise) {
     const pendingQueries = this.get('pendingQueries');
     const indexedDbQuery = IndexedDbQuery.create({
-      taskFinishedCallback: queryInstance =>
+      queryFinishedCallback: queryInstance =>
         pendingQueries.removeObject(queryInstance),
-      promise: queryPromise,
+      queryPromise,
     });
 
     pendingQueries.pushObject(indexedDbQuery);
+  },
+
+  /**
+   * @param {string} [transactionMode='readonly'] one of: readwrite, readonly
+   * @returns {{ transaction: IDBTransaction, resultsObjectStore: IDBObjectStore }}
+   */
+  startTransaction(transactionMode) {
+    return this.openDatabase()
+      .then(dbInstance => {
+        const resultsObjectStoreName = this.get('resultsObjectStoreName');
+        const transaction =
+          dbInstance.transaction(resultsObjectStoreName, transactionMode);
+        const resultsObjectStore = transaction.objectStore(resultsObjectStoreName);
+        return { transaction, resultsObjectStore };
+      });
   },
 
   /**
@@ -169,17 +191,14 @@ export default Service.extend(I18n, {
    * @returns {Promise}
    */
   saveResults(results) {
-    const promise = this.openDatabase()
-      .then(dbInstance => new Promise((resolve, reject) => {
-        const resultsObjectStoreName = this.get('resultsObjectStoreName');
-        const transaction =
-          dbInstance.transaction(resultsObjectStoreName, 'readwrite');
+    const promise = this.startTransaction('readwrite')
+      .then(({ transaction, resultsObjectStore }) => new Promise((resolve, reject) => {
         transaction.oncomplete = resolve;
         transaction.onerror = event => {
           console.error('Cannot save record to IndexedDB database:', event);
           reject(this.t('cannotSaveError'));
         };
-        transaction.objectStore(resultsObjectStoreName).add(results);
+        resultsObjectStore.add(results);
       }));
 
     this.queueNewQuery(promise);
@@ -188,12 +207,9 @@ export default Service.extend(I18n, {
   },
 
   loadResultsList() {
-    const promise = this.openDatabase()
-      .then(dbInstance => new Promise((resolve, reject) => {
-        const resultsObjectStoreName = this.get('resultsObjectStoreName');
-        const transaction =
-          dbInstance.transaction(resultsObjectStoreName, 'readonly');
-        const request = transaction.objectStore(resultsObjectStoreName).getAll();
+    const promise = this.startTransaction('readonly')
+      .then(({ transaction, resultsObjectStore }) => new Promise((resolve, reject) => {
+        const request = resultsObjectStore.getAll();
 
         transaction.oncomplete = () => resolve(request.result);
         transaction.onerror = event => {
@@ -209,49 +225,51 @@ export default Service.extend(I18n, {
 
   removeResults(results) {
     const idToRemove = results && get(results, 'id');
-    if (typeof idToRemove === 'number') {
-      const promise = this.openDatabase()
-        .then(dbInstance => new Promise((resolve, reject) => {
-          const resultsObjectStoreName = this.get('resultsObjectStoreName');
-          const transaction =
-            dbInstance.transaction(resultsObjectStoreName, 'readwrite');
-          transaction.oncomplete = resolve;
-          transaction.onerror = event => {
-            console.error('Cannot remove record from IndexedDB database:', event);
-            reject(this.t('cannotRemoveError'));
-          };
-
-          transaction.objectStore(resultsObjectStoreName).delete(idToRemove);
-        }));
-
-      this.queueNewQuery(promise);
-
-      return promise;
-    } else {
+    if (typeof idToRemove !== 'number') {
       return resolve();
     }
+
+    const promise = this.startTransaction('readwrite')
+      .then(({ transaction, resultsObjectStore }) => new Promise((resolve, reject) => {
+        transaction.oncomplete = resolve;
+        transaction.onerror = event => {
+          console.error('Cannot remove record from IndexedDB database:', event);
+          reject(this.t('cannotRemoveError'));
+        };
+
+        resultsObjectStore.delete(idToRemove);
+      }));
+
+    this.queueNewQuery(promise);
+
+    return promise;
   },
 });
 
+/**
+ * Util class used to populate pendingQueries array.
+ */
 const IndexedDbQuery = EmberObject.extend({
   /**
+   * Called when queryPromise is settled
    * @virtual
    * @type {Function}
    * @param {IndexedDbQuery} queryInstance
    * @returns {any}
    */
-  taskFinishedCallback: () => {},
+  queryFinishedCallback: () => {},
 
   /**
+   * Must not change after object init
    * @virtual
    * @type {Promise}
    */
-  promise: undefined,
+  queryPromise: undefined,
 
   init() {
     this._super(...arguments);
 
-    this.get('promise')
-      .finally(() => this.get('taskFinishedCallback')(this));
+    this.get('queryPromise')
+      .finally(() => this.get('queryFinishedCallback')(this));
   },
 });
