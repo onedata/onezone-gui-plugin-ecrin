@@ -9,6 +9,7 @@ import resourceLoadError from './components/resource-load-error';
 import saveDialog from './components/save-dialog';
 
 import indexeddbStorage from './services/indexeddb-storage';
+import pdfGenerator from './services/pdf-generator';
 
 export default {
   components: {
@@ -24,5 +25,6 @@ export default {
   },
   services: {
     indexeddbStorage,
+    pdfGenerator,
   },
 };

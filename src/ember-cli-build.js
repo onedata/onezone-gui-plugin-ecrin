@@ -58,11 +58,9 @@ module.exports = function (defaults) {
     ],
   });
 
-  const NODE_ASSETS = [
-    'dexie/dist/dexie.min.js',
-  ];
-
-  NODE_ASSETS.forEach(path => app.import(`node_modules/${path}`));
+  app.import('node_modules/pdfmake/build/pdfmake.min.js', {
+    outputFile: 'assets/pdfmake.js',
+  });
 
   return app.toTree();
 };
