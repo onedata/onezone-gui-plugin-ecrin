@@ -1559,14 +1559,29 @@
             "index.auto_expand_replicas": "0-all",
             "analysis": {
               "analyzer": {
-                "index_default_analyzer": {
-                  "type": "standard",
-                  "tokenizer": "index_default_tokenizer",
+                "default": {
+                  "tokenizer": "default_tokenizer",
+                  "filter": [
+                    "ecrin_synonyms",
+                    "lowercase",
+                    "default_stop"
+                  ]
+                }
+              },
+              "filter": {
+                "ecrin_synonyms": {
+                  "type": "synonym_graph",
+                  "synonyms_path": "synonym/ecrin_synonym",
+                  "format": "solr",
+                  "expand": "true"
+                },
+                "default_stop": {
+                  "type": "stop",
                   "stopwords": "_english_"
                 }
               },
               "tokenizer": {
-                "index_default_tokenizer": {
+                "default_tokenizer": {
                   "type": "standard"
                 }
               }
@@ -1617,7 +1632,7 @@
                   },
                   "identifier_date": {
                     "type": "date",
-                    "format": "YYYY MMM DD"
+                    "format": "yyyy MMM dd"
                   },
                   "identifier_link": {
                     "type": "keyword"
@@ -1768,14 +1783,29 @@
             "index.auto_expand_replicas": "0-all",
             "analysis": {
               "analyzer": {
-                "index_default_analyzer": {
-                  "type": "standard",
-                  "tokenizer": "index_default_tokenizer",
+                "default": {
+                  "tokenizer": "default_tokenizer",
+                  "filter": [
+                    "ecrin_synonyms",
+                    "lowercase",
+                    "default_stop"
+                  ]
+                }
+              },
+              "filter": {
+                "ecrin_synonyms": {
+                  "type": "synonym_graph",
+                  "synonyms_path": "synonym/ecrin_synonym",
+                  "format": "solr",
+                  "expand": "true"
+                },
+                "default_stop": {
+                  "type": "stop",
                   "stopwords": "_english_"
                 }
               },
               "tokenizer": {
-                "index_default_tokenizer": {
+                "default_tokenizer": {
                   "type": "standard"
                 }
               }
