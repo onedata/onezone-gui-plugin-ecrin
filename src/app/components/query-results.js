@@ -69,6 +69,13 @@ export default Component.extend(I18n, {
   removeSavedResults: () => {},
 
   /**
+   * @virtual
+   * @type {Function}
+   * @returns {Promise<any>}
+   */
+  exportResultsToPdf: () => {},
+
+  /**
    * @type {number}
    */
   rowHeight: 43,
@@ -287,7 +294,7 @@ export default Component.extend(I18n, {
         }));
     },
     exportStudiesToPdf() {
-      console.log('export to pdf');
+      return this.get('exportResultsToPdf')();
     },
   },
 });

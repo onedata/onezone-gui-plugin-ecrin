@@ -33,6 +33,7 @@ export default Component.extend(I18n, {
   elasticsearch: service(),
   configuration: service(),
   indexeddbStorage: service(),
+  pdfGenerator: service(),
 
   /**
    * @override
@@ -675,6 +676,14 @@ export default Component.extend(I18n, {
     },
     removeSavedResults(results) {
       return this.get('indexeddbStorage').removeResults(results);
+    },
+    exportResultsToPdf() {
+      const {
+        pdfGenerator,
+        studies,
+      } = this.getProperties('pdfGenerator', 'studies');
+
+      return pdfGenerator.generatePdfFromResults(studies);
     },
   },
 });

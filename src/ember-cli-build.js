@@ -59,7 +59,10 @@ module.exports = function (defaults) {
   });
 
   app.import('node_modules/pdfmake/build/pdfmake.min.js', {
-    outputFile: 'assets/pdfmake.js',
+    outputFile: 'assets/pdfmake/pdfmake.js',
+  });
+  app.import('node_modules/pdfmake/build/vfs_fonts.js', {
+    outputFile: 'assets/pdfmake/vfs_fonts.js',
   });
 
   return app.toTree();
