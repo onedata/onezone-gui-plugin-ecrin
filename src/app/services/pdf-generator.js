@@ -1,7 +1,8 @@
 import Service from '@ember/service';
 import { resolve, Promise } from 'rsvp';
-import { getProperties } from '@ember/object';
+import { getProperties, get } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
+import _ from 'lodash';
 
 const scriptsToLoad = [
   'assets/pdfmake/pdfmake.js',
@@ -85,70 +86,150 @@ export default Service.extend(I18n, {
   generatePdfFromResults(results) {
     return this.loadPdfMake()
       .then(pdfMake => {
-        const studyTables = results.map(study => {
-          const {
-            title,
-            description,
-            dataSharingStatement,
-          } = getProperties(
-            study,
-            'title',
-            'description',
-            'dataSharingStatement'
-          );
-          const tableColsCount = 2;
-          const tableBody = [
-            [{
-              text: title,
-              colSpan: 2,
-              bold: true,
-            }, {}],
-          ];
-          if (description) {
-            tableBody.push([{
-              text: [{
-                  text: this.pdfT('studyDescriptionLabel'),
-                  bold: true,
-                },
-                description,
-              ],
-              colSpan: tableColsCount,
-            }, {}]);
-          }
-          if (dataSharingStatement) {
-            tableBody.push([{
-              text: [{
-                  text: this.pdfT('studyDataSharingStatementLabel'),
-                  bold: true,
-                },
-                dataSharingStatement,
-              ],
-              colSpan: tableColsCount,
-            }, {}]);
-          }
-
-          return {
-            style: 'studyTable',
-            table: {
-              headerRows: 1,
-              widths: [200, '*'],
-              body: tableBody,
-            },
-          };
-        });
+        const dataObjects = _.flatten(
+          results.mapBy('selectedDataObjects')
+        ).uniqBy('id');
+        const dataObjectsRepresentation =
+          this.generateDataObjectsPdfRepresentation(dataObjects);
+        const studiesRepresentation =
+          this.generateStudiesPdfRepresentation(results, dataObjectsRepresentation);
         const docDefinition = {
-          content: [
-            ...studyTables,
+          footer: function (currentPage) {
+            const onRightSide = !(currentPage % 2);
+            return [{
+              text: currentPage.toString(),
+              alignment: onRightSide ? 'right' : 'left',
+              fontSize: 9,
+              margin: onRightSide ? [0, 10, 40, 0] : [40, 10, 0, 0],
+            }];
+          },
+          content: [{
+              text: this.pdfT('title').string,
+              fontSize: 25,
+            },
+            ...studiesRepresentation,
           ],
           styles: {
             studyTable: {
               margin: [0, 5, 0, 15],
-              fontSize: 10,
+              fontSize: 9,
             },
           },
         };
         pdfMake.createPdf(docDefinition).open();
       });
+  },
+
+  /**
+   * Generates map dataObject.id -> dataObject pdf representation object
+   * @param {Array<Utils.DataObject>} dataObjects 
+   * @returns {Map<number,Object>}
+   */
+  generateDataObjectsPdfRepresentation(dataObjects) {
+    const representationsMap = new Map();
+
+    dataObjects.forEach(dataObject => {
+      const {
+        id,
+        type,
+        title,
+        year,
+        accessType,
+        url,
+      } = getProperties(
+        dataObject,
+        'id',
+        'type',
+        'title',
+        'year',
+        'accessType',
+        'url'
+      );
+
+      if (!representationsMap.has(id)) {
+        representationsMap.set(id, [{
+          text: get(type, 'name'),
+          bold: true,
+        }, {
+          text: title +
+            (url ? '\n\n' + this.pdfT('dataObjectAccessLabel') + url : ''),
+        }, {
+          text: year || '-',
+        }, {
+          text: get(accessType, 'name') || '-',
+        }]);
+      }
+    });
+
+    return representationsMap;
+  },
+
+  /**
+   * Generates array of studies pdf representations
+   * @param {Array<Utils.Study>} studies
+   * @param {Map<number,Object>} dataObjectsRepresentation 
+   * @returns {Array<Object>}
+   */
+  generateStudiesPdfRepresentation(studies, dataObjectsRepresentation) {
+    return studies.map(study => {
+      const {
+        title,
+        description,
+        dataSharingStatement,
+        selectedDataObjects,
+      } = getProperties(
+        study,
+        'title',
+        'description',
+        'dataSharingStatement',
+        'selectedDataObjects',
+      );
+      const tableColsCount = 4;
+      const tableBody = [
+        [{
+          text: title,
+          colSpan: tableColsCount,
+          bold: true,
+        }, ..._.times(tableColsCount - 1, _.constant({}))],
+      ];
+      if (description) {
+        tableBody.push([{
+          text: [{
+              text: this.pdfT('studyDescriptionLabel'),
+              bold: true,
+            },
+            description,
+          ],
+          colSpan: tableColsCount,
+        }, ..._.times(tableColsCount - 1, _.constant({}))]);
+      }
+      if (dataSharingStatement) {
+        tableBody.push([{
+          text: [{
+              text: this.pdfT('studyDataSharingStatementLabel'),
+              bold: true,
+            },
+            dataSharingStatement,
+          ],
+          colSpan: tableColsCount,
+        }, ..._.times(tableColsCount - 1, _.constant({}))]);
+      }
+      if (get(selectedDataObjects, 'length')) {
+        tableBody.push(...selectedDataObjects.map(dataObject =>
+          dataObjectsRepresentation.get(get(dataObject, 'id'))
+        ));
+      }
+
+      return {
+        style: 'studyTable',
+        table: {
+          headerRows: 1,
+          keepWithHeaderRows: true,
+          widths: [100, '*', 40, 80],
+          body: tableBody,
+        },
+      };
+    });
   },
 
   pdfT(path, ...args) {

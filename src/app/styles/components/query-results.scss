@@ -118,7 +118,7 @@
     color: $main-text-light-color;
     padding-left: $padding-small-horizontal;
     padding-right: $padding-small-horizontal;
-    word-break: break-all;
+    overflow-wrap: break-word;
     p {
       margin-bottom: $padding-small-vertical;
     }
