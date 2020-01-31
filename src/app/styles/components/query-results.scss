@@ -115,6 +115,7 @@
 
   .data-object-description {
     flex-grow: 1;
+    min-width: 0;
     color: $main-text-light-color;
     padding-left: $padding-small-horizontal;
     padding-right: $padding-small-horizontal;
@@ -210,6 +211,11 @@
   @media (max-width: $screen-xs-max) {
     .data-object-record {
       flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .data-object-type {
+      flex-basis: 100%;
     }
 
     .data-object-description {
