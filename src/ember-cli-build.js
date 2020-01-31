@@ -3,7 +3,9 @@
 
 const defineSassBreakpoints = require('./app/utils/define-sass-breakpoints');
 const breakpointValues = require('./app/breakpoint-values');
+const manifest = require('./app/manifest');
 const sass = require('sass');
+const fs = require('fs');
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function (defaults) {
@@ -64,6 +66,21 @@ module.exports = function (defaults) {
   app.import('node_modules/pdfmake/build/vfs_fonts.js', {
     outputFile: 'assets/pdfmake/vfs_fonts.js',
   });
+
+  if (env !== 'production') {
+    // Remove Ecrin synonyms from manifest in development mode (breaks down index
+    // creation due to lack of synonyms files).
+    const indices = manifest.onedata.indices;
+    indices.forEach(index => {
+      const esAnalysis = index.schema.settings.analysis;
+      const analyzer = esAnalysis.analyzer.default;
+      analyzer.filter =
+        analyzer.filter.filter(filterName => filterName !== 'ecrin_synonyms');
+      delete esAnalysis.filter.ecrin_synonyms;
+    });
+  }
+
+  fs.writeFileSync('public/manifest.json', JSON.stringify(manifest));
 
   return app.toTree();
 };
