@@ -2,6 +2,7 @@
   "onedata": {
     "version": "0.01",
     "defaultGuiConfiguration": {
+      "contactEmail": "example@mail.com",
       "studyIdTypeMapping": [
         {
           "name": "Trial Registry ID",

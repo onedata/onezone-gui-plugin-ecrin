@@ -9,6 +9,7 @@
 
 import Service, { inject as service } from '@ember/service';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
+import { reads } from '@ember/object/computed';
 import { or, raw, array } from 'ember-awesome-macros';
 
 const mappingFields = [
@@ -46,6 +47,11 @@ export default Service.extend(serviceFields, {
    * @type {Object|undefined}
    */
   configuration: undefined,
+
+  /**
+   * @type {ComputedProperty<String>}
+   */
+  contactEmail: reads('configuration.contactEmail'),
 
   /**
    * (Re)loads configuration object
