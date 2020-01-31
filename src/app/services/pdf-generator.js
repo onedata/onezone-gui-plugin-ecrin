@@ -1,6 +1,6 @@
 import Service from '@ember/service';
 import { resolve, Promise } from 'rsvp';
-import { get } from '@ember/object';
+import { getProperties } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 
 const scriptsToLoad = [
@@ -86,14 +86,53 @@ export default Service.extend(I18n, {
     return this.loadPdfMake()
       .then(pdfMake => {
         const studyTables = results.map(study => {
+          const {
+            title,
+            description,
+            dataSharingStatement,
+          } = getProperties(
+            study,
+            'title',
+            'description',
+            'dataSharingStatement'
+          );
+          const tableColsCount = 2;
+          const tableBody = [
+            [{
+              text: title,
+              colSpan: 2,
+              bold: true,
+            }, {}],
+          ];
+          if (description) {
+            tableBody.push([{
+              text: [{
+                  text: this.pdfT('studyDescriptionLabel'),
+                  bold: true,
+                },
+                description,
+              ],
+              colSpan: tableColsCount,
+            }, {}]);
+          }
+          if (dataSharingStatement) {
+            tableBody.push([{
+              text: [{
+                  text: this.pdfT('studyDataSharingStatementLabel'),
+                  bold: true,
+                },
+                dataSharingStatement,
+              ],
+              colSpan: tableColsCount,
+            }, {}]);
+          }
+
           return {
             style: 'studyTable',
             table: {
               headerRows: 1,
               widths: [200, '*'],
-              body: [
-                [{ text: get(study, 'title'), colSpan: 2 }, {}],
-              ],
+              body: tableBody,
             },
           };
         });
@@ -104,10 +143,15 @@ export default Service.extend(I18n, {
           styles: {
             studyTable: {
               margin: [0, 5, 0, 15],
+              fontSize: 10,
             },
           },
         };
         pdfMake.createPdf(docDefinition).open();
       });
+  },
+
+  pdfT(path, ...args) {
+    return this.t(`pdfElements.${path}`, ...args);
   },
 });
