@@ -1561,6 +1561,10 @@
               "analyzer": {
                 "default": {
                   "tokenizer": "default_tokenizer",
+                  "char_filter": [
+                    "ecrin_remove_dot",
+                    "ecrin_rplc_apostrophes"
+                  ],
                   "filter": [
                     "ecrin_synonyms",
                     "lowercase",
@@ -1578,6 +1582,18 @@
                 "default_stop": {
                   "type": "stop",
                   "stopwords": "_english_"
+                }
+              },
+              "char_filter": {
+                "ecrin_remove_dot": {
+                  "type": "pattern_replace",
+                  "pattern": "([.])",
+                  "replacement": ""
+                },
+                "ecrin_rplc_apostrophes": {
+                  "type": "pattern_replace",
+                  "pattern": "(')",
+                  "replacement": "’"
                 }
               },
               "tokenizer": {
@@ -1785,6 +1801,10 @@
               "analyzer": {
                 "default": {
                   "tokenizer": "default_tokenizer",
+                  "char_filter": [
+                    "ecrin_remove_dot",
+                    "ecrin_rplc_apostrophes"
+                  ],
                   "filter": [
                     "ecrin_synonyms",
                     "lowercase",
@@ -1802,6 +1822,18 @@
                 "default_stop": {
                   "type": "stop",
                   "stopwords": "_english_"
+                }
+              },
+              "char_filter": {
+                "ecrin_remove_dot": {
+                  "type": "pattern_replace",
+                  "pattern": "([.])",
+                  "replacement": ""
+                },
+                "ecrin_rplc_apostrophes": {
+                  "type": "pattern_replace",
+                  "pattern": "(')",
+                  "replacement": "’"
                 }
               },
               "tokenizer": {
