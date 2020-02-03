@@ -4,7 +4,6 @@
 const defineSassBreakpoints = require('./app/utils/define-sass-breakpoints');
 const breakpointValues = require('./app/breakpoint-values');
 const manifest = require('./app/manifest');
-const sass = require('sass');
 const fs = require('fs');
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
@@ -26,20 +25,6 @@ module.exports = function (defaults) {
   });
 
   defineSassBreakpoints(app, breakpointValues);
-
-  // Injects proper root-url to Sass depending on environment. Fixes different
-  // root-url in production and development mode
-  const env = process.env.EMBER_ENV;
-  if (!app.options.sassOptions) {
-    app.options.sassOptions = {};
-  }
-  const sassOptions = app.options.sassOptions;
-  if (!sassOptions.functions) {
-    sassOptions.functions = {};
-  }
-  sassOptions.functions['root-url'] = function rootUrl() {
-    return new sass.types.String(env === 'production' ? '../' : './');
-  };
 
   // Use `app.import` to add additional libraries to the generated
   // output files.
@@ -67,6 +52,7 @@ module.exports = function (defaults) {
     outputFile: 'assets/pdfmake/vfs_fonts.js',
   });
 
+  const env = process.env.EMBER_ENV;
   if (env !== 'production') {
     // Remove Ecrin synonyms from manifest in development mode (breaks down index
     // creation due to lack of synonyms files).
