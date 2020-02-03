@@ -1,3 +1,14 @@
+/**
+ * Represents a single data object received from Elasticsearch. Raw ES data object
+ * is stored in `raw` field and used to create computed props with all data needed
+ * for filtering and rendering
+ *
+ * @module utils/study
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import EmberObject, { computed } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { array, raw } from 'ember-awesome-macros';
@@ -61,6 +72,8 @@ export default EmberObject.extend({
   managingOrganisation: reads('raw.managing_organisation'),
 
   isSupportingField() {
+    // Data object has no fields that exclude each other (like study has), hence
+    // always return true
     return true;
   },
 });

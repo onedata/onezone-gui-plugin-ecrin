@@ -1,3 +1,12 @@
+/**
+ * A modal for providing a name needed to save results and triggering save process.
+ * 
+ * @module components/save-dialog
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Component from '@ember/component';
 import { observer } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';

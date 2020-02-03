@@ -1,3 +1,13 @@
+/**
+ * A modal for selecting saved results, which should be loaded. Also allows to
+ * remove saved results.
+ * 
+ * @module components/load-dialog
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Component from '@ember/component';
 import { observer, computed, get } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
@@ -119,6 +129,7 @@ export default Component.extend(I18n, {
       selectedResults: null,
       isLoading: false,
       filter: '',
+      lastError: null,
     });
 
     if (this.get('isOpened')) {

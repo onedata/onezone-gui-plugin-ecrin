@@ -23,7 +23,7 @@
       {{#bs-button
         type="default"
         size="sm"
-        onClick=(action "exportStudiesToPdf")
+        onClick=exportResultsToPdf
         disabled=isFetchingData
       }}
         {{tt this "exportToPdf"}}
@@ -60,7 +60,7 @@
           {{query-results/study-record
             item=accItem
             study=study
-            isExpanded=(eq study.id expandedResultId)
+            isExpanded=(eq study.id expandedStudyId)
             remove=(action "removeStudy" study)
             isFetchingData=isFetchingData
           }}

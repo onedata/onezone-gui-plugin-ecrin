@@ -2,7 +2,7 @@
  * Creates a base for checkbox-like components using the one-way-checkbox component.
  * Allows to put checkbox deeper in DOM without worry about value change handling.
  *
- * @module components/one-checkbox-base.js
+ * @module components/one-checkbox-base
  * @author Michał Borzęcki, Jakub Liput
  * @copyright (C) 2017-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
@@ -108,7 +108,7 @@ export default Component.extend({
     this._super(...arguments);
 
     this.$('input')
-      // .change(() => this._toggle())
+      .change(() => this._toggle())
       .focusout(() => this.get('onFocusOut')())
       // Fix for Firefox to handle toggle change by 
       // label-click and keyboard change on active input

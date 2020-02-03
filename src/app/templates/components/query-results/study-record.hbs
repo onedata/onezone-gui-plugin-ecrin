@@ -1,9 +1,7 @@
 {{#item.title}}
   {{#truncated-string}}{{or study.title "Untitled"}}{{/truncated-string}}
 {{/item.title}}
-{{!-- TODO: Add actions when requirements will be exactly specified --}}
 <ul class="result-actions">
-  {{!-- <li class="result-action" {{action "resultAction"}}>{{one-icon icon="settings"}}</li> --}}
   {{#if isExpanded}}
     <li class="result-action expand-action" {{action "toggleAllElementsExpansion"}}>
       {{one-icon icon=(if study.hasAllElementsExpanded "arrow-up" "arrow-down")}}
@@ -81,7 +79,7 @@
         </div>
         <div class="data-object-year">{{or dataObject.year "-"}}</div>
         <div class="data-object-status">
-          <span class="data-object-status-icon {{dataObject.accessType.indicator}}">
+          <span class="data-object-status-icon {{or dataObject.accessType.indicator "unknown"}}">
             {{#if dataObject.accessType.name}}
               {{bs-tooltip title=dataObject.accessType.name}}
             {{/if}}

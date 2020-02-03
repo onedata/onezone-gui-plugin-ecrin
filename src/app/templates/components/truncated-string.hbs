@@ -5,4 +5,11 @@
 {{else}}
   {{yield}}
 {{/if}}
-{{bs-tooltip autoPlacement=true placement="top" title=tooltipText triggerEvents="" visible=(and tooltipEnabled showTooltip)}}
+{{bs-tooltip
+  autoPlacement=true
+  placement="top"
+  title=tooltipText
+  triggerEvents=""
+  visible=(and tooltipEnabled showTooltip)
+  fade=false
+}}

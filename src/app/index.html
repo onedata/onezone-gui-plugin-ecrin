@@ -4,18 +4,20 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>The Clinical Studies Data Objects Index</title>
+  <title>MDR: Metadata Repository for clinical trial data objects</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   {{content-for "head"}}
 
   <script type="text/javascript">
+    // Run tracking script only on production
     var environmentMeta = document.getElementsByName('onezone-gui-plugin-ecrin/config/environment')[0];
     if (environmentMeta) {
       var environmentString = environmentMeta.content;
       var environment = JSON.parse(decodeURIComponent(environmentString));
       if (environment.environment === 'production') {
+        // Code taken from Inspectlet
         (function() {
           window.__insp = window.__insp || [];
           __insp.push(['wid', 456578243]);

@@ -1,3 +1,12 @@
+/**
+ * Loads PDF generating library and creates PDF documents from passed search results.
+ *
+ * @module services/pdf-generator
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Service from '@ember/service';
 import { resolve, Promise } from 'rsvp';
 import { getProperties, get } from '@ember/object';
@@ -44,8 +53,8 @@ export default Service.extend(I18n, {
     } else {
       return this.set(
         'loadingPdfmakePromise',
-        new Promise((resolveLoad, rejectLoad) =>
-          this.loadChainedLibs(scriptsToLoad, resolveLoad, rejectLoad)
+        new Promise((resolve, reject) =>
+          this.loadChainedLibs(scriptsToLoad, resolve, reject)
         )
       );
     }
@@ -55,7 +64,7 @@ export default Service.extend(I18n, {
    * Loads scripts specified by first arguments one by another (second is getting
    * loaded only when the first one finished and so on).
    * @param {Array<string>} scriptsToLoad paths to scripts, that should be loaded
-   * @param {Function} resolveLoad resolve promise callback. Should accepts makePdf
+   * @param {Function} resolveLoad resolve promise callback. Should get makePdf
    *   as an argument
    * @param {Function} rejectLoad reject promise callback
    * @returns {undefined}
@@ -95,7 +104,7 @@ export default Service.extend(I18n, {
           this.generateStudiesPdfRepresentation(results, dataObjectsRepresentation);
         const docDefinition = {
           footer: function (currentPage) {
-            const onRightSide = !(currentPage % 2);
+            const onRightSide = !!(currentPage % 2);
             return [{
               text: currentPage.toString(),
               alignment: onRightSide ? 'right' : 'left',

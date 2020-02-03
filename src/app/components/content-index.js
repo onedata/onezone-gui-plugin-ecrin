@@ -13,7 +13,6 @@ import {
   get,
   getProperties,
   set,
-  setProperties,
 } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
@@ -45,16 +44,31 @@ export default Component.extend(I18n, {
    */
   studySearchParams: computed(() => StudySearchParams.create()),
 
+  /**
+   * Query results - studies
+   * @type {Array<Utils.Study>}
+   */
   studies: computed(() => A()),
 
+  /**
+   * All data objects loaded for studies in results
+   * @type {Array<Utils.DataObject>}
+   */
   dataObjects: computed(() => A()),
 
+  /**
+   * Used as a special publisher for data objects without specified publisher
+   * @type {Object}
+   */
   dataObjectPublisherUnknownValue: Object.freeze({
     id: -1,
     name: 'Not provided',
     useForUnknown: true,
   }),
 
+  /**
+   * @type {ComputedProperty<Array<Object>>}
+   */
   dataObjectPublisherMapping: computed(
     'dataObjects.@each.managingOrganisation',
     'dataObjectPublisherUnknownValue',
@@ -73,6 +87,7 @@ export default Component.extend(I18n, {
         .map(publisher => {
           const publisherCopy = Object.assign({}, publisher);
           const name = get(publisher, 'name');
+          // Sometimes publisher name is an array of strings
           if (typeof name === 'object' && name[0]) {
             publisherCopy.name = name[0];
           } else if (typeof name !== 'string') {
@@ -88,7 +103,9 @@ export default Component.extend(I18n, {
   /**
    * @type {ComputedProperty<PromiseObject>}
    */
-  fetchDataPromiseObject: computed(() => PromiseObject.create({ promise: resolve() })),
+  fetchDataPromiseObject: computed(() =>
+    PromiseObject.create({ promise: resolve() })
+  ),
 
   /**
    * @type {ComputedProperty<boolean>}
@@ -155,7 +172,12 @@ export default Component.extend(I18n, {
    * @returns {Object}
    */
   constructQueryBodyBase(type) {
-    const body = {};
+    const body = {
+      size: 1000,
+      sort: [
+        { id: { order: 'asc' } },
+      ],
+    };
 
     let _source;
     if (type === 'study') {
@@ -182,13 +204,8 @@ export default Component.extend(I18n, {
         'related_studies',
       ];
     }
-    body.sort = [
-      { id: { order: 'asc' } },
-    ];
-    setProperties(body, {
-      size: 1000,
-      _source,
-    });
+    body._source = _source;
+
     return body;
   },
 
@@ -320,9 +337,7 @@ export default Component.extend(I18n, {
 
   /**
    * Fetches ids of studies, that are related to data objects specified by
-   * `published paper` query params. If first fetch attempt does not give
-   * enough number of ids, method will call itself again to filfill
-   * `size` requirement (if possible).
+   * `published paper` query params.
    * @returns {Promise<Array<number>>}
    */
   fetchStudyIdsForPerPaperSearch() {
@@ -425,10 +440,9 @@ export default Component.extend(I18n, {
 
   generateExcludeFetchedStudiesClause() {
     const studies = this.get('studies') || [];
-    const studyIds = studies.mapBy('id');
     return {
       terms: {
-        id: studyIds,
+        id: studies.mapBy('id'),
       },
     };
   },
@@ -450,7 +464,6 @@ export default Component.extend(I18n, {
     );
 
     let fetchDataObjectsPromise;
-
     if (idsOfDataObjectsToFetch.length) {
       const body = this.constructQueryBodyBase('data_object');
       body.query = {
@@ -507,11 +520,11 @@ export default Component.extend(I18n, {
 
     studies.removeObjects(studiesToRemove);
 
-    const dataObjectsMaybeToRemove = _.uniq(_.flatten(
+    const dataObjectsOfRemovedStudies = _.uniq(_.flatten(
       studiesToRemove.mapBy('dataObjects').compact()
     ));
     const usedDataObjectIds = _.flatten(studies.mapBy('dataObjectsIdsToFetch'));
-    const dataObjectsToRemove = dataObjectsMaybeToRemove.filter(dataObject => {
+    const dataObjectsToRemove = dataObjectsOfRemovedStudies.filter(dataObject => {
       const doId = get(dataObject, 'id');
       return !usedDataObjectIds.includes(doId);
     });
@@ -578,11 +591,10 @@ export default Component.extend(I18n, {
         'timePerspective',
         'biospecimensRetained',
       ].forEach(fieldName => {
-        const filter = get(filters, fieldName);
         filteredStudies = checkMatchOfCategorizedValue(
           filteredStudies,
           fieldName,
-          filter
+          get(filters, fieldName)
         );
       });
 
@@ -612,11 +624,10 @@ export default Component.extend(I18n, {
         'type',
         'accessType',
       ].forEach(fieldName => {
-        const filter = get(filters, fieldName);
         filteredDataObjects = checkMatchOfCategorizedValue(
           filteredDataObjects,
           fieldName,
-          filter
+          get(filters, fieldName)
         );
       });
       if (year && year.length) {
@@ -671,7 +682,7 @@ export default Component.extend(I18n, {
       return this.get('indexeddbStorage').loadResultsList();
     },
     loadSavedResults(results) {
-      this.removeStudies(this.get('studies'));
+      this.removeStudies(this.get('studies').slice());
       return this.loadStudiesFromSavedResults(results);
     },
     removeSavedResults(results) {

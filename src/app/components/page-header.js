@@ -1,5 +1,5 @@
 /**
- * A component, which shows content header with optional logo.
+ * A component, which shows content header
  * 
  * @module components/page-header
  * @author Michał Borzęcki

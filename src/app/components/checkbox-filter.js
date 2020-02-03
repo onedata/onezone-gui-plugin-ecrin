@@ -1,3 +1,12 @@
+/**
+ * A filter which allows to select multiple options using checkboxes.
+ *
+ * @module components/checkbox-filter
+ * @author Michał Borzęcki
+ * @copyright (C) 2020 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Component from '@ember/component';
 import { computed, get } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
@@ -19,21 +28,31 @@ export default Component.extend(I18n, {
   items: computed(() => A()),
 
   /**
+   * @type {Function}
+   * @param {Object} item
+   * @param {string} filter
+   * @returns {boolean}
+   */
+  matcher: computed(() => {
+    return (item, filter) =>
+      get(item, 'name').toLowerCase().indexOf(filter.trim().toLowerCase()) !== -1;
+  }),
+
+  /**
    * @type {ComputedProperty<Array<{ name: string }>>}
    */
   filteredItems: computed(
     'items.@each.name',
     'itemsFilter',
+    'matcher',
     function filteredItems() {
       const {
         items,
         itemsFilter,
-      } = this.getProperties('items', 'itemsFilter');
+        matcher,
+      } = this.getProperties('items', 'itemsFilter', 'matcher');
 
-      const processedItemsFilter = itemsFilter.trim().toLowerCase();
-      return items.filter(item =>
-        get(item, 'name').toLowerCase().indexOf(processedItemsFilter) !== -1
-      );
+      return items.filter(item => matcher(item, itemsFilter));
     }
   ),
 

@@ -87,6 +87,7 @@ export default EmberObject.extend({
   /**
    * @type {ComputedProperty<boolean>}
    * @public
+   * True if params can be used to create a query
    */
   hasMeaningfulParams: computed(...paramsList, function hasMeaningfulParams() {
     const {

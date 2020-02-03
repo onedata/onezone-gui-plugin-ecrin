@@ -36,6 +36,10 @@ export default Component.extend(I18n, {
    */
   isFetchingData: false,
 
+  /**
+   * @virtual
+   * @type {Array<Utils.Study>}
+   */
   studies: computed(() => A()),
 
   /**
@@ -76,6 +80,14 @@ export default Component.extend(I18n, {
   exportResultsToPdf: () => {},
 
   /**
+   * @virtual
+   * @type {Function}
+   * @param {Array<Util.Study>} studies
+   * @returns {any}
+   */
+  removeStudies: () => {},
+
+  /**
    * @type {number}
    */
   rowHeight: 43,
@@ -93,22 +105,17 @@ export default Component.extend(I18n, {
   /**
    * @type {string}
    */
-  expandedResultId: undefined,
+  expandedStudyId: undefined,
 
   /**
    * @type {Util.ListWatcher}
    */
   listWatcher: null,
 
-  studiesChunksArray: undefined,
-
   /**
-   * @virtual
-   * @type {Function}
-   * @param {Array<Util.Study>} studies
-   * @returns {any}
+   * @type {ReplacingChunksArray<Utils.Study>}
    */
-  removeStudies: () => {},
+  studiesChunksArray: undefined,
 
   /**
    * @type {boolean}
@@ -123,15 +130,19 @@ export default Component.extend(I18n, {
   /**
    * @type {Ember.ComputedProperty<number>}
    */
-  firstRowHeight: computed('rowHeight', 'studiesChunksArray._start',
+  firstRowHeight: computed(
+    'rowHeight',
+    'studiesChunksArray._start',
+    'expandedStudyId',
+    'expandedRowExtraHeight',
     function firstRowHeight() {
       const {
-        expandedResultId,
+        expandedStudyId,
         studiesChunksArray,
         rowHeight,
         expandedRowExtraHeight,
       } = this.getProperties(
-        'expandedResultId',
+        'expandedStudyId',
         'studiesChunksArray',
         'rowHeight',
         'expandedRowExtraHeight'
@@ -144,13 +155,13 @@ export default Component.extend(I18n, {
         return 0;
       } else {
         let height = _start * rowHeight;
-        if (sourceArray.slice(0, _start).map(x => get(x, 'index.id'))
-          .includes(expandedResultId)) {
+        if (sourceArray.slice(0, _start).findBy('id', expandedStudyId)) {
           height += expandedRowExtraHeight;
         }
         return height;
       }
-    }),
+    }
+  ),
 
   /**
    * @type {Ember.ComputedProperty<HTMLSafe>}
@@ -158,17 +169,6 @@ export default Component.extend(I18n, {
   firstRowStyle: computed('firstRowHeight', function firstRowStyle() {
     return htmlSafe(`height: ${this.get('firstRowHeight')}px;`);
   }),
-
-  /**
-   * @type {Ember.ComputedProperty<boolean>}
-   */
-  bottomLoading: computed(
-    'studiesChunksArray.{_fetchNextLock,initialLoad.isPending}',
-    function bottomLoading() {
-      return this.get('studiesChunksArray._fetchNextLock') ||
-        this.get('studiesChunksArray.initialLoad.isPending');
-    }
-  ),
 
   scrollContainerModifier: observer(
     'media.isMobile',
@@ -234,7 +234,7 @@ export default Component.extend(I18n, {
   onListScroll(items, headerVisible) {
     const resultsArray = this.get('studiesChunksArray');
     const sourceArray = get(resultsArray, 'sourceArray');
-    const resultsArrayIds = sourceArray.map(x => get(x, 'id'));
+    const resultsArrayIds = sourceArray.mapBy('id');
     const firstId = items[0] && Number(items[0].getAttribute('data-row-id')) || null;
     const lastId = items[items.length - 1] &&
       Number(items[items.length - 1].getAttribute('data-row-id')) || null;
@@ -256,17 +256,17 @@ export default Component.extend(I18n, {
 
   actions: {
     resultExpanded(resultId) {
-      this.set('expandedResultId', resultId);
+      this.set('expandedStudyId', resultId);
     },
     removeStudy(study) {
       const {
         removeStudies,
-        expandedResultId,
-      } = this.getProperties('removeStudies', 'expandedResultId');
+        expandedStudyId,
+      } = this.getProperties('removeStudies', 'expandedStudyId');
 
       removeStudies([study]);
-      if (expandedResultId === get(study, 'id')) {
-        this.set('expandedResultId', null);
+      if (expandedStudyId === get(study, 'id')) {
+        this.set('expandedStudyId', null);
       }
     },
     removeAllStudies() {
@@ -276,10 +276,7 @@ export default Component.extend(I18n, {
       } = this.getProperties('removeStudies', 'studies');
 
       removeStudies(studies.slice());
-      this.set('expandedResultId', null);
-    },
-    openLoadStudiesDialog() {
-      console.log('load study dialog');
+      this.set('expandedStudyId', null);
     },
     loadSavedResults(results) {
       return this.get('loadSavedResults')(results)
@@ -292,9 +289,6 @@ export default Component.extend(I18n, {
         .then(() => safeExec(this, () => {
           this.set('isSaveDialogOpened', false);
         }));
-    },
-    exportStudiesToPdf() {
-      return this.get('exportResultsToPdf')();
     },
   },
 });

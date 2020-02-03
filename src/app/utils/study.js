@@ -1,3 +1,14 @@
+/**
+ * Represents a single study object received from Elasticsearch. Raw ES study object
+ * is stored in `raw` field and used to create computed props with all data needed
+ * for filtering and rendering
+ *
+ * @module utils/study
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import EmberObject, { computed, observer, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { A } from '@ember/array';
@@ -6,6 +17,7 @@ import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 import _ from 'lodash';
 import categorizedValueComputed from 'onezone-gui-plugin-ecrin/utils/categorized-value-computed';
 
+// Study topics which makes sense only when study is interventional
 const interventionalOnlyStudyTopicTypes = [
   'phase',
   'interventionModel',
@@ -14,12 +26,15 @@ const interventionalOnlyStudyTopicTypes = [
   'masking',
 ];
 
+// Like above, but for observational studies
 const observationalOnlyStudyTopicTypes = [
   'observationalModel',
   'timePerspective',
   'biospecimensRetained',
 ];
 
+// Topics which possible values are enumerated (in configuration). Raw value should be
+// casted to one of predefined values
 const categorizedTopicTypes = interventionalOnlyStudyTopicTypes
   .concat(observationalOnlyStudyTopicTypes)
   .concat(['genderEligibility']);
@@ -62,11 +77,6 @@ export default EmberObject.extend(topicFields, {
   id: reads('raw.id'),
 
   /**
-   * @type {ComputedProperty<number>}
-   */
-  index: reads('id'),
-
-  /**
    * @public
    * @type {boolean}
    */
@@ -79,6 +89,8 @@ export default EmberObject.extend(topicFields, {
   isDataSharingStatementExpanded: false,
 
   /**
+   * Promise object which is not resolved until data objects
+   * (specfied by field dataObjectsIdsToFetch) are fetched
    * @virtual
    * @type {PromiseObject<Array<Util.DataObject>>}
    */
@@ -143,32 +155,12 @@ export default EmberObject.extend(topicFields, {
   /**
    * @type {ComputedProperty<boolean>}
    */
-  isInterventional: computed(
-    'type.id',
-    'studyTypeMapping.@each.isInterventional',
-    function isInterventional() {
-      const studyTypeId = this.get('type.id');
-      const interventionalTypeId =
-        this.get('studyTypeMapping').findBy('isInterventional', true);
-      return interventionalTypeId !== undefined &&
-        get(interventionalTypeId, 'id') === studyTypeId;
-    }
-  ),
+  isInterventional: isStudyOfTypeComputed('interventional'),
 
   /**
    * @type {ComputedProperty<boolean>}
    */
-  isObservational: computed(
-    'type.id',
-    'studyTypeMapping.@each.isInterventional',
-    function isObservational() {
-      const studyTypeId = this.get('type.id');
-      const observationalTypeId =
-        this.get('studyTypeMapping').findBy('isObservational', true);
-      return observationalTypeId !== undefined &&
-        get(observationalTypeId, 'id') === studyTypeId;
-    }
-  ),
+  isObservational: isStudyOfTypeComputed('observational'),
 
   /**
    * @type {ComputedProperty<boolean>}
@@ -232,24 +224,46 @@ export default EmberObject.extend(topicFields, {
   },
 });
 
+/**
+ * Creates computed property which takes value of specified topic type and
+ * casts it to predefined topic values (performs categorization).
+ * @param {String} topicTypeName
+ * @returns {ComputedProperty<Object>}
+ */
 function topicTypeComputed(topicTypeName) {
   return computed('studyTopics.[]', function () {
     const {
       studyTopicTypeMapping,
       studyTopics,
     } = this.getProperties('studyTopicTypeMapping', 'studyTopics');
-    const specifiedTopicMapping =
-      this.get(`configuration.study${_.upperFirst(topicTypeName)}Mapping`);
     const topicFromMapping = studyTopicTypeMapping
       .findBy(`is${_.upperFirst(topicTypeName)}TopicType`, true);
     if (topicFromMapping) {
       const topicTypeId = get(topicFromMapping, 'id');
       const topic = studyTopics
         .find(topic => get(topic, 'topic_source_type.id') === topicTypeId);
+      const specifiedTopicMapping =
+        this.get(`configuration.study${_.upperFirst(topicTypeName)}Mapping`);
       const unknownValue =
         this.get(`configuration.study${_.upperFirst(topicTypeName)}UnknownValue`);
       return topic &&
         specifiedTopicMapping.findBy('name', get(topic, 'topic_value')) || unknownValue;
     }
+  });
+}
+
+/**
+ * Creates computed property which checks whether study type fits to passed type
+ * name. To work properly needs an according flag set on study type in configuration
+ * (like isInterventional or isObservational).
+ * @param {String} typeName
+ * @returns {ComputedProperty<boolean>}
+ */
+function isStudyOfTypeComputed(typeName) {
+  const typeFlag = `is${_.upperFirst(typeName)}`;
+  return computed('type', `studyTypeMapping.@each.${typeFlag}`, function () {
+    const studyType = this.get('type');
+    const type = this.get('studyTypeMapping').findBy(typeFlag, true);
+    return type !== undefined && type === studyType;
   });
 }

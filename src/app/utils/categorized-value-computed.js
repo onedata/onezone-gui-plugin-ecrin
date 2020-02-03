@@ -1,3 +1,13 @@
+/**
+ * Creates a computed which casts elasticsearch model property value to some
+ * value from bounded set of possible values (specified in configuration).
+ *
+ * @module utils/categorized-value-computed
+ * @author Michał Borzęcki
+ * @copyright (C) 2019 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import { computed } from '@ember/object';
 
 export default function categorizedValueComputed(rawFieldPath, fieldNameInConfig) {

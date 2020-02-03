@@ -2,7 +2,7 @@
  * A component used internally by query-result component, that shows
  * one record of query results (one study).
  * 
- * @module components/query-reslts/study-record
+ * @module components/query-results/study-record
  * @author Michał Borzęcki
  * @copyright (C) 2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.

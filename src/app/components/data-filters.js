@@ -1,5 +1,14 @@
+/**
+ * Study and data objects filters.
+ *
+ * @module components/data-filters
+ * @author Michał Borzęcki
+ * @copyright (C) 2020 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Component from '@ember/component';
-import rangeToNumbers from 'onezone-gui-plugin-ecrin/utils/range-to-numbers';
+import stringToRanges from 'onezone-gui-plugin-ecrin/utils/string-to-ranges';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { inject as service } from '@ember/service';
 import { observer, get } from '@ember/object';
@@ -72,13 +81,21 @@ export default Component.extend(I18n, filtersFields, {
   onFilterDataObjects: () => {},
 
   /**
+   * @virtual
+   * @type {Array<Object>}
+   */
+  dataObjectPublisherMapping: undefined,
+
+  /**
+   * @type {Array<Object>}
+   * Previous value of dataObjectPublisherMapping
+   */
+  prevDataObjectPublisherMapping: undefined,
+
+  /**
    * @type {study}
    */
   filtersModel: 'study',
-
-  dataObjectPublisherMapping: undefined,
-
-  prevDataObjectPublisherMapping: undefined,
 
   /**
    * @type {string}
@@ -121,14 +138,14 @@ export default Component.extend(I18n, filtersFields, {
 
       const oldPublishersIds = prevDataObjectPublisherMapping.mapBy('id');
       const newPublishersIds = dataObjectPublisherMapping.mapBy('id');
-      const newPublishers = _.difference(newPublishersIds, oldPublishersIds)
+      const addedPublishers = _.difference(newPublishersIds, oldPublishersIds)
         .map(id => dataObjectPublisherMapping.findBy('id', id));
       const filterInNewMapping = dataObjectPublisherFilter
         .map(publisher =>
           dataObjectPublisherMapping.findBy('id', get(publisher, 'id'))
         )
         .compact()
-        .addObjects(newPublishers);
+        .addObjects(addedPublishers);
 
       this.setProperties({
         prevDataObjectPublisherMapping: dataObjectPublisherMapping.slice(),
@@ -146,6 +163,11 @@ export default Component.extend(I18n, filtersFields, {
       prevDataObjectPublisherMapping: dataObjectPublisherMapping,
       dataObjectPublisherFilter: dataObjectPublisherMapping,
     });
+  },
+
+  dataObjectTypeMatcher(item, filter) {
+    const name = `${get(item, 'name')} [${get(item, 'class')}]`;
+    return name.toLowerCase().indexOf(filter.trim().toLowerCase()) !== -1;
   },
 
   actions: {
@@ -173,7 +195,7 @@ export default Component.extend(I18n, filtersFields, {
       );
 
       const filters = {
-        year: rangeToNumbers(dataObjectYearFilter),
+        year: stringToRanges(dataObjectYearFilter),
         publisher: dataObjectPublisherFilter,
       };
 

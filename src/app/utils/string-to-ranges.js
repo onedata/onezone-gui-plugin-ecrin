@@ -7,13 +7,13 @@
  * '2000-2003' -> [{start: 2000, end: 2003}]
  * '1992-1993,1995,1996-1997' -> [{start: 1992, end: 1993}, {start: 1995, end: 1995}, {start: 1996, end: 1997}]
  *
- * @module utils/range-to-numbers
+ * @module utils/string-to-ranges
  * @author Michał Borzęcki
  * @copyright (C) 2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-export default function rangeToNumbers(rangeString) {
+export default function stringToRanges(rangeString) {
   if (typeof rangeString !== 'string') {
     return [];
   }

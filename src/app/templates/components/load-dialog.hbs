@@ -18,7 +18,7 @@
           value={{filter}}
           placeholder={{tt this "filterPlaceholder"}}
           oninput={{action (action (mut filter)) value="target.value"}}
-          disabled={{isLoading}}
+          disabled={{or isLoadingList isLoading}}
         >
         <ul class="selector {{if (or isLoading isRemoving) "disabled"}}">
           {{#each (sort-by "timestamp:desc" filteredResultsList) as |results|}}

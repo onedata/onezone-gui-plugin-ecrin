@@ -17,7 +17,7 @@
         type="text"
         value={{resultsName}}
         oninput={{action (action (mut resultsName)) value="target.value"}}
-        onkeydown={{invoke-on-enter (action "save")}}
+        onkeydown={{if resultsName (invoke-on-enter (action "save"))}}
         disabled={{isSaving}}
       >
     </div>
