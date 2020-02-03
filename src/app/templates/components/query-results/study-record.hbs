@@ -80,7 +80,13 @@
           {{/if}}
         </div>
         <div class="data-object-year">{{or dataObject.year "-"}}</div>
-        <div class="data-object-status"><span class="data-object-status-icon {{dataObject.accessType.indicator}}"></span></div>
+        <div class="data-object-status">
+          <span class="data-object-status-icon {{dataObject.accessType.indicator}}">
+            {{#if dataObject.accessType.name}}
+              {{bs-tooltip title=dataObject.accessType.name}}
+            {{/if}}
+          </span>
+        </div>
         <div class="data-object-checkbox">
           {{one-checkbox
             checked=(contains dataObject study.selectedDataObjects)
