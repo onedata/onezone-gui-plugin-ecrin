@@ -1,6 +1,6 @@
 {
   "onedata": {
-    "version": "0.01",
+    "version": "0.2",
     "defaultGuiConfiguration": {
       "contactEmail": "example@mail.com",
       "studyIdTypeMapping": [
