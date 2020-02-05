@@ -2,7 +2,7 @@
   "onedata": {
     "version": "0.2",
     "defaultGuiConfiguration": {
-      "contactEmail": "example@mail.com",
+      "contactEmail": "contact@ecrin.org",
       "studyIdTypeMapping": [
         {
           "name": "Trial Registry ID",

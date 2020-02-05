@@ -2,7 +2,8 @@
   <div class="messages">
     <div class="footer-section sources-section">
       {{!-- TODO: link target --}}
-      <a>{{tt this "sourcesAndOrganisations"}}</a>
+      <a>{{tt this "sourcesAndOrganisations"}}</a> |
+      {{#link-to "disclaimer"}}{{tt this "disclaimer"}}{{/link-to}}
     </div>
     <div class="footer-section include-metadata-section">
       {{tt this "contactStart"}}<a href={{contactHref}} target="_blank">{{tt this "here"}}</a>{{tt this "contactEnd"}}

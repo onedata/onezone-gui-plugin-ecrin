@@ -1,3 +1,4 @@
+import applicationContainer from './components/application-container';
 import checkboxFilter from './components/checkbox-filter';
 import dataFilters from './components/data-filters';
 import loadDialog from './components/load-dialog';
@@ -13,6 +14,7 @@ import pdfGenerator from './services/pdf-generator';
 
 export default {
   components: {
+    applicationContainer,
     checkboxFilter,
     dataFilters,
     loadDialog,
