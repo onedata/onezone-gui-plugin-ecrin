@@ -10,8 +10,11 @@
 
 import Component from '@ember/component';
 import { observer, computed, get } from '@ember/object';
+import { or } from 'ember-awesome-macros';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
+import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
+import notImplementedReject from 'onezone-gui-plugin-ecrin/utils/not-implemented-reject';
 
 export default Component.extend(I18n, {
   /**
@@ -53,14 +56,14 @@ export default Component.extend(I18n, {
   /**
    * @type {string}
    */
-  filter: '',
+  filterString: '',
 
   /**
    * @virtual
    * @type {Function}
    * @returns {Promise<Array<Object>>}
    */
-  onLoadList: () => {},
+  onLoadList: notImplementedReject,
 
   /**
    * @virtual
@@ -68,7 +71,7 @@ export default Component.extend(I18n, {
    * @param {Object} results
    * @returns {Promise}
    */
-  onLoad: () => {},
+  onLoad: notImplementedReject,
 
   /**
    * @virtual
@@ -76,32 +79,34 @@ export default Component.extend(I18n, {
    * @param {Object} results
    * @returns {Promise}
    */
-  onRemove: () => {},
+  onRemove: notImplementedReject,
 
   /**
    * @virtual
    * @type {Function}
    * @returns {any}
    */
-  onCancel: () => {},
+  onCancel: notImplementedIgnore,
 
   /**
    * @type {Array<Object>}
    */
   resultsList: computed(() => []),
 
+  closeDisabled: or('isLoading', 'isRemoving'),
+
   filteredResultsList: computed(
     'resultsList.@each.name',
-    'filter',
+    'filterString',
     function filteredResultsList() {
       const {
         resultsList,
-        filter,
-      } = this.getProperties('resultsList', 'filter');
-      const strippedFilter = filter.trim().toLowerCase();
+        filterString,
+      } = this.getProperties('resultsList', 'filterString');
+      const strippedFilter = filterString.trim().toLowerCase();
 
       return resultsList.filter(results =>
-        get(results, 'name').toLowerCase().indexOf(strippedFilter) !== -1
+        get(results, 'name').toLowerCase().includes(strippedFilter)
       );
     }
   ),
@@ -124,16 +129,16 @@ export default Component.extend(I18n, {
   ),
 
   isOpenedObserver: observer('isOpened', function isOpenedObserver() {
-    this.setProperties({
-      resultsList: [],
-      selectedResults: null,
-      isLoading: false,
-      filter: '',
-      lastError: null,
-    });
-
     if (this.get('isOpened')) {
       this.loadList();
+    } else {
+      this.setProperties({
+        resultsList: [],
+        selectedResults: null,
+        isLoading: false,
+        filterString: '',
+        lastError: null,
+      });
     }
   }),
 
@@ -164,7 +169,7 @@ export default Component.extend(I18n, {
       const {
         onLoad,
         selectedResults,
-      } = this.getProperties('selectedResults', 'onLoad');
+      } = this.getProperties('onLoad', 'selectedResults');
 
       this.setProperties({
         isLoading: true,
@@ -178,7 +183,7 @@ export default Component.extend(I18n, {
       const {
         onRemove,
         resultsList,
-      } = this.getProperties('resultsList', 'onRemove');
+      } = this.getProperties('onRemove', 'resultsList');
 
       this.setProperties({
         isRemoving: true,

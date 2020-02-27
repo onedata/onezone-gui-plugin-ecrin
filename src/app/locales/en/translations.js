@@ -1,5 +1,6 @@
 import applicationContainer from './components/application-container';
 import checkboxFilter from './components/checkbox-filter';
+import contentDisclaimer from './components/content-disclaimer';
 import dataFilters from './components/data-filters';
 import loadDialog from './components/load-dialog';
 import pageFooter from './components/page-footer';
@@ -16,6 +17,7 @@ export default {
   components: {
     applicationContainer,
     checkboxFilter,
+    contentDisclaimer,
     dataFilters,
     loadDialog,
     pageFooter,

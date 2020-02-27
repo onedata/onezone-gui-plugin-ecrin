@@ -15,6 +15,8 @@ import { observer, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { array, raw } from 'ember-awesome-macros';
 import _ from 'lodash';
+import { dataObjectTypeName } from 'onezone-gui-plugin-ecrin/helpers/data-object-type-name';
+import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 
 const studyCategorizedFilters = [
   'type',
@@ -70,7 +72,7 @@ export default Component.extend(I18n, filtersFields, {
    * @param {Object} filters
    * @returns {any}
    */
-  onFilterStudies: () => {},
+  onFilterStudies: notImplementedIgnore,
 
   /**
    * @virtual
@@ -78,7 +80,7 @@ export default Component.extend(I18n, filtersFields, {
    * @param {Object} filters
    * @returns {any}
    */
-  onFilterDataObjects: () => {},
+  onFilterDataObjects: notImplementedIgnore,
 
   /**
    * @virtual
@@ -166,8 +168,8 @@ export default Component.extend(I18n, filtersFields, {
   },
 
   dataObjectTypeMatcher(item, filter) {
-    const name = `${get(item, 'name')} [${get(item, 'class')}]`;
-    return name.toLowerCase().indexOf(filter.trim().toLowerCase()) !== -1;
+    const name = dataObjectTypeName(item);
+    return name.toLowerCase().includes(filter.trim().toLowerCase());
   },
 
   actions: {

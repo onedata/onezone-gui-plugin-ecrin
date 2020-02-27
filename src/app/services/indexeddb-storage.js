@@ -13,6 +13,7 @@ import { Promise, resolve, reject } from 'rsvp';
 import { A } from '@ember/array';
 import { next } from '@ember/runloop';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
+import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 
 export default Service.extend(I18n, {
   /**
@@ -226,6 +227,9 @@ export default Service.extend(I18n, {
   removeResults(results) {
     const idToRemove = results && get(results, 'id');
     if (typeof idToRemove !== 'number') {
+      console.error(
+        'Failed to remove results with id: ' + idToRemove + ' Wrong id format.'
+      );
       return resolve();
     }
 
@@ -257,7 +261,7 @@ const IndexedDbQuery = EmberObject.extend({
    * @param {IndexedDbQuery} queryInstance
    * @returns {any}
    */
-  queryFinishedCallback: () => {},
+  queryFinishedCallback: notImplementedIgnore,
 
   /**
    * Must not change after object init

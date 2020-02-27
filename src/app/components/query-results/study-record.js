@@ -11,6 +11,7 @@
 import Component from '@ember/component';
 import { get } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
+import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 
 export default Component.extend(I18n, {
   classNames: ['study-record'],
@@ -50,16 +51,11 @@ export default Component.extend(I18n, {
    * @type {Function}
    * @returns {any}
    */
-  remove: () => {},
+  remove: notImplementedIgnore,
 
   actions: {
     toggleDataObjectExpansion(dataObject) {
-      const expandedDataObjects = this.get('study.expandedDataObjects');
-      if (expandedDataObjects.includes(dataObject)) {
-        expandedDataObjects.removeObject(dataObject);
-      } else {
-        expandedDataObjects.addObject(dataObject);
-      }
+      toggleListItemExistence(this.get('study.expandedDataObjects'), dataObject);
     },
     toggleAllElementsExpansion() {
       const study = this.get('study');
@@ -70,12 +66,7 @@ export default Component.extend(I18n, {
       }
     },
     toggleDataObjectSelection(dataObject) {
-      const selectedDataObjects = this.get('study.selectedDataObjects');
-      if (selectedDataObjects.includes(dataObject)) {
-        selectedDataObjects.removeObject(dataObject);
-      } else {
-        selectedDataObjects.addObject(dataObject);
-      }
+      toggleListItemExistence(this.get('study.selectedDataObjects'), dataObject);
     },
     remove() {
       const {
@@ -89,3 +80,11 @@ export default Component.extend(I18n, {
     },
   },
 });
+
+function toggleListItemExistence(list, item) {
+  if (list.includes(item)) {
+    list.removeObject(item);
+  } else {
+    list.addObject(item);
+  }
+}

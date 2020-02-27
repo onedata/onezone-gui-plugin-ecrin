@@ -5,6 +5,7 @@ export default {
   exportToPdf: 'Export to pdf',
   clear: 'Clear',
   studyRecord: {
+    untitled: 'Untitled',
     loading: 'Loading...',
     studyDescription: 'Description',
     studyDataSharingStatement: 'Data sharing statement',

@@ -3,7 +3,7 @@
 
 const defineSassBreakpoints = require('./app/utils/define-sass-breakpoints');
 const breakpointValues = require('./app/breakpoint-values');
-const manifest = require('./app/manifest');
+let manifest = require('./app/manifest');
 const fs = require('fs');
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
@@ -45,17 +45,17 @@ module.exports = function (defaults) {
     ],
   });
 
-  app.import('node_modules/pdfmake/build/pdfmake.min.js', {
-    outputFile: 'assets/pdfmake/pdfmake.js',
-  });
-  app.import('node_modules/pdfmake/build/vfs_fonts.js', {
-    outputFile: 'assets/pdfmake/vfs_fonts.js',
+  ['pdfmake.min', 'vfs_fonts'].forEach(name => {
+    app.import('node_modules/pdfmake/build/' + name + '.js', {
+      outputFile: 'assets/pdfmake/' + name + '.js',
+    });
   });
 
   const env = process.env.EMBER_ENV;
   if (env !== 'production') {
     // Remove Ecrin synonyms from manifest in development mode (breaks down index
     // creation due to lack of synonyms files).
+    manifest = JSON.parse(JSON.stringify(manifest));
     const indices = manifest.onedata.indices;
     indices.forEach(index => {
       const esAnalysis = index.schema.settings.analysis;

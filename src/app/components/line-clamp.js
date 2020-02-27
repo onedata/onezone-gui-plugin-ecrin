@@ -14,6 +14,8 @@ export default LineClamp.extend({
   didInsertElement() {
     this._super(...arguments);
 
-    this._handleNewTruncateAttr(this.get('truncate'));
+    const truncate = this.get('truncate');
+    this._handleNewTruncateAttr(truncate);
+    this.set('_expanded', !truncate);
   },
 });

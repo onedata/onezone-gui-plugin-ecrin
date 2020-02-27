@@ -12,6 +12,7 @@ import { get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { inject as service } from '@ember/service';
+import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 
 export default Component.extend(I18n, {
   tagName: 'form',
@@ -51,7 +52,7 @@ export default Component.extend(I18n, {
    * @type {Function}
    * @returns {undefined}
    */
-  onFind: () => {},
+  onFind: notImplementedIgnore,
 
   /**
    * @type {Array<string>}

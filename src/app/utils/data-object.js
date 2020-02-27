@@ -24,7 +24,6 @@ export default EmberObject.extend({
   raw: undefined,
 
   /**
-   * @public
    * @type {ComputedProperty<number>}
    */
   id: reads('raw.id'),

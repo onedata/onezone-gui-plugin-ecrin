@@ -3,6 +3,7 @@
   onHide=onCancel
   onShown=(action "shown")
   backdropClose=(not isSaving)
+  keyboard=(not isSaving)
   as |modal|
 }}
   {{#modal.header}}
@@ -10,9 +11,9 @@
   {{/modal.header}}
   {{#modal.body}}
     <div class="form-group">
-      <label class="control-label" for="save-name-input">{{tt this "name"}}:</label>
+      <label class="control-label" for={{concat "save-name-input" elementId}}>{{tt this "name"}}:</label>
       <input
-        id="save-name-input"
+        id={{concat "save-name-input" elementId}}
         class="form-control"
         type="text"
         value={{resultsName}}

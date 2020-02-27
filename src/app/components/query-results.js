@@ -18,6 +18,8 @@ import { inject as service } from '@ember/service';
 import ReplacingChunksArray from 'onezone-gui-plugin-ecrin/utils/replacing-chunks-array';
 import { resolve } from 'rsvp';
 import { A } from '@ember/array';
+import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
+import notImplementedReject from 'onezone-gui-plugin-ecrin/utils/not-implemented-reject';
 
 export default Component.extend(I18n, {
   classNames: ['query-results'],
@@ -47,7 +49,7 @@ export default Component.extend(I18n, {
    * @type {Function}
    * @returns {Promise<any>}
    */
-  saveResults: () => {},
+  saveResults: notImplementedReject,
 
   /**
    * @virtual
@@ -55,14 +57,14 @@ export default Component.extend(I18n, {
    * @param {Object} results
    * @returns {Promise<any>}
    */
-  loadSavedResults: () => {},
+  loadSavedResults: notImplementedReject,
 
   /**
    * @virtual
    * @type {Function}
    * @returns {Promise<Array<Object>>}
    */
-  loadSavedResultsList: () => {},
+  loadSavedResultsList: notImplementedReject,
 
   /**
    * @virtual
@@ -70,14 +72,14 @@ export default Component.extend(I18n, {
    * @param {Object} results
    * @returns {Promise<any>}
    */
-  removeSavedResults: () => {},
+  removeSavedResults: notImplementedReject,
 
   /**
    * @virtual
    * @type {Function}
    * @returns {Promise<any>}
    */
-  exportResultsToPdf: () => {},
+  exportResultsToPdf: notImplementedReject,
 
   /**
    * @virtual
@@ -85,7 +87,7 @@ export default Component.extend(I18n, {
    * @param {Array<Util.Study>} studies
    * @returns {any}
    */
-  removeStudies: () => {},
+  removeStudies: notImplementedIgnore,
 
   /**
    * @type {number}
@@ -174,18 +176,18 @@ export default Component.extend(I18n, {
     'media.isMobile',
     function scrollContainerModifier() {
       const isMobile = this.get('media.isMobile');
-      const $scrollContainer = isMobile ?
+      const $newScrollContainer = isMobile ?
         $('#application-container') : this.$('.studies-list');
 
       const $oldScrollContainer = this.get('$scrollContainer');
-      if (!$oldScrollContainer || $oldScrollContainer[0] !== $scrollContainer[0]) {
+      if (!$oldScrollContainer || $oldScrollContainer[0] !== $newScrollContainer[0]) {
         const oldListWatcher = this.get('listWatcher');
         if (oldListWatcher) {
           oldListWatcher.destroy();
         }
 
         const newListWatcher = new ListWatcher(
-          $scrollContainer,
+          $newScrollContainer,
           '.data-row',
           (items, onTop) => safeExec(this, 'onListScroll', items, onTop),
           '.data-start-row',
@@ -193,7 +195,7 @@ export default Component.extend(I18n, {
         newListWatcher.scrollHandler();
 
         this.setProperties({
-          $scrollContainer,
+          $newScrollContainer,
           listWatcher: newListWatcher,
         });
       }
@@ -232,9 +234,9 @@ export default Component.extend(I18n, {
    * @returns {undefined}
    */
   onListScroll(items, headerVisible) {
-    const resultsArray = this.get('studiesChunksArray');
-    const sourceArray = get(resultsArray, 'sourceArray');
-    const resultsArrayIds = sourceArray.mapBy('id');
+    const studiesChunksArray = this.get('studiesChunksArray');
+    const sourceArray = get(studiesChunksArray, 'sourceArray');
+    const sourceArrayIds = sourceArray.mapBy('id');
     const firstId = items[0] && Number(items[0].getAttribute('data-row-id')) || null;
     const lastId = items[items.length - 1] &&
       Number(items[items.length - 1].getAttribute('data-row-id')) || null;
@@ -247,10 +249,10 @@ export default Component.extend(I18n, {
       startIndex = Math.floor(blankStart / rowHeight);
       endIndex = Math.floor(blankEnd / rowHeight);
     } else {
-      startIndex = resultsArrayIds.indexOf(firstId);
-      endIndex = resultsArrayIds.indexOf(lastId);
+      startIndex = sourceArrayIds.indexOf(firstId);
+      endIndex = sourceArrayIds.indexOf(lastId);
     }
-    resultsArray.setProperties({ startIndex, endIndex });
+    studiesChunksArray.setProperties({ startIndex, endIndex });
     safeExec(this, 'set', 'headerVisible', headerVisible);
   },
 

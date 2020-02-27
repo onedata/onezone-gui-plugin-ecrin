@@ -10,17 +10,10 @@
     </div>
   </div>
   <div class="logos">
-    <div class="logo onedata-logo">
-      {{bs-tooltip title=(tt this "onedataLogoDescription")}}
-    </div>
-    <div class="logo ecrin-logo">
-      {{bs-tooltip title=(tt this "ecrinLogoDescription")}}
-    </div>
-    <div class="logo xdc-logo">
-      {{bs-tooltip title=(tt this "xdcLogoDescription")}}
-    </div>
-    <div class="logo eosc-logo">
-      {{bs-tooltip title=(tt this "eoscLogoDescription")}}
-    </div>
+    {{#each (array "onedata" "ecrin" "xdc" "eosc") as |logoName|}}
+      <div class="logo {{logoName}}-logo">
+        {{bs-tooltip title=(tt this (concat logoName "LogoDescription"))}}
+      </div>
+    {{/each}}
   </div>
 </div>

@@ -12,6 +12,7 @@ import { computed, get } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { A } from '@ember/array';
 import { equal } from 'ember-awesome-macros';
+import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 
 export default Component.extend(I18n, {
   classNames: ['checkbox-filter'],
@@ -22,10 +23,36 @@ export default Component.extend(I18n, {
   i18nPrefix: 'components.checkboxFilter',
 
   /**
+   * @virtual optional
+   * @type {boolean}
+   */
+  disabled: false,
+
+  /**
+   * @virtual
+   * @type {Function}
+   * @param {Array<Object>} selectedItems
+   * @returns {any}
+   */
+  onChange: notImplementedIgnore,
+
+  /**
+   * Filter string for filtering by item name
+   * @type {String}
+   */
+  itemsFilter: '',
+
+  /**
    * @virtual
    * @type {ComputedProperty<Array<{ name: string }>>}
    */
   items: computed(() => A()),
+
+  /**
+   * @virtual
+   * @type {ComputedProperty<Array<{ name: string }>>}
+   */
+  selectedItems: computed(() => A()),
 
   /**
    * @type {Function}
@@ -35,7 +62,7 @@ export default Component.extend(I18n, {
    */
   matcher: computed(() => {
     return (item, filter) =>
-      get(item, 'name').toLowerCase().indexOf(filter.trim().toLowerCase()) !== -1;
+      get(item, 'name').toLowerCase().includes(filter.trim().toLowerCase());
   }),
 
   /**
@@ -57,31 +84,6 @@ export default Component.extend(I18n, {
   ),
 
   /**
-   * @virtual
-   * @type {ComputedProperty<Array<{ name: string }>>}
-   */
-  selectedItems: computed(() => A()),
-
-  /**
-   * @virtual optional
-   * @type {boolean}
-   */
-  disabled: false,
-
-  /**
-   * @virtual
-   * @type {Function}
-   * @param {Array<Object>} selectedItems
-   * @returns {any}
-   */
-  onChange: () => {},
-
-  /**
-   * @type {String}
-   */
-  itemsFilter: '',
-
-  /**
    * @type {ComputedProperty<boolean>}
    */
   areAllItemsSelected: equal('selectedItems.length', 'filteredItems.length'),
@@ -98,7 +100,7 @@ export default Component.extend(I18n, {
         if (selectedItems.includes(item)) {
           newSelectedItems = selectedItems.without(item);
         } else {
-          newSelectedItems = selectedItems.concat([item]);
+          newSelectedItems = [...selectedItems, item];
         }
 
         onChange(newSelectedItems);

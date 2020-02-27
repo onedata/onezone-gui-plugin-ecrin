@@ -35,9 +35,11 @@ const observationalOnlyStudyTopicTypes = [
 
 // Topics which possible values are enumerated (in configuration). Raw value should be
 // casted to one of predefined values
-const categorizedTopicTypes = interventionalOnlyStudyTopicTypes
-  .concat(observationalOnlyStudyTopicTypes)
-  .concat(['genderEligibility']);
+const categorizedTopicTypes = [
+  ...interventionalOnlyStudyTopicTypes,
+  ...observationalOnlyStudyTopicTypes,
+  'genderEligibility',
+];
 
 const topicFields = {};
 categorizedTopicTypes.forEach(topicField => {
@@ -155,12 +157,12 @@ export default EmberObject.extend(topicFields, {
   /**
    * @type {ComputedProperty<boolean>}
    */
-  isInterventional: isStudyOfTypeComputed('interventional'),
+  isInterventional: computedIsStudyOfType('interventional'),
 
   /**
    * @type {ComputedProperty<boolean>}
    */
-  isObservational: isStudyOfTypeComputed('observational'),
+  isObservational: computedIsStudyOfType('observational'),
 
   /**
    * @type {ComputedProperty<boolean>}
@@ -259,11 +261,14 @@ function topicTypeComputed(topicTypeName) {
  * @param {String} typeName
  * @returns {ComputedProperty<boolean>}
  */
-function isStudyOfTypeComputed(typeName) {
+function computedIsStudyOfType(typeName) {
   const typeFlag = `is${_.upperFirst(typeName)}`;
   return computed('type', `studyTypeMapping.@each.${typeFlag}`, function () {
-    const studyType = this.get('type');
-    const type = this.get('studyTypeMapping').findBy(typeFlag, true);
-    return type !== undefined && type === studyType;
+    const {
+      type,
+      studyTypeMapping,
+    } = this.getProperties('type', 'studyTypeMapping');
+    const typeFromMapping = studyTypeMapping.findBy(typeFlag, true);
+    return type !== undefined && type === typeFromMapping;
   });
 }

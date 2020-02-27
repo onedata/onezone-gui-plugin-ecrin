@@ -13,6 +13,7 @@ import Component from '@ember/component';
 import { Promise } from 'rsvp';
 import { computed } from '@ember/object';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
+import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 
 export default Component.extend({
   classNames: ['one-checkbox-base'],
@@ -46,7 +47,7 @@ export default Component.extend({
    * @type {Function}
    * @returns {undefined}
    */
-  update: () => {},
+  update: notImplementedIgnore,
 
   /**
    * Set this flag to true to force toggle to be in progress state
@@ -94,7 +95,7 @@ export default Component.extend({
    * @type {Function}
    * @returns {undefined}
    */
-  onFocusOut: () => {},
+  onFocusOut: notImplementedIgnore,
 
   /**
    * Element ID for rendered invisible input element

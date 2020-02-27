@@ -1,7 +1,8 @@
 {{#bs-modal
   open=isOpened
   onHide=onCancel
-  backdropClose=(not isLoading)
+  backdropClose=(not closeDisabled)
+  keyboard=(not closeDisabled)
   class="load-dialog"
   as |modal|
 }}
@@ -15,9 +16,9 @@
         <input
           class="form-control filter-input"
           type="text"
-          value={{filter}}
+          value={{filterString}}
           placeholder={{tt this "filterPlaceholder"}}
-          oninput={{action (action (mut filter)) value="target.value"}}
+          oninput={{action (action (mut filterString)) value="target.value"}}
           disabled={{or isLoadingList isLoading}}
         >
         <ul class="selector {{if (or isLoading isRemoving) "disabled"}}">
@@ -47,14 +48,14 @@
   {{#modal.footer}}
     {{#bs-button
       onClick=onCancel
-      disabled=(or isLoading isRemoving)
+      disabled=closeDisabled
     }}
       {{tt this "cancel"}}
     {{/bs-button}}
     {{#bs-button
       onClick=(action "load")
       type="primary"
-      disabled=(or isLoading isRemoving (not selectedResults))
+      disabled=(or closeDisabled (not selectedResults))
     }}
       {{tt this "load"}}
     {{/bs-button}}

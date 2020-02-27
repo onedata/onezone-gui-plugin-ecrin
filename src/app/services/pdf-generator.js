@@ -14,7 +14,7 @@ import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import _ from 'lodash';
 
 const scriptsToLoad = [
-  'assets/pdfmake/pdfmake.js',
+  'assets/pdfmake/pdfmake.min.js',
   'assets/pdfmake/vfs_fonts.js',
 ];
 
@@ -61,7 +61,7 @@ export default Service.extend(I18n, {
   },
 
   /**
-   * Loads scripts specified by first arguments one by another (second is getting
+   * Loads scripts specified by first arguments one after another (second is getting
    * loaded only when the first one finished and so on).
    * @param {Array<string>} scriptsToLoad paths to scripts, that should be loaded
    * @param {Function} resolveLoad resolve promise callback. Should get makePdf
@@ -104,7 +104,7 @@ export default Service.extend(I18n, {
           this.generateStudiesPdfRepresentation(results, dataObjectsRepresentation);
         const docDefinition = {
           footer: function (currentPage) {
-            const onRightSide = !!(currentPage % 2);
+            const onRightSide = Boolean(currentPage % 2);
             return [{
               text: currentPage.toString(),
               alignment: onRightSide ? 'right' : 'left',
@@ -163,9 +163,9 @@ export default Service.extend(I18n, {
           text: title +
             (url ? '\n\n' + this.pdfT('dataObjectAccessLabel') + url : ''),
         }, {
-          text: year || '-',
+          text: year || '‐',
         }, {
-          text: get(accessType, 'name') || '-',
+          text: get(accessType, 'name') || '‐',
         }]);
       }
     });

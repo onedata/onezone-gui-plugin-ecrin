@@ -1,5 +1,5 @@
 {{#item.title}}
-  {{#truncated-string}}{{or study.title "Untitled"}}{{/truncated-string}}
+  {{#truncated-string}}{{or study.title (tt this "untitled")}}{{/truncated-string}}
 {{/item.title}}
 <ul class="result-actions">
   {{#if isExpanded}}
@@ -77,7 +77,7 @@
             </p>
           {{/if}}
         </div>
-        <div class="data-object-year">{{or dataObject.year "-"}}</div>
+        <div class="data-object-year">{{or dataObject.year "‐"}}</div>
         <div class="data-object-status">
           <span class="data-object-status-icon {{or dataObject.accessType.indicator "unknown"}}">
             {{#if dataObject.accessType.name}}

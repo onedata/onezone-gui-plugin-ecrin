@@ -12,6 +12,8 @@ import { observer } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 import $ from 'jquery';
+import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
+import notImplementedReject from 'onezone-gui-plugin-ecrin/utils/not-implemented-reject';
 
 export default Component.extend(I18n, {
   /**
@@ -45,13 +47,13 @@ export default Component.extend(I18n, {
    * @param {string} resultsName
    * @returns {Promise}
    */
-  onSave: () => {},
+  onSave: notImplementedReject,
 
   /**
    * @type {Function}
    * @returns {any}
    */
-  onCancel: () => {},
+  onCancel: notImplementedIgnore,
 
   isOpenedObserver: observer('isOpened', function isOpenedObserver() {
     this.setProperties({
