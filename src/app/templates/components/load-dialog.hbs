@@ -1,0 +1,63 @@
+{{#bs-modal
+  open=isOpened
+  onHide=onCancel
+  backdropClose=(not closeDisabled)
+  keyboard=(not closeDisabled)
+  class="load-dialog"
+  as |modal|
+}}
+  {{#modal.header}}
+    <h1>{{tt this "header"}}</h1>
+  {{/modal.header}}
+  {{#modal.body}}
+    {{#if (not isLoadingList)}}
+      <div class="form-group">
+        <label class="control-label">{{tt this "selectorLabel"}}:</label>
+        <input
+          class="form-control filter-input"
+          type="text"
+          value={{filterString}}
+          placeholder={{tt this "filterPlaceholder"}}
+          oninput={{action (action (mut filterString)) value="target.value"}}
+          disabled={{or isLoadingList isLoading}}
+        >
+        <ul class="selector {{if (or isLoading isRemoving) "disabled"}}">
+          {{#each (sort-by "timestamp:desc" filteredResultsList) as |results|}}
+            <li
+              class="selector-item {{if (eq selectedResults results) "selected"}}"
+              {{action (mut selectedResults) results}}
+            >
+              {{#truncated-string class="selector-item-name"}}{{results.name}}{{/truncated-string}}
+              {{#if results.timestamp}}
+                <span class="selector-item-timestamp">
+                  {{moment-format (unix results.timestamp) "YYYY/MM/DD HH:mm"}}
+                </span>
+              {{/if}}
+              {{one-icon class="selector-icon-remove" icon="x" click=(action "remove" results)}}
+            </li>
+          {{else}}
+            <li class="selector-item nothing-to-load-item">{{tt this "nothingToLoad"}}</li>
+          {{/each}}
+        </ul>
+      </div>
+    {{/if}}
+    {{#if lastError}}
+      {{resource-load-error message=(concat (tt this "error") ": " lastError)}}
+    {{/if}}
+  {{/modal.body}}
+  {{#modal.footer}}
+    {{#bs-button
+      onClick=onCancel
+      disabled=closeDisabled
+    }}
+      {{tt this "cancel"}}
+    {{/bs-button}}
+    {{#bs-button
+      onClick=(action "load")
+      type="primary"
+      disabled=(or closeDisabled (not selectedResults))
+    }}
+      {{tt this "load"}}
+    {{/bs-button}}
+  {{/modal.footer}}
+{{/bs-modal}}

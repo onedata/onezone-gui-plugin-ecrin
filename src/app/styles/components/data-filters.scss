@@ -1,0 +1,35 @@
+.data-filters {
+  .panel-body {
+    padding: 0 $padding-small-horizontal
+  }
+
+  .form-group {
+    padding-top: $padding-base-vertical;
+    margin-bottom: $padding-base-vertical;
+
+    + .form-group {
+      border-top: 1px solid $main-border-color;
+    }
+  }
+
+  .filters-model-group {
+    display: flex;
+    align-items: center;
+    padding-top: 0;
+
+    .control-label {
+        flex-grow: 1;
+        margin: 0;
+    }
+  }
+
+  @media (min-width: $screen-sm-min) {
+    display: flex;
+    flex-direction: column;
+
+    .filters-container {
+      overflow: auto;
+      margin-bottom: $padding-base-vertical;
+    }
+  }
+}

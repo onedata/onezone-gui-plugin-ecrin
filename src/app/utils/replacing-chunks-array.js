@@ -1,6 +1,8 @@
 /**
  * Array that fetches additional chunks of data if requesting indexes
  * that are not currently loaded
+ * 
+ * Version from commit bf2fed7753a onedata-gui-common. Do not update - it breaks down tests.
  *
  * @module utils/replacing-chunks-array
  * @author Jakub Liput

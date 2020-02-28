@@ -1,0 +1,31 @@
+<div class="top-bar">
+  <input
+    class="form-control input-sm items-filter"
+    type="text"
+    placeholder={{tt this "itemsFilterPlaceholder"}}
+    value={{itemsFilter}}
+    oninput={{action (action (mut itemsFilter)) value="target.value"}}
+    disabled={{disabled}}
+  >
+  <a {{action "toggleAllItems"}} class={{if disabled "disabled"}}>
+    {{tt this (if areAllItemsSelected "deselectAll" "selectAll")}}
+  </a>
+</div>
+<ul class="items-list">
+  {{#each filteredItems as |item index|}}
+    <li class="checkbox-item">
+      <label class="item-name" for={{concat elementId "-" index}}>
+        {{#if hasBlock}}
+          {{yield item}}
+        {{else}}
+          {{#truncated-string}}{{item.name}}{{/truncated-string}}
+        {{/if}}
+      </label>
+      {{one-checkbox
+        inputId=(concat elementId "-" index)
+        checked=(contains item selectedItems)
+        isReadOnly=disabled
+        update=(action "toggleItem" item)}}
+    </li>
+  {{/each}}
+</ul>

@@ -7,7 +7,7 @@ const Router = EmberRouter.extend({
 });
 
 Router.map(function () {
-  this.route('query');
+  this.route('disclaimer');
 });
 
 export default Router;

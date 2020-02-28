@@ -1,5 +1,5 @@
 /**
- * A form with query/filter parameters for studies/data objects.
+ * A form with query parameters for studies.
  * 
  * @module components/query-parameters
  * @author Michał Borzęcki
@@ -8,9 +8,11 @@
  */
 
 import Component from '@ember/component';
+import { get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { inject as service } from '@ember/service';
+import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 
 export default Component.extend(I18n, {
   tagName: 'form',
@@ -24,6 +26,19 @@ export default Component.extend(I18n, {
   i18nPrefix: 'components.queryParameters',
 
   /**
+   * True if application is in the middle of data fetching process
+   * @virtual optional
+   * @type {boolean}
+   */
+  isFetchingData: false,
+
+  /**
+   * @virtual
+   * @type {Utils.StudySearchParams}
+   */
+  studySearchParams: undefined,
+
+  /**
    * @virtual
    * @type {Function}
    * @param {string} fieldName
@@ -31,31 +46,13 @@ export default Component.extend(I18n, {
    * @returns {undefined}
    */
   onChange: undefined,
-  
-  /**
-   * @virtual
-   * @type {Function}
-   * @returns {undefined}
-   */
-  onFind: () => {},
 
   /**
    * @virtual
    * @type {Function}
    * @returns {undefined}
    */
-  onFilter: () => {},
-
-  /**
-   * @virtual
-   * @type {Utils.QueryParams}
-   */
-  queryParams: undefined,
-
-  /**
-   * @type {boolean}
-   */
-  areDataObjectFiltersVisible: true,
+  onFind: notImplementedIgnore,
 
   /**
    * @type {Array<string>}
@@ -76,24 +73,7 @@ export default Component.extend(I18n, {
    */
   studyIdTypeMapping: reads('configuration.studyIdTypeMapping'),
 
-  /**
-   * @type {Ember.ComputedProperty<Array<Object>>}
-   */
-  typeFilterOptions: reads('configuration.typeMapping'),
-
-  /**
-   * @type {Ember.ComputedProperty<Array<Object>>}
-   */
-  accessTypeFilterOptions: reads('configuration.accessTypeMapping'),
-
-  /**
-   * @type {Ember.ComputedProperty<Array<Object>>}
-   */
-  publisherFilterOptions: reads('configuration.publisherMapping'),
-
-  actions: {
-    toggleDataObjectFilters() {
-      this.toggleProperty('areDataObjectFiltersVisible');
-    },
+  entryMatcher(item, term) {
+    return get(item, 'name').toLowerCase().indexOf(term.trim().toLowerCase());
   },
 });

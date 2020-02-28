@@ -1,15 +1,19 @@
 <div class="panel-body">
-  <div class="footer-section pull-left sources-section">
-    {{!-- TODO: link target --}}
-    <a>{{tt this "sourcesAndOrganisations"}}</a>
+  <div class="messages">
+    <div class="footer-section sources-section">
+      {{!-- TODO: link target --}}
+      <a>{{tt this "sourcesAndOrganisations"}}</a> |
+      {{#link-to "disclaimer"}}{{tt this "disclaimer"}}{{/link-to}}
+    </div>
+    <div class="footer-section include-metadata-section">
+      {{tt this "contactStart"}}<a href={{contactHref}} target="_blank">{{tt this "here"}}</a>{{tt this "contactEnd"}}
+    </div>
   </div>
-  <div class="footer-section pull-left include-metadata-section">
-    {{tt this "yourMetedataIncludedContact"}}<a href="https://www.ecrin.org/" target="_blank">{{tt this "here"}}</a>.
-  </div>
-  <div class="logo eosc-logo pull-right">
-    {{bs-tooltip title=(tt this "eoscLogoDescription")}}
-  </div>
-  <div class="logo xdc-logo pull-right">
-    {{bs-tooltip title=(tt this "xdcLogoDescription")}}
+  <div class="logos">
+    {{#each (array "onedata" "ecrin" "xdc" "eosc") as |logoName|}}
+      <div class="logo {{logoName}}-logo">
+        {{bs-tooltip title=(tt this (concat logoName "LogoDescription"))}}
+      </div>
+    {{/each}}
   </div>
 </div>

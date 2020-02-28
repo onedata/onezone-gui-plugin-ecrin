@@ -1,7 +1,16 @@
 export default {
   results: 'Results',
-  result: {
-    loadMore: 'Load more',
+  load: 'Load...',
+  save: 'Save...',
+  exportToPdf: 'Export to pdf',
+  clear: 'Clear',
+  studyRecord: {
+    untitled: 'Untitled',
     loading: 'Loading...',
+    studyDescription: 'Description',
+    studyDataSharingStatement: 'Data sharing statement',
+    showLess: '(show less)',
+    showMore: '(show more)',
+    urlAccess: 'Access',
   },
 };

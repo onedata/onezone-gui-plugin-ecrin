@@ -2,8 +2,9 @@
 'use strict';
 
 const defineSassBreakpoints = require('./app/utils/define-sass-breakpoints');
-const breakpointValues = require('./app/breakpoint-values').default;
-const sass = require('sass');
+const breakpointValues = require('./app/breakpoint-values');
+let manifest = require('./app/manifest');
+const fs = require('fs');
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function (defaults) {
@@ -25,19 +26,6 @@ module.exports = function (defaults) {
 
   defineSassBreakpoints(app, breakpointValues);
 
-  // Injects proper root-url to Sass depending on environment. Fixes different
-  // root-url in production and development mode
-  if (!app.options.sassOptions) {
-    app.options.sassOptions = {};
-  }
-  const sassOptions = app.options.sassOptions;
-  if (!sassOptions.functions) {
-    sassOptions.functions = {};
-  }
-  sassOptions.functions['root-url'] = function rootUrl() {
-    return new sass.types.String('./');
-  };
-
   // Use `app.import` to add additional libraries to the generated
   // output files.
   //
@@ -51,11 +39,34 @@ module.exports = function (defaults) {
   // please specify an object with the list of modules as keys
   // along with the exports of each module as its value.
 
-  const NODE_ASSETS = [
-    'dexie/dist/dexie.min.js',
-  ];
+  app.import('node_modules/is-url/index.js', {
+    using: [
+      { transformation: 'cjs', as: 'is-url' },
+    ],
+  });
 
-  NODE_ASSETS.forEach(path => app.import(`node_modules/${path}`));
+  ['pdfmake.min', 'vfs_fonts'].forEach(name => {
+    app.import('node_modules/pdfmake/build/' + name + '.js', {
+      outputFile: 'assets/pdfmake/' + name + '.js',
+    });
+  });
+
+  const env = process.env.EMBER_ENV;
+  if (env !== 'production') {
+    // Remove Ecrin synonyms from manifest in development mode (breaks down index
+    // creation due to lack of synonyms files).
+    manifest = JSON.parse(JSON.stringify(manifest));
+    const indices = manifest.onedata.indices;
+    indices.forEach(index => {
+      const esAnalysis = index.schema.settings.analysis;
+      const analyzer = esAnalysis.analyzer.default;
+      analyzer.filter =
+        analyzer.filter.filter(filterName => filterName !== 'ecrin_synonyms');
+      delete esAnalysis.filter.ecrin_synonyms;
+    });
+  }
+
+  fs.writeFileSync('public/manifest.json', JSON.stringify(manifest));
 
   return app.toTree();
 };

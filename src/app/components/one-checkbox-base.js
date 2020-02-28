@@ -2,7 +2,7 @@
  * Creates a base for checkbox-like components using the one-way-checkbox component.
  * Allows to put checkbox deeper in DOM without worry about value change handling.
  *
- * @module components/one-checkbox-base.js
+ * @module components/one-checkbox-base
  * @author Michał Borzęcki, Jakub Liput
  * @copyright (C) 2017-2019 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
@@ -13,6 +13,7 @@ import Component from '@ember/component';
 import { Promise } from 'rsvp';
 import { computed } from '@ember/object';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
+import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 
 export default Component.extend({
   classNames: ['one-checkbox-base'],
@@ -22,12 +23,6 @@ export default Component.extend({
     '_spinnerSideClass',
   ],
   attributeBindings: ['dataOption:data-option'],
-
-  /**
-   * Element ID for rendered invisible input element
-   * @type {string}
-   */
-  inputId: null,
 
   /**
    * If true, toggle is in enabled state
@@ -52,7 +47,7 @@ export default Component.extend({
    * @type {Function}
    * @returns {undefined}
    */
-  update: () => {},
+  update: notImplementedIgnore,
 
   /**
    * Set this flag to true to force toggle to be in progress state
@@ -100,7 +95,15 @@ export default Component.extend({
    * @type {Function}
    * @returns {undefined}
    */
-  onFocusOut: () => {},
+  onFocusOut: notImplementedIgnore,
+
+  /**
+   * Element ID for rendered invisible input element
+   * @type {string}
+   */
+  inputId: computed('elementId', function inputId() {
+    return this.get('elementId') + '-input';
+  }),
 
   didInsertElement() {
     this._super(...arguments);

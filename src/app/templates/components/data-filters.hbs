@@ -1,0 +1,186 @@
+<div class="form-group filters-model-group">
+  <label class="control-label">{{tt this "filtersModel"}}</label>
+  {{#bs-button-group
+    value=filtersModel
+    type="radio"
+    onChange=(action (mut filtersModel)) as |bg|
+  }}
+    <div class="btn-group" role="group">
+      {{#bg.button
+        type="default"
+        class="btn-sm btn-studies"
+        value="study"
+        disabled=isFetchingData
+      }}
+        {{tt this "studies"}}
+      {{/bg.button}}
+    </div>
+    <div class="btn-group" role="group">
+      {{#bg.button
+        type="default"
+        class="btn-sm btn-data-objects"
+        value="dataObject"
+        disabled=isFetchingData
+      }}
+        {{tt this "dataObjects"}}
+      {{/bg.button}}
+    </div>
+  {{/bs-button-group}}
+</div>
+<div class="filters-container">
+  <div class={{if (not-eq filtersModel "study") "hidden"}}>
+    {{#filter-collapse label=(tt this "studyType")}}
+      {{checkbox-filter
+        items=configuration.studyTypeMapping
+        selectedItems=studyTypeFilter
+        disabled=isFetchingData
+        onChange=(action (mut studyTypeFilter))
+      }}
+    {{/filter-collapse}}
+    {{#filter-collapse label=(tt this "studyStatus")}}
+      {{checkbox-filter
+        items=configuration.studyStatusMapping
+        selectedItems=studyStatusFilter
+        disabled=isFetchingData
+        onChange=(action (mut studyStatusFilter))
+      }}
+    {{/filter-collapse}}
+    {{#filter-collapse label=(tt this "studyGenderEligibility")}}
+      {{checkbox-filter
+        items=configuration.studyGenderEligibilityMapping
+        selectedItems=studyGenderEligibilityFilter
+        disabled=isFetchingData
+        onChange=(action (mut studyGenderEligibilityFilter))
+      }}
+    {{/filter-collapse}}
+    {{#if hasInterventionalStudyTypeSelected}}
+      <div class="panel panel-default interventional-only-filters">
+        <div class="panel-heading">{{tt this "interventionalStudiesFilters"}}</div>
+        <div class="panel-body">
+          {{#filter-collapse label=(tt this "studyPhase")}}
+            {{checkbox-filter
+              items=configuration.studyPhaseMapping
+              selectedItems=studyPhaseFilter
+              disabled=isFetchingData
+              onChange=(action (mut studyPhaseFilter))
+            }}
+          {{/filter-collapse}}
+          {{#filter-collapse label=(tt this "studyInterventionModel")}}
+            {{checkbox-filter
+              items=configuration.studyInterventionModelMapping
+              selectedItems=studyInterventionModelFilter
+              disabled=isFetchingData
+              onChange=(action (mut studyInterventionModelFilter))
+            }}
+          {{/filter-collapse}}
+          {{#filter-collapse label=(tt this "studyAllocationType")}}
+            {{checkbox-filter
+              items=configuration.studyAllocationTypeMapping
+              selectedItems=studyAllocationTypeFilter
+              disabled=isFetchingData
+              onChange=(action (mut studyAllocationTypeFilter))
+            }}
+          {{/filter-collapse}}
+          {{#filter-collapse label=(tt this "studyPrimaryPurpose")}}
+            {{checkbox-filter
+              items=configuration.studyPrimaryPurposeMapping
+              selectedItems=studyPrimaryPurposeFilter
+              disabled=isFetchingData
+              onChange=(action (mut studyPrimaryPurposeFilter))
+            }}
+          {{/filter-collapse}}
+          {{#filter-collapse label=(tt this "studyMasking")}}
+            {{checkbox-filter
+              items=configuration.studyMaskingMapping
+              selectedItems=studyMaskingFilter
+              disabled=isFetchingData
+              onChange=(action (mut studyMaskingFilter))
+            }}
+          {{/filter-collapse}}
+        </div>
+      </div>
+    {{/if}}
+    {{#if hasObservationalStudyTypeSelected}}
+      <div class="panel panel-default observational-only-filters">
+        <div class="panel-heading">{{tt this "observationalStudiesFilters"}}</div>
+        <div class="panel-body">
+          {{#filter-collapse label=(tt this "studyObservationalModel")}}
+            {{checkbox-filter
+              items=configuration.studyObservationalModelMapping
+              selectedItems=studyObservationalModelFilter
+              disabled=isFetchingData
+              onChange=(action (mut studyObservationalModelFilter))
+            }}
+          {{/filter-collapse}}
+          {{#filter-collapse label=(tt this "studyTimePerspective")}}
+            {{checkbox-filter
+              items=configuration.studyTimePerspectiveMapping
+              selectedItems=studyTimePerspectiveFilter
+              disabled=isFetchingData
+              onChange=(action (mut studyTimePerspectiveFilter))
+            }}
+          {{/filter-collapse}}
+          {{#filter-collapse label=(tt this "studyBiospecimensRetained")}}
+            {{checkbox-filter
+              items=configuration.studyBiospecimensRetainedMapping
+              selectedItems=studyBiospecimensRetainedFilter
+              disabled=isFetchingData
+              onChange=(action (mut studyBiospecimensRetainedFilter))
+            }}
+          {{/filter-collapse}}
+        </div>
+      </div>
+    {{/if}}
+  </div>
+  <div class={{if (not-eq filtersModel "dataObject") "hidden"}}>
+    {{#filter-collapse label=(tt this "dataObjectType")}}
+      {{#checkbox-filter
+        items=configuration.dataObjectTypeMapping
+        selectedItems=dataObjectTypeFilter
+        disabled=isFetchingData
+        matcher=dataObjectTypeMatcher
+        onChange=(action (mut dataObjectTypeFilter))
+        as |item|
+      }}
+        {{#truncated-string}}{{data-object-type-name item}}{{/truncated-string}}
+      {{/checkbox-filter}}
+    {{/filter-collapse}}
+    {{#filter-collapse label=(tt this "dataObjectAccessType")}}
+      {{checkbox-filter
+        items=configuration.dataObjectAccessTypeMapping
+        selectedItems=dataObjectAccessTypeFilter
+        disabled=isFetchingData
+        onChange=(action (mut dataObjectAccessTypeFilter))
+      }}
+    {{/filter-collapse}}
+    {{#filter-collapse label=(tt this "dataObjectYear") class="form-group-sm"}}
+      <input
+        id="year-filter-input"
+        class="form-control"
+        type="text"
+        value={{dataObjectYearFilter}}
+        oninput={{action (action (mut dataObjectYearFilter)) value="target.value"}}
+        onkeydown={{invoke-on-enter (action "filterDataObjects")}}
+        disabled={{isFetchingData}}
+      >
+    {{/filter-collapse}}
+    {{#filter-collapse label=(tt this "dataObjectPublisher")}}
+      {{checkbox-filter
+        items=dataObjectPublisherMapping
+        selectedItems=dataObjectPublisherFilter
+        disabled=isFetchingData
+        onChange=(action (mut dataObjectPublisherFilter))
+      }}
+    {{/filter-collapse}}
+  </div>
+</div>
+{{#bs-button
+  size="sm"
+  type="default"
+  class="pull-right"
+  onClick=(action (if (eq filtersModel "study") "filterStudies" "filterDataObjects"))
+  disabled=isFetchingData
+}}
+  {{tt this "filter"}}
+{{/bs-button}}
+{{yield}}

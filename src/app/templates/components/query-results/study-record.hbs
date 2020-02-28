@@ -1,0 +1,100 @@
+{{#item.title}}
+  {{#truncated-string}}{{or study.title (tt this "untitled")}}{{/truncated-string}}
+{{/item.title}}
+<ul class="result-actions">
+  {{#if isExpanded}}
+    <li class="result-action expand-action" {{action "toggleAllElementsExpansion"}}>
+      {{one-icon icon=(if study.hasAllElementsExpanded "arrow-up" "arrow-down")}}
+    </li>
+  {{/if}}
+  <li class="result-action remove-action {{if isFetchingData "disabled"}}" {{action "remove"}}>{{one-icon icon="x"}}</li>
+</ul>
+{{#item.body}}
+  <div class="data-object-records">
+    {{#if study.description}}
+      <div class="data-object-record study-info">
+        <div class="data-object-type">
+          <div class="object-type-name">{{tt this "studyDescription"}}</div>
+          <a {{action (mut study.isDescriptionExpanded) (not study.isDescriptionExpanded)}} class="show-more-link">
+            {{tt this (if study.isDescriptionExpanded "showLess" "showMore")}}
+          </a>
+        </div>
+        <div class="data-object-description">
+          {{line-clamp
+            text=study.description
+            lines=2
+            interactive=false
+            truncate=(not study.isDescriptionExpanded)
+          }}
+        </div>
+      </div>
+    {{/if}}
+  {{#if study.dataSharingStatement}}
+      <div class="data-object-record study-info">
+        <div class="data-object-type">
+          <div class="object-type-name">{{tt this "studyDataSharingStatement"}}</div>
+          <a {{action (mut study.isDataSharingStatementExpanded) (not study.isDataSharingStatementExpanded)}} class="show-more-link">
+            {{tt this (if study.isDataSharingStatementExpanded "showLess" "showMore")}}
+          </a>
+        </div>
+        <div class="data-object-description">
+          {{line-clamp
+            text=study.dataSharingStatement
+            lines=2
+            interactive=false
+            truncate=(not study.isDataSharingStatementExpanded)
+          }}
+        </div>
+      </div>
+    {{/if}}
+    {{#each (sort-by "year:asc" study.dataObjects) as |dataObject|}}
+      <div class="data-object-record">
+        <div class="data-object-type">
+          <div class="object-type-name">{{dataObject.type.name}}</div>
+          <a {{action "toggleDataObjectExpansion" dataObject}} class="show-more-link">
+            {{tt this (if (contains dataObject study.expandedDataObjects) "showLess" "showMore")}}
+          </a>
+        </div>
+        <div class="data-object-description">
+          {{#if dataObject.title}}
+            <p>
+              {{line-clamp
+                text=dataObject.title
+                lines=2
+                interactive=false
+                truncate=(not (contains dataObject study.expandedDataObjects))
+              }}
+            </p>
+          {{/if}}
+          {{#if dataObject.url}}
+            <p>
+              {{tt this "urlAccess"}}:
+              {{#if dataObject.hasCorrectUrl}}
+                <a href={{dataObject.url}} target="_blank">{{dataObject.url}}</a>
+              {{else}}
+                {{dataObject.url}}
+              {{/if}}
+            </p>
+          {{/if}}
+        </div>
+        <div class="data-object-year">{{or dataObject.year "‐"}}</div>
+        <div class="data-object-status">
+          <span class="data-object-status-icon {{or dataObject.accessType.indicator "unknown"}}">
+            {{#if dataObject.accessType.name}}
+              {{bs-tooltip title=dataObject.accessType.name}}
+            {{/if}}
+          </span>
+        </div>
+        <div class="data-object-checkbox">
+          {{one-checkbox
+            checked=(contains dataObject study.selectedDataObjects)
+            update=(action "toggleDataObjectSelection" dataObject)
+          }}
+        </div>
+      </div>
+    {{/each}}
+  </div>
+  {{#if study.dataObjectsPromiseObject.isPending}}
+    {{spin-spinner-block sizeClass="xs" class="loading-inner-spinner"}} <span>{{tt this "loading"}}</span>
+  {{/if}}
+{{/item.body}}

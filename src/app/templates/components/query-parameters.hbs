@@ -1,24 +1,26 @@
-<div class="relative">
+<div class="relative clearfix">
   <div class="row study-filters">
     <div class="col-xs-12 col-sm-4 form-group">
       <label class="control-label">{{tt this "selectMode"}}</label>
       {{#power-select
-        selected=queryParams.mode
+        selected=studySearchParams.mode
         options=modeOptions
         onchange=(action onChange "mode")
         searchEnabled=false
+        disabled=isFetchingData
         as |mode|}}
         {{tt this (concat "modes." mode)}}
       {{/power-select}}
     </div>
-    {{#if (eq queryParams.mode "specificStudy")}}
+    {{#if (eq studySearchParams.mode "specificStudy")}}
       <div class="col-xs-12 col-sm-4 form-group">
         <label class="control-label">{{tt this "studyIdType"}}</label>
         {{#power-select
-          selected=queryParams.studyIdType
+          selected=studySearchParams.studyIdType
           options=studyIdTypeMapping
           onchange=(action onChange "studyIdType")
-          searchEnabled=false
+          matcher=entryMatcher
+          disabled=isFetchingData
           as |studyIdType|}}
           {{studyIdType.name}}
         {{/power-select}}
@@ -29,28 +31,31 @@
           id="study-id-input"
           class="form-control"
           type="text"
-          value={{queryParams.studyId}}
+          value={{studySearchParams.studyId}}
           onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "studyId") value="target.value"}}>
+          oninput={{action (action onChange "studyId") value="target.value"}}
+          disabled={{isFetchingData}}>
       </div>
-    {{else if (eq queryParams.mode "studyCharact")}}
+    {{else if (eq studySearchParams.mode "studyCharact")}}
       <div class="col-xs-12 col-sm-3 form-group">
         <label class="control-label" for="study-title-contains-input">{{tt this "studyTitleContains"}}</label>
         <input
           id="study-title-contains-input"
           class="form-control"
           type="text"
-          value={{queryParams.studyTitleContains}}
+          value={{studySearchParams.studyTitleContains}}
           onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "studyTitleContains") value="target.value"}}>
+          oninput={{action (action onChange "studyTitleContains") value="target.value"}}
+          disabled={{isFetchingData}}>
       </div>
       <div class="col-xs-12 col-sm-2 form-group">
           <label class="control-label hidden-xs">&nbsp;</label>
           {{#power-select
             options=studyTitleTopicOperatorOptions
-            selected=queryParams.studyTitleTopicOperator
+            selected=studySearchParams.studyTitleTopicOperator
             onchange=(action onChange "studyTitleTopicOperator")
             searchEnabled=false
+            disabled=isFetchingData
             as |studyTitleTopicOperator|}}
             {{tt this (concat "studyTitleTopicOperatorOptions." studyTitleTopicOperator)}}
           {{/power-select}}
@@ -61,20 +66,22 @@
           id="study-topics-include-input"
           class="form-control"
           type="text"
-          value={{queryParams.studyTopicsInclude}}
+          value={{studySearchParams.studyTopicsInclude}}
           onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "studyTopicsInclude") value="target.value"}}>
+          oninput={{action (action onChange "studyTopicsInclude") value="target.value"}}
+          disabled={{isFetchingData}}>
       </div>
-    {{else if (eq queryParams.mode "viaPubPaper")}}
+    {{else if (eq studySearchParams.mode "viaPubPaper")}}
       <div class="col-xs-12 col-sm-4 form-group">
         <label class="control-label" for="doi-input">{{tt this "doi"}}</label>
         <input
           id="doi-input"
           class="form-control"
           type="text"
-          value={{queryParams.doi}}
+          value={{studySearchParams.doi}}
           onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "doi") value="target.value"}}>
+          oninput={{action (action onChange "doi") value="target.value"}}
+          disabled={{isFetchingData}}>
       </div>
       <div class="col-xs-12 col-sm-4 form-group">
         <label class="control-label" for="data-object-title-input">{{tt this "dataObjectTitle"}}</label>
@@ -82,70 +89,19 @@
           id="data-object-title-input"
           class="form-control"
           type="text"
-          value={{queryParams.dataObjectTitle}}
+          value={{studySearchParams.dataObjectTitle}}
           onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "dataObjectTitle") value="target.value"}}>
+          oninput={{action (action onChange "dataObjectTitle") value="target.value"}}
+          disabled={{isFetchingData}}>
       </div>
     {{/if}}
   </div>
-  {{#bs-button type="primary" class="pull-right find-button" onClick=onFind}}{{tt this "find"}}{{/bs-button}}
+  {{#bs-button
+    type="primary"
+    class="pull-right find-button"
+    onClick=onFind
+    disabled=isFetchingData
+  }}
+    {{tt this "find"}}
+  {{/bs-button}}
 </div>
-<div class="row relative">
-  <div class="col-xs-12">
-  <a {{action "toggleDataObjectFilters"}} class="data-object-filters-toggle">
-    {{tt this (if areDataObjectFiltersVisible "hideDataObjectFilters" "showDataObjectFilters")}}
-  </a>
-  </div>
-</div>
-{{#bs-accordion selected=areDataObjectFiltersVisible as |acc|}}
-  {{#acc.item class=(concat "data-object-filters " (if areDataObjectFiltersVisible "expanded" "collapsed")) value=true as |accItem|}}
-    {{#accItem.body}}
-      <div class="row">
-        <div class="col-xs-12 col-sm-3 form-group">
-          <label class="control-label">{{tt this "filterByType"}}</label>
-          {{#power-select-multiple
-            options=typeFilterOptions
-            selected=queryParams.typeFilter
-            closeOnSelect=false
-            onchange=(action onChange "typeFilter")
-            as |typeFilter|}}
-            {{typeFilter.name}}
-          {{/power-select-multiple}}
-        </div>
-        <div class="col-xs-12 col-sm-3 form-group">
-          <label class="control-label">{{tt this "filterByAccessType"}}</label>
-          {{#power-select-multiple
-            options=accessTypeFilterOptions
-            selected=queryParams.accessTypeFilter
-            closeOnSelect=false
-            onchange=(action onChange "accessTypeFilter")
-            as |accessTypeFilter|}}
-            {{accessTypeFilter.name}}
-          {{/power-select-multiple}}
-        </div>
-        <div class="col-xs-12 col-sm-3 form-group">
-          <label class="control-label" for="year-filter-input">{{tt this "filterByYear"}}</label>
-          <input
-            id="year-filter-input"
-            class="form-control"
-            type="text"
-            value={{queryParams.yearFilter}}
-            oninput={{action (action onChange "yearFilter") value="target.value"}}
-            onkeydown={{invoke-on-enter onFilter}}>
-        </div>
-        <div class="col-xs-12 col-sm-3 form-group">
-          <label class="control-label">{{tt this "filterByPublisher"}}</label>
-          {{#power-select-multiple
-            options=publisherFilterOptions
-            selected=queryParams.publisherFilter
-            closeOnSelect=false
-            onchange=(action onChange "publisherFilter")
-            as |publisherFilter|}}
-            {{publisherFilter.name}}
-          {{/power-select-multiple}}
-        </div>
-      </div>
-      {{#bs-button type="default" class="pull-right" onClick=onFilter}}{{tt this "filter"}}{{/bs-button}}
-    {{/accItem.body}}
-  {{/acc.item}}
-{{/bs-accordion}}

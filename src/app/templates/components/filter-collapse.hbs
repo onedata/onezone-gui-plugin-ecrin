@@ -1,0 +1,7 @@
+<label class="control-label component-label" {{action (mut isExpanded) (not isExpanded)}}>
+  {{label}}
+  {{one-icon class="expand-icon" icon=(if isExpanded "arrow-up" "arrow-down")}}
+</label>
+{{#bs-collapse collapsed=(not isExpanded)}}
+  {{yield}}
+{{/bs-collapse}}

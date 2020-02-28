@@ -2,6 +2,8 @@
  * An array proxy that exposes only selected slice of real EmberArray.
  * 
  * See tests for usage examples.
+ * 
+ * Version from commit bf2fed7753a onedata-gui-common. Do not update - it breaks down tests.
  *
  * @module utils/array-slice
  * @author Jakub Liput

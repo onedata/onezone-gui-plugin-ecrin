@@ -1,5 +1,6 @@
 export default {
-  ecrinLogoDescription: 'European Clinical Research Infrastructure Network',
+  logoAbbrev: 'MDR',
+  title: 'Metadata Repository for clinical trial data objects',
   helpLink: 'Help',
   aboutLink: 'About',
 };

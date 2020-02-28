@@ -67,3 +67,7 @@ rel
 .vscode/
 jsconfig.json
 typings/
+
+gui_static.tar.gz
+gui_static
+plugin.tar.gz

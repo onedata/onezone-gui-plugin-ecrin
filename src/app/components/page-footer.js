@@ -8,15 +8,14 @@
  */
 
 import Component from '@ember/component';
-import { computed } from '@ember/object';
-import { inject as service } from '@ember/service';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
+import { inject as service } from '@ember/service';
+import { computed } from '@ember/object';
 
 export default Component.extend(I18n, {
   classNames: ['page-footer', 'panel'],
-  classNameBindings: ['isVisible::hidden'],
 
-  router: service(),
+  configuration: service(),
 
   /**
    * @override
@@ -24,10 +23,14 @@ export default Component.extend(I18n, {
   i18nPrefix: 'components.pageFooter',
 
   /**
-   * @type {Ember.ComputedProperty<boolean>}
+   * @type {ComputedProperty<String>}
    */
-  isVisible: computed('router.currentRouteName', function isVisible() {
-    const currentRouteName = this.get('router.currentRouteName');
-    return currentRouteName !== 'index';
+  contactHref: computed('configuration.contactEmail', function contactHref() {
+    const contactEmail = this.get('configuration.contactEmail');
+    if (contactEmail) {
+      return `mailto:${contactEmail}`;
+    } else {
+      return 'https://www.ecrin.org/';
+    }
   }),
 });

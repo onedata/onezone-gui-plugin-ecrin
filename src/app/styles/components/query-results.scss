@@ -1,5 +1,27 @@
 .query-results {
-  margin-top: $padding-base-vertical;
+  .studies-list-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: $padding-base-vertical;
+    font-family: 'Open Sans Semibold';
+  }
+
+  .results-counter {
+    flex-grow: 1;
+    margin-right: $padding-xs-horizontal;
+  }
+
+  .results-actions {
+    .btn {
+      margin-right: $padding-xs-horizontal;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
   .panel {
     margin-bottom: $padding-small-vertical;
   }
@@ -24,14 +46,14 @@
   .panel-body {
     padding: $padding-base-vertical $padding-base-horizontal;
     height: 250px;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 
   .panel-group .panel-heading + .panel-collapse > .panel-body {
     border-top: 0;
   }
 
-  .query-results-result {
+  .study-record {
     position: relative;
   }
 
@@ -54,50 +76,70 @@
     &:hover {
       color: $main-text-color;
     }
+    &.disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
   }
 
-  .do-records {
-    table-layout: fixed;
-    margin-bottom: 0;
-    tr + tr td {
+  .data-object-record {
+    display: flex;
+
+    + .data-object-record {
       padding-top: $padding-base-vertical;
     }
-    td {
-      vertical-align: top;
-      word-break: break-all;
-    }
   }
 
-  .do-type {
-    width: 10em;
+  .data-object-type,
+  .data-object-year,
+  .data-object-status {
+    flex-shrink: 0;
+  }
+
+  .data-object-type {
+    flex-basis: 10em;
     @media (max-width: $screen-xs-max) {
-      width: 7em;
+      display: flex;
+      flex-basis: initial;
+      flex-grow: 1;
+
+      .object-type-name {
+        flex-grow: 1;
+      }
+
+      .show-more-link {
+        margin-left: $padding-small-horizontal;
+      }
     }
   }
 
-  .do-description {
+  .show-more-link {
+    white-space: nowrap;
+  }
+
+  .data-object-description {
+    flex-grow: 1;
+    min-width: 0;
     color: $main-text-light-color;
     padding-left: $padding-small-horizontal;
     padding-right: $padding-small-horizontal;
+    overflow-wrap: break-word;
     p {
       margin-bottom: $padding-small-vertical;
     }
   }
 
-  .do-year {
-    width: 4em;
+  .data-object-year {
+    flex-basis: 3.5em;
     color: $main-text-light-color;
-    @media (max-width: $screen-xs-max) {
-      width: 3em;
-    }
+    text-align: right;
   }
 
-  .do-status {
-    width: 20px;
-    text-align: center;
+  .data-object-status {
+    margin-left: $padding-small-horizontal;
   }
 
-  .do-status-icon {
+  .data-object-status-icon {
     display: inline-block;
     width: 15px;
     height: 15px;
@@ -117,6 +159,14 @@
     }
   }
 
+  .data-object-checkbox {
+    margin-left: $padding-small-horizontal;
+
+    .one-checkbox {
+      vertical-align: middle;
+    }
+  }
+
   .loading-inner-spinner {
     display: inline-block;
     vertical-align: middle;
@@ -126,8 +176,44 @@
     margin-top: $padding-base-vertical;
   }
 
-  .total-records-number {
-    margin-bottom: $padding-base-vertical;
-    font-family: 'Open Sans Semibold';
+  .result-actions {
+    .expand-action .one-icon {
+      font-weight: bold;
+    }
+
+    .remove-action:hover {
+      color: $color-one-danger;
+    }
+  }
+
+  .study-info .data-object-type {
+    font-style: italic;
+  }
+
+  @media (min-width: $screen-sm-min) {
+    display: flex;
+    flex-direction: column;
+
+    .studies-list {
+      flex-grow: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+  }
+
+  @media (max-width: $screen-xs-max) {
+    .data-object-record {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .data-object-type {
+      flex-basis: 100%;
+    }
+
+    .data-object-description {
+      padding: 0;
+      order: 5;
+    }
   }
 }
