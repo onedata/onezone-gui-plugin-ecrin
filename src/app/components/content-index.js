@@ -88,7 +88,7 @@ export default Component.extend(I18n, {
           const publisherCopy = Object.assign({}, publisher);
           const name = get(publisher, 'name');
           // Sometimes publisher name is an array of strings
-          if (typeof name === 'object' && name[0]) {
+          if (name && typeof name === 'object' && name[0]) {
             publisherCopy.name = name[0];
           } else if (typeof name !== 'string') {
             publisherCopy.name = null;
