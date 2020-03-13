@@ -174,9 +174,6 @@ export default Component.extend(I18n, {
   constructQueryBodyBase(type) {
     const body = {
       size: 1000,
-      sort: [
-        { id: { order: 'asc' } },
-      ],
     };
 
     let _source;
@@ -329,7 +326,7 @@ export default Component.extend(I18n, {
       });
     } else {
       Object.assign(body.query.bool, {
-        filter: filtersArray,
+        must: filtersArray,
       });
     }
     return elasticsearch.post('study', '_search', body);
@@ -353,12 +350,9 @@ export default Component.extend(I18n, {
     const dataObjectBody = {
       size: 10000,
       _source: ['related_studies'],
-      sort: [
-        { id: { order: 'asc' } },
-      ],
       query: {
         bool: {
-          filter: filters,
+          must: filters,
         },
       },
     };
