@@ -172,10 +172,6 @@ export default Component.extend(I18n, {
    * @returns {Object}
    */
   constructQueryBodyBase(type) {
-    const body = {
-      size: 1000,
-    };
-
     let _source;
     if (type === 'study') {
       _source = [
@@ -201,9 +197,10 @@ export default Component.extend(I18n, {
         'related_studies',
       ];
     }
-    body._source = _source;
 
-    return body;
+    return {
+      _source,
+    };
   },
 
   /**
@@ -229,7 +226,8 @@ export default Component.extend(I18n, {
     );
     const studyIdTypeId = get(studyIdType, 'id');
 
-    set(body, 'query', {
+    body.size = 1000;
+    body.query = {
       bool: {
         filter: [{
           nested: {
@@ -251,7 +249,7 @@ export default Component.extend(I18n, {
         }],
         must_not: this.generateExcludeFetchedStudiesClause(),
       },
-    });
+    };
 
     return elasticsearch.post('study', '_search', body);
   },
@@ -269,6 +267,7 @@ export default Component.extend(I18n, {
       'studySearchParams',
     );
     const body = this.constructQueryBodyBase('study');
+    body.size = 1000;
     body.query = {
       bool: {
         must_not: this.generateExcludeFetchedStudiesClause(),
@@ -414,7 +413,8 @@ export default Component.extend(I18n, {
         if (studyIdsNumber) {
           const studyBody =
             this.constructQueryBodyBase('study');
-          set(studyBody, 'query', {
+          studyBody.size = 1000;
+          studyBody.query = {
             bool: {
               filter: [{
                 terms: {
@@ -423,7 +423,7 @@ export default Component.extend(I18n, {
               }],
               must_not: this.generateExcludeFetchedStudiesClause(),
             },
-          });
+          };
           // fetch studies
           return elasticsearch.post('study', '_search', studyBody);
         } else {
@@ -460,6 +460,7 @@ export default Component.extend(I18n, {
     let fetchDataObjectsPromise;
     if (idsOfDataObjectsToFetch.length) {
       const body = this.constructQueryBodyBase('data_object');
+      body.size = idsOfDataObjectsToFetch.length;
       body.query = {
         bool: {
           filter: [{
@@ -529,6 +530,7 @@ export default Component.extend(I18n, {
     const savedStudies = get(results, 'studies');
     const elasticsearch = this.get('elasticsearch');
     const body = Object.assign(this.constructQueryBodyBase('study'), {
+      size: savedStudies.length,
       query: {
         bool: {
           filter: [{
