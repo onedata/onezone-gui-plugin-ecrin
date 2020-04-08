@@ -225,6 +225,25 @@
           "useForUnknown": true
         }
       ],
+      "studyGenderEligibilityMapping": [
+        {
+          "id": 900,
+          "name": "All"
+        },
+        {
+          "id": 905,
+          "name": "Female"
+        },
+        {
+          "id": 910,
+          "name": "Male"
+        },
+        {
+          "id": 915,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
       "studyTopicTypeMapping": [
         {
           "id": 11,
@@ -293,11 +312,6 @@
           "id": 32,
           "name": "biospecimens retained",
           "isBiospecimensRetainedTopicType": true
-        },
-        {
-          "id": 40,
-          "name": "gender eligibility",
-          "isGenderEligibilityTopicType": true
         },
         {
           "id": 41,
@@ -630,25 +644,6 @@
         {
           "id": 0,
           "name": "not yet known"
-        }
-      ],
-      "studyGenderEligibilityMapping": [
-        {
-          "id": 1000,
-          "name": "Female"
-        },
-        {
-          "id": 1005,
-          "name": "Male"
-        },
-        {
-          "id": 1010,
-          "name": "All"
-        },
-        {
-          "id": 1015,
-          "name": "Not provided",
-          "useForUnknown": true
         }
       ],
       "studyPhaseMapping": [
@@ -1567,8 +1562,8 @@
                     "ecrin_rplc_apostrophes"
                   ],
                   "filter": [
-                    "ecrin_synonyms",
                     "lowercase",
+                    "ecrin_synonyms",
                     "default_stop"
                   ]
                 }
@@ -1618,13 +1613,19 @@
               },
               "display_title": {
                 "properties": {
-                  "title": {
-                    "type": "text"
+                  "title_text": {
+                    "type": "text",
+                    "fielddata": true
                   },
                   "lang_code": {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "eager_global_ordinals": true
                   }
                 }
+              },
+              "data_sharing_statement": {
+                "type": "text",
+                "fielddata": true
               },
               "study_identifiers": {
                 "type": "nested",
@@ -1634,7 +1635,8 @@
                   },
                   "identifier_value": {
                     "type": "text",
-                    "analyzer": "keyword"
+                    "analyzer": "keyword",
+                    "fielddata": true
                   },
                   "identifier_type": {
                     "type": "object",
@@ -1643,7 +1645,8 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
@@ -1652,7 +1655,8 @@
                     "format": "yyyy MMM dd"
                   },
                   "identifier_link": {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "eager_global_ordinals": true
                   },
                   "identifier_org": {
                     "type": "object",
@@ -1661,7 +1665,40 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  }
+                }
+              },
+              "study_features": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "feature_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "feature_value": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   }
@@ -1674,7 +1711,8 @@
                     "type": "integer"
                   },
                   "topic_value": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "topic_source_type": {
                     "type": "object",
@@ -1683,7 +1721,8 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
@@ -1694,12 +1733,14 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
                   "topic_ct_code": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -1716,21 +1757,25 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
                   "title_text": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "lang_code": {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "eager_global_ordinals": true
                   },
                   "contains_html": {
                     "type": "boolean"
                   },
                   "comments": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -1741,7 +1786,8 @@
                     "type": "integer"
                   },
                   "name": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -1752,15 +1798,59 @@
                     "type": "integer"
                   },
                   "name": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "study_gender_elig": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "study_enrolment": {
+                "type": "integer"
+              },
+              "min_age": {
+                "type": "integer"
+              },
+              "max_age": {
+                "type": "integer"
+              },
+              "min_age_units": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "max_age_units": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
               "brief_description": {
-                "type": "text"
-              },
-              "data_sharing_statement": {
-                "type": "text"
+                "type": "text",
+                "fielddata": true
               },
               "related_studies": {
                 "type": "nested",
@@ -1775,7 +1865,8 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
@@ -1807,8 +1898,8 @@
                     "ecrin_rplc_apostrophes"
                   ],
                   "filter": [
-                    "ecrin_synonyms",
                     "lowercase",
+                    "ecrin_synonyms",
                     "default_stop"
                   ]
                 }
@@ -1854,16 +1945,20 @@
                 "type": "integer"
               },
               "file_type": {
-                "type": "text"
+                "type": "text",
+                "fielddata": true
               },
               "doi": {
-                "type": "text"
+                "type": "keyword",
+                "eager_global_ordinals": true
               },
               "display_title": {
-                "type": "text"
+                "type": "text",
+                "fielddata": true
               },
               "version": {
-                "type": "text"
+                "type": "text",
+                "fielddata": true
               },
               "managing_organisation": {
                 "type": "object",
@@ -1872,7 +1967,8 @@
                     "type": "integer"
                   },
                   "name": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -1883,7 +1979,8 @@
                     "type": "integer"
                   },
                   "name": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -1894,7 +1991,8 @@
                     "type": "integer"
                   },
                   "name": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -1903,7 +2001,8 @@
                 "format": "YYYY"
               },
               "language_code": {
-                "type": "keyword"
+                "type": "keyword",
+                "eager_global_ordinals": true
               },
               "identifier_org": {
                 "type": "object",
@@ -1912,7 +2011,8 @@
                     "type": "integer"
                   },
                   "name": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -1923,15 +2023,18 @@
                     "type": "integer"
                   },
                   "name": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
               "access_details": {
-                "type": "text"
+                "type": "text",
+                "fielddata": true
               },
               "access_details_url": {
-                "type": "text"
+                "type": "text",
+                "fielddata": true
               },
               "url_last_checked": {
                 "type": "date",
@@ -1944,10 +2047,12 @@
                     "type": "integer"
                   },
                   "name": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "details": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -1958,10 +2063,12 @@
                     "type": "integer"
                   },
                   "name": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "details": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -1972,10 +2079,12 @@
                     "type": "integer"
                   },
                   "name": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "details": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -1986,7 +2095,8 @@
                     "type": "integer"
                   },
                   "identifier_value": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "identifier_type": {
                     "type": "object",
@@ -1995,7 +2105,8 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
@@ -2010,7 +2121,8 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   }
@@ -2029,21 +2141,25 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
                   "title_text": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "lang_code": {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "eager_global_ordinals": true
                   },
                   "contains_html": {
                     "type": "boolean"
                   },
                   "comments": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -2060,7 +2176,8 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
@@ -2074,22 +2191,27 @@
                         "type": "integer"
                       },
                       "family_name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       },
                       "given_name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       },
                       "full_name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       },
                       "identifier": {
                         "type": "object",
                         "properties": {
                           "person_id": {
-                            "type": "text"
+                            "type": "text",
+                            "fielddata": true
                           },
                           "scheme_name": {
-                            "type": "text"
+                            "type": "text",
+                            "fielddata": true
                           }
                         }
                       },
@@ -2097,13 +2219,16 @@
                         "type": "object",
                         "properties": {
                           "affiliation": {
-                            "type": "text"
+                            "type": "text",
+                            "fielddata": true
                           },
                           "org_id": {
-                            "type": "text"
+                            "type": "text",
+                            "fielddata": true
                           },
                           "scheme_name": {
-                            "type": "text"
+                            "type": "text",
+                            "fielddata": true
                           }
                         }
                       }
@@ -2116,7 +2241,8 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   }
@@ -2135,7 +2261,8 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
@@ -2143,7 +2270,8 @@
                     "type": "boolean"
                   },
                   "date_as_string": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "start_date": {
                     "type": "object",
@@ -2174,7 +2302,8 @@
                     }
                   },
                   "comments": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -2191,18 +2320,22 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
                   "description_label": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "description_text": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "language_code": {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "eager_global_ordinals": true
                   },
                   "contains_html": {
                     "type": "boolean"
@@ -2222,12 +2355,14 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
                   "url": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "url_direct_access": {
                     "type": "boolean"
@@ -2243,7 +2378,8 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
@@ -2254,7 +2390,8 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
@@ -2262,7 +2399,8 @@
                     "type": "float"
                   },
                   "resource_size_unit": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -2273,7 +2411,8 @@
                     "type": "integer"
                   },
                   "topic_value": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "topic_source_type": {
                     "type": "object",
@@ -2282,7 +2421,8 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
@@ -2293,12 +2433,14 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
                   "topic_ct_code": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -2309,10 +2451,12 @@
                     "type": "integer"
                   },
                   "details": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   },
                   "rights_url": {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                   }
                 }
               },
@@ -2329,7 +2473,8 @@
                         "type": "integer"
                       },
                       "name": {
-                        "type": "text"
+                        "type": "text",
+                        "fielddata": true
                       }
                     }
                   },
@@ -2339,7 +2484,8 @@
                 }
               },
               "related_studies": {
-                "type": "keyword"
+                "type": "keyword",
+                "eager_global_ordinals": true
               }
             }
           }

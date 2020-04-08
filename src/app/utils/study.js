@@ -38,7 +38,6 @@ const observationalOnlyStudyTopicTypes = [
 const categorizedTopicTypes = [
   ...interventionalOnlyStudyTopicTypes,
   ...observationalOnlyStudyTopicTypes,
-  'genderEligibility',
 ];
 
 const topicFields = {};
@@ -111,7 +110,7 @@ export default EmberObject.extend(topicFields, {
   /**
    * @type {ComputedProperty<String>}
    */
-  title: reads('raw.display_title.title'),
+  title: reads('raw.display_title.title_text'),
 
   /**
    * @type {ComputedProperty<String>}
@@ -150,9 +149,17 @@ export default EmberObject.extend(topicFields, {
   status: categorizedValueComputed('study_status', 'studyStatus'),
 
   /**
+   * @type {ComputedProperty<Object>}
+   */
+  genderEligibility: categorizedValueComputed(
+    'study_gender_elig',
+    'studyGenderEligibility'
+  ),
+
+  /**
    * @type {ComputedProperty<Array<Object>>}
    */
-  studyTopics: or('raw.study_topics', []),
+  studyFeatures: or('raw.study_features', []),
 
   /**
    * @type {ComputedProperty<boolean>}
@@ -233,23 +240,24 @@ export default EmberObject.extend(topicFields, {
  * @returns {ComputedProperty<Object>}
  */
 function topicTypeComputed(topicTypeName) {
-  return computed('studyTopics.[]', function () {
+  return computed('studyFeatures.[]', function () {
     const {
       studyTopicTypeMapping,
-      studyTopics,
-    } = this.getProperties('studyTopicTypeMapping', 'studyTopics');
+      studyFeatures,
+    } = this.getProperties('studyTopicTypeMapping', 'studyFeatures');
     const topicFromMapping = studyTopicTypeMapping
       .findBy(`is${_.upperFirst(topicTypeName)}TopicType`, true);
     if (topicFromMapping) {
       const topicTypeId = get(topicFromMapping, 'id');
-      const topic = studyTopics
-        .find(topic => get(topic, 'topic_source_type.id') === topicTypeId);
+      const topic = studyFeatures
+        .find(topic => get(topic, 'feature_type.id') === topicTypeId);
       const specifiedTopicMapping =
         this.get(`configuration.study${_.upperFirst(topicTypeName)}Mapping`);
       const unknownValue =
         this.get(`configuration.study${_.upperFirst(topicTypeName)}UnknownValue`);
       return topic &&
-        specifiedTopicMapping.findBy('name', get(topic, 'topic_value')) || unknownValue;
+        specifiedTopicMapping.findBy('id', get(topic, 'feature_value.id')) ||
+        unknownValue;
     }
   });
 }

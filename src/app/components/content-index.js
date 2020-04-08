@@ -179,10 +179,11 @@ export default Component.extend(I18n, {
         'study_type',
         'brief_description',
         'data_sharing_statement',
-        'display_title.title',
+        'display_title.title_text',
         'study_status.id',
-        'study_topics.topic_value',
-        'study_topics.topic_source_type.id',
+        'study_gender_elig.id',
+        'study_features.feature_value.id',
+        'study_features.feature_type.id',
         'linked_data_objects',
       ];
     } else if (type === 'data_object') {
@@ -309,11 +310,11 @@ export default Component.extend(I18n, {
     if (studyTopicsInclude) {
       filtersArray.push({
         nested: {
-          path: 'study_topics',
+          path: 'study_features',
           query: {
             simple_query_string: {
               query: studyTopicsInclude,
-              fields: ['study_topics.topic_value'],
+              fields: ['study_features.feature_value'],
             },
           },
         },
