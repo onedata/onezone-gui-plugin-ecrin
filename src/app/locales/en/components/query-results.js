@@ -3,7 +3,7 @@ export default {
   load: 'Load...',
   save: 'Save...',
   exportToPdf: 'Export to pdf',
-  clear: 'Clear',
+  clear: 'Clear results',
   studyRecord: {
     untitled: 'Untitled',
     loading: 'Loading...',
