@@ -26,12 +26,6 @@
     margin-bottom: $padding-small-vertical;
   }
 
-  .data-row:nth-child(odd) {
-    .panel-body, .panel-heading {
-      background-color: $panel-default-heading-bg;
-    }
-  }
-
   .data-row .panel-heading:hover {
     background-color: darken($panel-default-heading-bg, 5%);
   }
@@ -44,9 +38,7 @@
   }
 
   .panel-body {
-    padding: $padding-base-vertical $padding-base-horizontal;
-    height: 250px;
-    overflow-y: auto;
+    padding: 0;
   }
 
   .panel-group .panel-heading + .panel-collapse > .panel-body {
@@ -55,6 +47,22 @@
 
   .study-record {
     position: relative;
+
+    &.is-collapsed {
+      .panel-heading {
+        border-bottom: 0;
+      }
+    }
+
+    &:nth-child(even) {
+      .panel-heading {
+        background-color: lighten($panel-default-heading-bg, 2.5%);
+      }
+    }
+  }
+
+  .data-object-records {
+    padding: $padding-base-vertical $padding-base-horizontal;
   }
 
   .result-actions {
@@ -188,6 +196,25 @@
 
   .study-info .data-object-type {
     font-style: italic;
+  }
+
+  .pagination {
+    display: initial;
+    margin: 0;
+
+    a {
+      padding: $padding-small-vertical $padding-small-horizontal;
+    }
+
+    .active a {
+      background-color: $color-one-blue-gray;
+      border-color: $color-one-blue-gray;
+      font-weight: bold;
+    }
+  }
+
+  .top-page-number {
+    margin-bottom: $padding-small-vertical;
   }
 
   @media (min-width: $screen-sm-min) {

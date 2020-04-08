@@ -51,22 +51,16 @@
   onRemove=removeSavedResults
   onCancel=(action (mut isLoadDialogOpened) false)
 }}
-<div class="studies-list">
-  <div class="data-start-row" style={{firstRowStyle}}></div>
-  {{#bs-accordion onChange=(action "resultExpanded") as |acc|}}
-    {{#each studiesChunksArray as |study|}}
-      <div class="data-row" data-row-id={{study.id}}>
-        {{#acc.item value=study.id as |accItem|}}
-          {{query-results/study-record
-            item=accItem
-            study=study
-            isExpanded=(eq study.id expandedStudyId)
-            remove=(action "removeStudy" study)
-            isFetchingData=isFetchingData
-          }}
-        {{/acc.item}}
-      </div>
+{{#if studies.length}}
+  <div class="studies-list">
+    {{page-numbers content=pagedStudies class="clearfix top-page-number"}}
+    {{#each pagedStudies as |study|}}
+      {{query-results/study-record
+        study=study
+        remove=(action "removeStudy" study)
+        isFetchingData=isFetchingData
+      }}
     {{/each}}
-  {{/bs-accordion}}
-  {{yield}}
-</div>
+    {{page-numbers content=pagedStudies class="clearfix bottom-page-number"}}
+  </div>
+{{/if}}

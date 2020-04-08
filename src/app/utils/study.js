@@ -81,6 +81,12 @@ export default EmberObject.extend(topicFields, {
    * @public
    * @type {boolean}
    */
+  isRecordExpanded: false,
+
+  /**
+   * @public
+   * @type {boolean}
+   */
   isDescriptionExpanded: false,
 
   /**

@@ -1,6 +1,6 @@
-{{#item.title}}
+<div class="panel-heading" {{action (mut study.isRecordExpanded) (not study.isRecordExpanded)}}>
   {{#truncated-string}}{{or study.title (tt this "untitled")}}{{/truncated-string}}
-{{/item.title}}
+</div>
 <ul class="result-actions">
   {{#if isExpanded}}
     <li class="result-action expand-action" {{action "toggleAllElementsExpansion"}}>
@@ -9,7 +9,7 @@
   {{/if}}
   <li class="result-action remove-action {{if isFetchingData "disabled"}}" {{action "remove"}}>{{one-icon icon="x"}}</li>
 </ul>
-{{#item.body}}
+{{#bs-collapse class="panel-body" collapsed=(not study.isRecordExpanded)}}
   <div class="data-object-records">
     {{#if study.description}}
       <div class="data-object-record study-info">
@@ -97,4 +97,4 @@
   {{#if study.dataObjectsPromiseObject.isPending}}
     {{spin-spinner-block sizeClass="xs" class="loading-inner-spinner"}} <span>{{tt this "loading"}}</span>
   {{/if}}
-{{/item.body}}
+{{/bs-collapse}}
