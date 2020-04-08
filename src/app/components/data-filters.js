@@ -213,5 +213,28 @@ export default Component.extend(I18n, filtersFields, {
 
       onFilterDataObjects(filters);
     },
+    resetStudyFilter() {
+      studyCategorizedFilters.forEach(filterName => {
+        const mapping = this.get(
+          `configuration.study${_.upperFirst(filterName)}Mapping`);
+        this.set(`study${_.upperFirst(filterName)}Filter`, mapping.slice());
+      });
+
+      this.send('filterStudies');
+    },
+    resetDataObjectFilter() {
+      this.setProperties({
+        dataObjectYearFilter: '',
+        dataObjectPublisherFilter: this.get('dataObjectPublisherMapping'),
+      });
+
+      dataObjectCategorizedFilters.forEach(filterName => {
+        const mapping = this.get(
+          `configuration.dataObject${_.upperFirst(filterName)}Mapping`);
+        this.set(`dataObject${_.upperFirst(filterName)}Filter`, mapping.slice());
+      });
+
+      this.send('filterDataObjects');
+    },
   },
 });

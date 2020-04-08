@@ -176,6 +176,17 @@
 </div>
 {{#bs-button
   size="sm"
+  type="warning"
+  onClick=(action
+    (if (eq filtersModel "study")
+    "resetStudyFilter"
+    "resetDataObjectFilter")
+  )
+}}
+  {{tt this (if (eq filtersModel "study") "clearStudyFilters" "clearDataObjectFilters")}}
+{{/bs-button}}
+{{#bs-button
+  size="sm"
   type="default"
   class="pull-right"
   onClick=(action (if (eq filtersModel "study") "filterStudies" "filterDataObjects"))

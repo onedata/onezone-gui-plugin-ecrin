@@ -20,4 +20,6 @@ export default {
   dataObjectYear: 'Year',
   dataObjectPublisher: 'Publisher / provider',
   filter: 'Filter',
+  clearStudyFilters: 'Reset study filters',
+  clearDataObjectFilters: 'Reset data object filters',
 };
