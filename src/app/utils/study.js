@@ -12,7 +12,7 @@
 import EmberObject, { computed, observer, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { A } from '@ember/array';
-import { and, or, raw, not, equal } from 'ember-awesome-macros';
+import { and, or, raw, not, equal, bool } from 'ember-awesome-macros';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 import _ from 'lodash';
 import categorizedValueComputed from 'onezone-gui-plugin-ecrin/utils/categorized-value-computed';
@@ -112,6 +112,11 @@ export default EmberObject.extend(topicFields, {
    * @type {ComputedProperty<Ember.A<Util.DataObject>>}
    */
   selectedDataObjects: computed(() => A()),
+
+  /**
+   * @type {ComputedProperty<boolean>}
+   */
+  hasSelectedDataObjects: bool('selectedDataObjects.length'),
 
   /**
    * @type {ComputedProperty<String>}

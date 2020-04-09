@@ -25,6 +25,7 @@ import DataObject from 'onezone-gui-plugin-ecrin/utils/data-object';
 import { A } from '@ember/array';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
 import { isBlank } from '@ember/utils';
+import { array, raw } from 'ember-awesome-macros';
 
 export default Component.extend(I18n, {
   classNames: ['content-index', 'content'],
@@ -51,10 +52,62 @@ export default Component.extend(I18n, {
   studies: computed(() => A()),
 
   /**
+   * @type {Object}
+   */
+  latestStudyFilters: Object.freeze({}),
+
+  /**
    * All data objects loaded for studies in results
    * @type {Array<Utils.DataObject>}
    */
   dataObjects: computed(() => A()),
+
+  /**
+   * Studies with at least one data object selected
+   * @type {ComputedProperty<Array<Utils.Study>>}
+   */
+  studiesWithDataObjectsSelected: array.filterBy(
+    'studies',
+    raw('hasSelectedDataObjects')
+  ),
+
+  /**
+   * Finally filtered studies
+   * @type {ComputedProperty<Array<Utils.Study>>}
+   */
+  filteredStudies: computed(
+    'studiesWithDataObjectsSelected',
+    'latestStudyFilters',
+    function filteredStudies() {
+      const {
+        studiesWithDataObjectsSelected,
+        latestStudyFilters,
+      } = this.getProperties('studiesWithDataObjectsSelected', 'latestStudyFilters');
+
+      let filteredStudies = studiesWithDataObjectsSelected.slice();
+      [
+        'type',
+        'status',
+        'genderEligibility',
+        'phase',
+        'interventionModel',
+        'allocationType',
+        'primaryPurpose',
+        'masking',
+        'observationalModel',
+        'timePerspective',
+        'biospecimensRetained',
+      ].forEach(fieldName => {
+        filteredStudies = checkMatchOfCategorizedValue(
+          filteredStudies,
+          fieldName,
+          get(latestStudyFilters, fieldName)
+        );
+      });
+
+      return filteredStudies;
+    }
+  ),
 
   /**
    * Used as a special publisher for data objects without specified publisher
@@ -573,33 +626,6 @@ export default Component.extend(I18n, {
     removeStudies(studiesToRemove) {
       this.removeStudies(studiesToRemove);
     },
-    filterStudies(filters) {
-      const studies = this.get('studies');
-
-      let filteredStudies = studies.slice();
-      [
-        'type',
-        'status',
-        'genderEligibility',
-        'phase',
-        'interventionModel',
-        'allocationType',
-        'primaryPurpose',
-        'masking',
-        'observationalModel',
-        'timePerspective',
-        'biospecimensRetained',
-      ].forEach(fieldName => {
-        filteredStudies = checkMatchOfCategorizedValue(
-          filteredStudies,
-          fieldName,
-          get(filters, fieldName)
-        );
-      });
-
-      const studiesToRemove = _.difference(studies.toArray(), filteredStudies);
-      this.removeStudies(studiesToRemove);
-    },
     filterDataObjects(filters) {
       const {
         studies,
@@ -700,6 +726,7 @@ export default Component.extend(I18n, {
 
 function checkMatchOfCategorizedValue(records, fieldName, filter) {
   return records.filter(record =>
-    !record.isSupportingField(fieldName) || filter.includes(get(record, fieldName))
+    !record.isSupportingField(fieldName) ||
+    !filter || filter.includes(get(record, fieldName))
   );
 }

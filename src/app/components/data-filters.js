@@ -11,7 +11,7 @@ import Component from '@ember/component';
 import stringToRanges from 'onezone-gui-plugin-ecrin/utils/string-to-ranges';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { inject as service } from '@ember/service';
-import { observer, get } from '@ember/object';
+import { observer, get, computed } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { array, raw } from 'ember-awesome-macros';
 import _ from 'lodash';
@@ -31,6 +31,8 @@ const studyCategorizedFilters = [
   'timePerspective',
   'biospecimensRetained',
 ];
+const studyFilterFieldNames = studyCategorizedFilters
+  .map(name => `study${_.upperFirst(name)}Filter`);
 
 const dataObjectCategorizedFilters = [
   'type',
@@ -156,6 +158,25 @@ export default Component.extend(I18n, filtersFields, {
     }
   ),
 
+  studyFiltersConfiguration: computed(
+    ...studyFilterFieldNames,
+    function studyFiltersConfiguration() {
+      return this.dumpStudyFilters();
+    }
+  ),
+
+  studyFiltersConfigurationObserver: observer(
+    'studyFiltersConfiguration',
+    function studyFiltersConfigurationObserver() {
+      const {
+        studyFiltersConfiguration,
+        onFilterStudies,
+      } = this.getProperties('studyFiltersConfiguration', 'onFilterStudies');
+
+      onFilterStudies(studyFiltersConfiguration);
+    }
+  ),
+
   init() {
     this._super(...arguments);
 
@@ -165,6 +186,20 @@ export default Component.extend(I18n, filtersFields, {
       prevDataObjectPublisherMapping: dataObjectPublisherMapping,
       dataObjectPublisherFilter: dataObjectPublisherMapping,
     });
+
+    this.get('studyFiltersConfiguration');
+  },
+
+  dumpStudyFilters() {
+    const filters = {};
+    studyCategorizedFilters.forEach(filterName => {
+      const mappingSize =
+        this.get(`configuration.study${_.upperFirst(filterName)}Mapping.length`);
+      if (mappingSize) {
+        filters[filterName] = this.get(`study${_.upperFirst(filterName)}Filter`);
+      }
+    });
+    return filters;
   },
 
   dataObjectTypeMatcher(item, filter) {
@@ -173,18 +208,6 @@ export default Component.extend(I18n, filtersFields, {
   },
 
   actions: {
-    filterStudies() {
-      const filters = {};
-      studyCategorizedFilters.forEach(filterName => {
-        const mappingSize =
-          this.get(`configuration.study${_.upperFirst(filterName)}Mapping.length`);
-        if (mappingSize) {
-          filters[filterName] = this.get(`study${_.upperFirst(filterName)}Filter`);
-        }
-      });
-
-      this.get('onFilterStudies')(filters);
-    },
     filterDataObjects() {
       const {
         onFilterDataObjects,
@@ -219,8 +242,6 @@ export default Component.extend(I18n, filtersFields, {
           `configuration.study${_.upperFirst(filterName)}Mapping`);
         this.set(`study${_.upperFirst(filterName)}Filter`, mapping.slice());
       });
-
-      this.send('filterStudies');
     },
     resetDataObjectFilter() {
       this.setProperties({

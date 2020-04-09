@@ -185,13 +185,4 @@
 }}
   {{tt this (if (eq filtersModel "study") "clearStudyFilters" "clearDataObjectFilters")}}
 {{/bs-button}}
-{{#bs-button
-  size="sm"
-  type="default"
-  class="pull-right"
-  onClick=(action (if (eq filtersModel "study") "filterStudies" "filterDataObjects"))
-  disabled=isFetchingData
-}}
-  {{tt this "filter"}}
-{{/bs-button}}
 {{yield}}

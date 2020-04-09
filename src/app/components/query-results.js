@@ -8,7 +8,7 @@
  */
 
 import Component from '@ember/component';
-import { get, computed, observer } from '@ember/object';
+import { get, getProperties, computed, observer } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
@@ -107,6 +107,17 @@ export default Component.extend(I18n, {
 
   studiesPerPageObserver: observer('studiesPerPage', function studiesPerPageObserver() {
     this.set('pagedStudies.page', 1);
+  }),
+
+  studiesNumberObserver: observer('studies.length', function studiesNumberObserver() {
+    const {
+      page,
+      totalPages,
+    } = getProperties(this.get('pagedStudies'), 'page', 'totalPages');
+
+    if (totalPages < page) {
+      this.set('pagedStudies.page', totalPages || 1);
+    }
   }),
 
   actions: {

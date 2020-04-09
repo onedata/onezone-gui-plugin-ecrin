@@ -8,12 +8,12 @@
   {{data-filters
     isFetchingData=isFetchingData
     dataObjectPublisherMapping=dataObjectPublisherMapping
-    onFilterStudies=(action "filterStudies")
+    onFilterStudies=(action (mut latestStudyFilters))
     onFilterDataObjects=(action "filterDataObjects")
   }}
   {{#query-results
     isFetchingData=isFetchingData
-    studies=studies
+    studies=filteredStudies
     removeStudies=(action "removeStudies")
     saveResults=(action "saveResults")
     loadSavedResultsList=(action "loadSavedResultsList")
