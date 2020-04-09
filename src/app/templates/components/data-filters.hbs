@@ -138,7 +138,6 @@
         items=configuration.dataObjectTypeMapping
         selectedItems=dataObjectTypeFilter
         disabled=isFetchingData
-        matcher=dataObjectTypeMatcher
         onChange=(action (mut dataObjectTypeFilter))
         as |item|
       }}
@@ -160,7 +159,6 @@
         type="text"
         value={{dataObjectYearFilter}}
         oninput={{action (action (mut dataObjectYearFilter)) value="target.value"}}
-        onkeydown={{invoke-on-enter (action "filterDataObjects")}}
         disabled={{isFetchingData}}
       >
     {{/filter-collapse}}

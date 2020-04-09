@@ -15,7 +15,6 @@ import { observer, get, computed } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { array, raw } from 'ember-awesome-macros';
 import _ from 'lodash';
-import { dataObjectTypeName } from 'onezone-gui-plugin-ecrin/helpers/data-object-type-name';
 import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 
 const studyCategorizedFilters = [
@@ -38,6 +37,8 @@ const dataObjectCategorizedFilters = [
   'type',
   'accessType',
 ];
+const dataObjectFilterFieldNames = dataObjectCategorizedFilters
+  .map(name => `dataObject${_.upperFirst(name)}Filter`);
 
 const filtersFields = {};
 studyCategorizedFilters.forEach(filterName => {
@@ -165,6 +166,15 @@ export default Component.extend(I18n, filtersFields, {
     }
   ),
 
+  dataObjectFiltersConfiguration: computed(
+    ...dataObjectFilterFieldNames,
+    'dataObjectYearFilter',
+    'dataObjectPublisherFilter',
+    function dataObjectFiltersConfiguration() {
+      return this.dumpDataObjectFilters();
+    }
+  ),
+
   studyFiltersConfigurationObserver: observer(
     'studyFiltersConfiguration',
     function studyFiltersConfigurationObserver() {
@@ -174,6 +184,18 @@ export default Component.extend(I18n, filtersFields, {
       } = this.getProperties('studyFiltersConfiguration', 'onFilterStudies');
 
       onFilterStudies(studyFiltersConfiguration);
+    }
+  ),
+
+  dataObjectFiltersConfigurationObserver: observer(
+    'dataObjectFiltersConfiguration',
+    function dataObjectFiltersConfigurationObserver() {
+      const {
+        dataObjectFiltersConfiguration,
+        onFilterDataObjects,
+      } = this.getProperties('dataObjectFiltersConfiguration', 'onFilterDataObjects');
+
+      onFilterDataObjects(dataObjectFiltersConfiguration);
     }
   ),
 
@@ -187,7 +209,10 @@ export default Component.extend(I18n, filtersFields, {
       dataObjectPublisherFilter: dataObjectPublisherMapping,
     });
 
-    this.get('studyFiltersConfiguration');
+    this.getProperties(
+      'studyFiltersConfiguration',
+      'dataObjectFiltersConfiguration'
+    );
   },
 
   dumpStudyFilters() {
@@ -202,40 +227,34 @@ export default Component.extend(I18n, filtersFields, {
     return filters;
   },
 
-  dataObjectTypeMatcher(item, filter) {
-    const name = dataObjectTypeName(item);
-    return name.toLowerCase().includes(filter.trim().toLowerCase());
+  dumpDataObjectFilters() {
+    const {
+      dataObjectYearFilter,
+      dataObjectPublisherFilter,
+    } = this.getProperties(
+      'dataObjectYearFilter',
+      'dataObjectPublisherFilter'
+    );
+
+    const filters = {
+      year: stringToRanges(dataObjectYearFilter),
+      publisher: dataObjectPublisherFilter,
+    };
+
+    dataObjectCategorizedFilters.forEach(filterName => {
+      const mappingSize = this.get(
+        `configuration.dataObject${_.upperFirst(filterName)}Mapping.length`
+      );
+      if (mappingSize) {
+        filters[filterName] =
+          this.get(`dataObject${_.upperFirst(filterName)}Filter`);
+      }
+    });
+
+    return filters;
   },
 
   actions: {
-    filterDataObjects() {
-      const {
-        onFilterDataObjects,
-        dataObjectYearFilter,
-        dataObjectPublisherFilter,
-      } = this.getProperties(
-        'onFilterDataObjects',
-        'dataObjectYearFilter',
-        'dataObjectPublisherFilter'
-      );
-
-      const filters = {
-        year: stringToRanges(dataObjectYearFilter),
-        publisher: dataObjectPublisherFilter,
-      };
-
-      dataObjectCategorizedFilters.forEach(filterName => {
-        const mappingSize = this.get(
-          `configuration.dataObject${_.upperFirst(filterName)}Mapping.length`
-        );
-        if (mappingSize) {
-          filters[filterName] =
-            this.get(`dataObject${_.upperFirst(filterName)}Filter`);
-        }
-      });
-
-      onFilterDataObjects(filters);
-    },
     resetStudyFilter() {
       studyCategorizedFilters.forEach(filterName => {
         const mapping = this.get(
@@ -254,8 +273,6 @@ export default Component.extend(I18n, filtersFields, {
           `configuration.dataObject${_.upperFirst(filterName)}Mapping`);
         this.set(`dataObject${_.upperFirst(filterName)}Filter`, mapping.slice());
       });
-
-      this.send('filterDataObjects');
     },
   },
 });

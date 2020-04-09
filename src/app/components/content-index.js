@@ -678,12 +678,9 @@ export default Component.extend(I18n, {
       }
 
       studies.forEach(study => {
-        const selectedDataObjects = get(study, 'selectedDataObjects');
-        selectedDataObjects.removeObjects(
-          selectedDataObjects.reject(dataObject =>
-            filteredDataObjects.includes(dataObject)
-          )
-        );
+        const filteredStudyDOs = (get(study, 'dataObjects') || [])
+          .filter(dataObject => filteredDataObjects.includes(dataObject));
+        set(study, 'selectedDataObjects', filteredStudyDOs);
       });
     },
     saveResults(name) {
