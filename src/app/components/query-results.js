@@ -8,7 +8,8 @@
  */
 
 import Component from '@ember/component';
-import { get, computed } from '@ember/object';
+import { get, computed, observer } from '@ember/object';
+import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 import { A } from '@ember/array';
@@ -93,9 +94,20 @@ export default Component.extend(I18n, {
   isLoadDialogOpened: false,
 
   /**
+   * @type {number}
+   */
+  studiesPerPage: 10,
+
+  /**
    * @type {PagedArray<Util.Study>}
    */
-  pagedStudies: pagedArray('studies'),
+  pagedStudies: pagedArray('studies', {
+    perPage: reads('parent.studiesPerPage'),
+  }),
+
+  studiesPerPageObserver: observer('studiesPerPage', function studiesPerPageObserver() {
+    this.set('pagedStudies.page', 1);
+  }),
 
   actions: {
     removeStudy(study) {

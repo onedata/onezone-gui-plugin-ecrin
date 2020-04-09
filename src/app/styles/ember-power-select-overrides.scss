@@ -15,6 +15,7 @@ $ember-power-select-dropdown-contiguous-border: $ember-power-select-dropdown-bor
 $ember-power-select-trigger-ltr-padding: $padding-base-vertical $padding-base-horizontal;
 $ember-power-select-dropdown-contiguous-border: none;
 $ember-power-select-multiple-option-line-height: $line-height-base;
+$ember-power-select-option-small-padding: $padding-small-vertical + 1px $padding-xs-horizontal;
 
 @import "ember-power-select";
 
@@ -80,4 +81,30 @@ $ember-power-select-multiple-option-line-height: $line-height-base;
   box-shadow: none;
   background-color: $input-bg-disabled;
   opacity: 0.6;
+}
+
+.ember-power-select-trigger.small {
+  padding: $ember-power-select-option-small-padding;
+  padding-right: 2em;
+  min-height: $input-height-small;
+  position: relative;
+  
+  .ember-power-select-status-icon {
+    right: 1.7em;
+    top: 1.2em;
+    margin: initial;
+    font-size: 1.1em;
+    font-weight: bold;
+    // &:before {
+    //   @include oneicon-content($oneicon-arrow-down);
+    // }
+  }
+}
+
+.ember-power-select-dropdown.small {
+  .ember-power-select-option {
+    padding: $ember-power-select-option-small-padding;
+    min-height: 31px;
+    line-height: $ember-power-select-line-height;
+  }
 }

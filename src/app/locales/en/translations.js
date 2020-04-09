@@ -5,6 +5,7 @@ import dataFilters from './components/data-filters';
 import loadDialog from './components/load-dialog';
 import pageFooter from './components/page-footer';
 import pageHeader from './components/page-header';
+import paginationSelector from './components/pagination-selector';
 import queryParameters from './components/query-parameters';
 import queryResults from './components/query-results';
 import resourceLoadError from './components/resource-load-error';
@@ -22,6 +23,7 @@ export default {
     loadDialog,
     pageFooter,
     pageHeader,
+    paginationSelector,
     queryParameters,
     queryResults,
     resourceLoadError,

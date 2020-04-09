@@ -198,25 +198,6 @@
     font-style: italic;
   }
 
-  .pagination {
-    display: initial;
-    margin: 0;
-
-    a {
-      padding: $padding-small-vertical $padding-small-horizontal;
-    }
-
-    .active a {
-      background-color: $color-one-blue-gray;
-      border-color: $color-one-blue-gray;
-      font-weight: bold;
-    }
-  }
-
-  .top-page-number {
-    margin-bottom: $padding-small-vertical;
-  }
-
   @media (min-width: $screen-sm-min) {
     display: flex;
     flex-direction: column;

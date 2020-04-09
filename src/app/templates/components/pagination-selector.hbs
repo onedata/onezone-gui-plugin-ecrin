@@ -1,0 +1,22 @@
+{{page-numbers
+  content=pagedContent
+  numPagesToShow=5
+  class="pagination-container"
+}}
+<div class="per-page-selector">
+  <label>{{tt this "perPageLabel"}}</label>
+  {{#power-select
+    options=(array 10 25 50 100)
+    selected=pagedContent.perPage
+    onchange=(action (mut pagedContent.perPage))
+    searchEnabled=false
+    renderInPlace=true
+    triggerClass="small"
+    dropdownClass="small"
+    verticalPosition=perPageDropdownVerticalPosition
+    as |perPage|
+  }}
+    {{perPage}}
+  {{/power-select}}
+</div>
+{{yield}}
