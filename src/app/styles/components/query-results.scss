@@ -39,6 +39,30 @@
 
   .panel-body {
     padding: 0;
+
+    &.collapse:not(.in) {
+      display: block;
+      height: 0;
+      overflow: hidden;
+    }
+  }
+
+  .data-object-overflow-container.collapsed {
+    max-height: 43px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 29px;
+      height: 14px;
+      width: 100%;
+      background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.7));
+      z-index: 1000000;
+      pointer-events: none;
+    }
   }
 
   .panel-group .panel-heading + .panel-collapse > .panel-body {
@@ -126,6 +150,7 @@
   }
 
   .data-object-description {
+    position: relative;
     flex-grow: 1;
     min-width: 0;
     color: $main-text-light-color;
@@ -134,6 +159,10 @@
     overflow-wrap: break-word;
     p {
       margin-bottom: $padding-small-vertical;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 

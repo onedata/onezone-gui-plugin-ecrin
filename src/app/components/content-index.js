@@ -194,6 +194,8 @@ export default Component.extend(I18n, {
         'object_type',
         'publication_year',
         'access_type',
+        'access_details',
+        'access_details_url',
         'object_instances',
         'related_studies',
       ];

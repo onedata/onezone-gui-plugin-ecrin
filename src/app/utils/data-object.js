@@ -66,6 +66,26 @@ export default EmberObject.extend({
   accessType: categorizedValueComputed('access_type', 'dataObjectAccessType'),
 
   /**
+   * @type {ComputedProperty<String>}
+   */
+  accessDetails: reads('raw.access_details'),
+
+  /**
+   * @type {ComputedProperty<String>}
+   */
+  accessDetailsUrl: reads('raw.access_details_url'),
+
+  /**
+   * @type {ComputedProperty<boolean>}
+   */
+  hasCorrectAccessDetailsUrl: computed(
+    'accessDetailsUrl',
+    function hasCorrectAccessDetailsUrl() {
+      return isUrl(this.get('accessDetailsUrl'));
+    }
+  ),
+
+  /**
    * @type {ComputedProperty<Object>}
    */
   managingOrganisation: reads('raw.managing_organisation'),

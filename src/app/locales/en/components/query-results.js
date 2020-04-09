@@ -5,12 +5,14 @@ export default {
   exportToPdf: 'Export to pdf',
   clear: 'Clear results',
   studyRecord: {
-    untitled: 'Untitled',
-    loading: 'Loading...',
     studyDescription: 'Description',
     studyDataSharingStatement: 'Data sharing statement',
+    urlAccess: 'Access',
+    untitled: 'Untitled',
+    loading: 'Loading...',
+  },
+  dataObjectRecord: {
     showLess: '(show less)',
     showMore: '(show more)',
-    urlAccess: 'Access',
   },
 };
