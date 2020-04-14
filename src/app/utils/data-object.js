@@ -9,7 +9,7 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-import EmberObject, { computed } from '@ember/object';
+import EmberObject, { computed, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { array, raw } from 'ember-awesome-macros';
 import isUrl from 'is-url';
@@ -58,7 +58,29 @@ export default EmberObject.extend({
   /**
    * @type {ComputedProperty<Object>}
    */
-  type: categorizedValueComputed('object_type', 'dataObjectType'),
+  type: reads('raw.object_type'),
+
+  /**
+   * @type {ComputedProperty<Object>}
+   */
+  filterType: computed(
+    'type.id',
+    'configuration.{dataObjectFilterTypeMapping,dataObjectFilterTypeUnknownValue}',
+    function filterType() {
+      const typeId = this.get('type.id');
+      const mapping = this.get('configuration.dataObjectFilterTypeMapping');
+      const unknownValue = this.get('configuration.dataObjectFilterTypeUnknownValue');
+
+      if (typeof typeId !== 'number') {
+        return unknownValue;
+      } else {
+        const filterType = mapping
+          .filterBy('objectTypeIds')
+          .find(filterType => get(filterType, 'objectTypeIds').includes(typeId));
+        return filterType || unknownValue;
+      }
+    }
+  ),
 
   /**
    * @type {ComputedProperty<Object>}

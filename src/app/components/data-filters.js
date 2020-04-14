@@ -34,7 +34,7 @@ const studyFilterFieldNames = studyCategorizedFilters
   .map(name => `study${_.upperFirst(name)}Filter`);
 
 const dataObjectCategorizedFilters = [
-  'type',
+  'filterType',
   'accessType',
 ];
 const dataObjectFilterFieldNames = dataObjectCategorizedFilters

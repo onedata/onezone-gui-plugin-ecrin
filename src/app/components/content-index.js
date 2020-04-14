@@ -646,7 +646,7 @@ export default Component.extend(I18n, {
 
       let filteredDataObjects = dataObjects.slice();
       [
-        'type',
+        'filterType',
         'accessType',
       ].forEach(fieldName => {
         filteredDataObjects = checkMatchOfCategorizedValue(

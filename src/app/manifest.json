@@ -163,11 +163,6 @@
         {
           "name": "Funded programme",
           "id": 15
-        },
-        {
-          "name": "Not yet known",
-          "id": 0,
-          "useForUnknown": true
         }
       ],
       "studyStatusMapping": [
@@ -878,606 +873,228 @@
           "useForUnknown": true
         }
       ],
-      "dataObjectTypeMapping": [
+      "dataObjectFilterTypeMapping": [
         {
-          "name": "Study Protocol",
-          "class": "Text",
-          "id": 11
+          "id": 11,
+          "name": "Trial registry entry",
+          "objectTypeIds": [
+            13
+          ]
         },
         {
-          "name": "Journal Article",
-          "class": "Text",
-          "id": 12
+          "id": 12,
+          "name": "Registry results summary",
+          "objectTypeIds": [
+            28
+          ]
         },
         {
-          "name": "Journal article abstract",
-          "class": "Text",
-          "id": 100
+          "id": 21,
+          "name": "Journal article",
+          "objectTypeIds": [
+            12,
+            100,
+            117,
+            135,
+            152
+          ]
         },
         {
-          "name": "Trial Registry entry",
-          "class": "Text",
-          "id": 13
+          "id": 22,
+          "name": "Study protocol",
+          "objectTypeIds": [
+            11,
+            42,
+            74,
+            75,
+            76
+          ]
         },
         {
-          "name": "Study Overview",
-          "class": "Text",
-          "id": 38
+          "id": 23,
+          "name": "Study overview",
+          "objectTypeIds": [
+            38
+          ]
         },
         {
-          "name": "Ethics submission",
-          "class": "Text",
-          "id": 14
+          "id": 24,
+          "name": "Patient consent / information forms",
+          "objectTypeIds": [
+            18,
+            19
+          ]
         },
         {
-          "name": "Ethics approval notification",
-          "class": "Text",
-          "id": 15
-        },
-        {
-          "name": "Regulatory authority submission",
-          "class": "Text",
-          "id": 16
-        },
-        {
-          "name": "Regulatory authority approval notification",
-          "class": "Text",
-          "id": 17
-        },
-        {
-          "name": "Manual of Operations",
-          "class": "Text",
-          "id": 35
-        },
-        {
-          "name": "Manual of Procedures",
-          "class": "Text",
-          "id": 36
-        },
-        {
-          "name": "Informed consent forms",
-          "class": "Text",
-          "id": 18
-        },
-        {
-          "name": "Patient information sheets",
-          "class": "Text",
-          "id": 19
-        },
-        {
-          "name": "Data Overview",
-          "class": "Text",
-          "id": 32
-        },
-        {
-          "name": "Database specification",
-          "class": "Text",
-          "id": 20
-        },
-        {
-          "name": "Data Dictionary",
-          "class": "Text",
-          "id": 31
-        },
-        {
+          "id": 25,
           "name": "Data collection forms",
-          "class": "Text",
-          "id": 21
+          "objectTypeIds": [
+            21,
+            30,
+            40
+          ]
         },
         {
-          "name": "Annotated Data Collection Forms",
-          "class": "Text",
-          "id": 30
+          "id": 26,
+          "name": "Manual of procedures",
+          "objectTypeIds": [
+            35,
+            36
+          ]
         },
         {
-          "name": "Standard instruments",
-          "class": "Text",
-          "id": 40
-        },
-        {
+          "id": 31,
           "name": "Statistical analysis plan",
-          "class": "Text",
-          "id": 22
-        },
-        {
-          "name": "Analysis Notes",
-          "class": "Text",
-          "id": 29
-        },
-        {
-          "name": "Protocol SAP",
-          "class": "Text",
-          "id": 74
-        },
-        {
-          "name": "Protocol ICF",
-          "class": "Text",
-          "id": 75
-        },
-        {
-          "name": "Protocol SAP ICF",
-          "class": "Text",
-          "id": 76
-        },
-        {
-          "name": "Data management plan",
-          "class": "Text",
-          "id": 23
-        },
-        {
-          "name": "Definitions",
-          "class": "Text",
-          "id": 33
-        },
-        {
-          "name": "Visit Schedule",
-          "class": "Text",
-          "id": 41
-        },
-        {
-          "name": "Trial master file contents list",
-          "class": "Text",
-          "id": 24
-        },
-        {
-          "name": "Data monitoring committee report",
-          "class": "Text",
-          "id": 25
-        },
-        {
-          "name": "Clinical Study Report",
-          "class": "Text",
-          "id": 26
-        },
-        {
-          "name": "CSR Summary",
-          "class": "Text",
-          "id": 79
-        },
-        {
-          "name": "Redacted Clinical Study Report",
-          "class": "Text",
-          "id": 27
-        },
-        {
-          "name": "Trial registry results summary",
-          "class": "Text",
-          "id": 28
-        },
-        {
-          "name": "Literature Review",
-          "class": "Text",
-          "id": 34
-        },
-        {
-          "name": "Investigational Product Information",
-          "class": "Text",
-          "id": 77
-        },
-        {
-          "name": "Publication List",
-          "class": "Text",
-          "id": 39
-        },
-        {
-          "name": "Redacted Protocol",
-          "class": "Text",
-          "id": 42
-        },
-        {
-          "name": "Redacted SAP",
-          "class": "Text",
-          "id": 43
-        },
-        {
-          "name": "General background to research topic",
-          "class": "Text",
-          "id": 78
-        },
-        {
-          "name": "Individual Participant Data",
-          "class": "Dataset",
-          "id": 80
-        },
-        {
-          "name": "IPD final analysis dataset (full study population)",
-          "class": "Dataset",
-          "id": 51
-        },
-        {
-          "name": "IPD final analysis dataset (supporting specific paper)",
-          "class": "Dataset",
-          "id": 52
-        },
-        {
-          "name": "IPD final analysis dataset (sub-population)",
-          "class": "Dataset",
-          "id": 53
-        },
-        {
-          "name": "IPD final analysis dataset (sub-study)",
-          "class": "Dataset",
-          "id": 54
-        },
-        {
-          "name": "IPD interim analysis dataset (sub-population)",
-          "class": "Dataset",
-          "id": 56
-        },
-        {
-          "name": "IPD interim analysis dataset (sub-study)",
-          "class": "Dataset",
-          "id": 57
-        },
-        {
-          "name": "IPD long term follow up analysis dataset",
-          "class": "Dataset",
-          "id": 58
-        },
-        {
-          "name": "IPD interim analysis dataset",
-          "class": "Dataset",
-          "id": 55
-        },
-        {
-          "name": "IPD safety analysis dataset",
-          "class": "Dataset",
-          "id": 59
-        },
-        {
-          "name": "IPD PK analysis dataset",
-          "class": "Dataset",
-          "id": 60
-        },
-        {
-          "name": "IPD PD analysis dataset",
-          "class": "Dataset",
-          "id": 61
-        },
-        {
-          "name": "IPD quality of life analysis dataset",
-          "class": "Dataset",
-          "id": 62
-        },
-        {
-          "name": "IPD analysis dataset, other",
-          "class": "Dataset",
-          "id": 63
-        },
-        {
-          "name": "IPD analysis dataset metadata definition",
-          "class": "Dataset",
-          "id": 64
-        },
-        {
-          "name": "IPD CDMS format dataset",
-          "class": "Dataset",
-          "id": 65
-        },
-        {
-          "name": "IPD CDMS format dataset metadata definition",
-          "class": "Dataset",
-          "id": 66
-        },
-        {
-          "name": "IPD transport format dataset",
-          "class": "Dataset",
-          "id": 67
-        },
-        {
-          "name": "IPD transport format dataset metadata definition",
-          "class": "Dataset",
-          "id": 68
-        },
-        {
-          "name": "Aggregated result dataset",
-          "class": "Dataset",
-          "id": 69
-        },
-        {
-          "name": "Aggregated result dataset, efficacy measures",
-          "class": "Dataset",
-          "id": 70
-        },
-        {
-          "name": "Aggregated result dataset, safety measures",
-          "class": "Dataset",
-          "id": 71
-        },
-        {
-          "name": "Aggregated result dataset, other",
-          "class": "Dataset",
-          "id": 72
-        },
-        {
-          "name": "Aggregated result dataset metadata definition",
-          "class": "Dataset",
-          "id": 73
-        },
-        {
-          "name": "Book",
-          "class": "Text",
-          "id": 101
-        },
-        {
-          "name": "Book Chapter",
-          "class": "Text",
-          "id": 102
-        },
-        {
-          "name": "Book Prospectus",
-          "class": "Text",
-          "id": 103
-        },
-        {
-          "name": "Book Review",
-          "class": "Text",
-          "id": 104
-        },
-        {
-          "name": "Book Series",
-          "class": "Text",
-          "id": 105
-        },
-        {
-          "name": "Conference Abstract",
-          "class": "Text",
-          "id": 106
-        },
-        {
-          "name": "Conference Paper",
-          "class": "Text",
-          "id": 107
-        },
-        {
-          "name": "Conference Poster",
-          "class": "Text",
-          "id": 108
-        },
-        {
-          "name": "Conference Program",
-          "class": "Text",
-          "id": 109
-        },
-        {
-          "name": "Dictionary Entry",
-          "class": "Text",
-          "id": 110
-        },
-        {
-          "name": "Disclosure",
-          "class": "Text",
-          "id": 111
-        },
-        {
-          "name": "Dissertation",
-          "class": "Text",
-          "id": 112
-        },
-        {
-          "name": "Edited Book",
-          "class": "Text",
-          "id": 113
-        },
-        {
-          "name": "Encyclopaedia Entry",
-          "class": "Text",
-          "id": 114
-        },
-        {
-          "name": "Funding Submission",
-          "class": "Text",
-          "id": 115
-        },
-        {
-          "name": "Journal Issue",
-          "class": "Text",
-          "id": 117
-        },
-        {
-          "name": "License",
-          "class": "Text",
-          "id": 118
-        },
-        {
-          "name": "Magazine Article",
-          "class": "Text",
-          "id": 119
-        },
-        {
-          "name": "Manual",
-          "class": "Text",
-          "id": 120
-        },
-        {
-          "name": "Newsletter Article",
-          "class": "Text",
-          "id": 121
-        },
-        {
-          "name": "Newspaper Article",
-          "class": "Text",
-          "id": 122
-        },
-        {
-          "name": "Online Resource",
-          "class": "Text",
-          "id": 123
-        },
-        {
-          "name": "Patent",
-          "class": "Text",
-          "id": 124
-        },
-        {
-          "name": "Registered Copyright",
-          "class": "Text",
-          "id": 125
-        },
-        {
-          "name": "Report",
-          "class": "Text",
-          "id": 126
-        },
-        {
-          "name": "Research Tool",
-          "class": "Text",
-          "id": 127
-        },
-        {
-          "name": "Supervised Student Publication",
-          "class": "Text",
-          "id": 128
-        },
-        {
-          "name": "Tenure-Promotion",
-          "class": "Text",
-          "id": 129
-        },
-        {
-          "name": "Test",
-          "class": "Text",
-          "id": 130
-        },
-        {
-          "name": "Trademark",
-          "class": "Text",
-          "id": 131
-        },
-        {
-          "name": "Translation",
-          "class": "Text",
-          "id": 132
-        },
-        {
-          "name": "University Academic Unit",
-          "class": "Text",
-          "id": 133
-        },
-        {
+          "objectTypeIds": [
+            22,
+            29,
+            43
+          ]
+        },
+        {
+          "id": 32,
+          "name": "Clinical study report",
+          "objectTypeIds": [
+            26,
+            27,
+            79,
+            85
+          ]
+        },
+        {
+          "id": 33,
+          "name": "Data description",
+          "objectTypeIds": [
+            20,
+            31,
+            32,
+            81,
+            82
+          ]
+        },
+        {
+          "id": 34,
+          "name": "Individual participant data",
+          "objectTypeIds": [
+            80,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            153
+          ]
+        },
+        {
+          "id": 35,
+          "name": "Aggregated data",
+          "objectTypeIds": [
+            69,
+            70,
+            71,
+            72,
+            73,
+            154
+          ]
+        },
+        {
+          "id": 36,
+          "name": "Other study resource",
+          "objectTypeIds": [
+            14,
+            15,
+            16,
+            17,
+            23,
+            24,
+            25,
+            33,
+            34,
+            39,
+            77,
+            78,
+            83,
+            84,
+            86
+          ]
+        },
+        {
+          "id": 41,
+          "name": "Conference material",
+          "objectTypeIds": [
+            106,
+            107,
+            108,
+            109
+          ]
+        },
+        {
+          "id": 42,
+          "name": "Other article",
+          "objectTypeIds": [
+            119,
+            121,
+            122
+          ]
+        },
+        {
+          "id": 43,
+          "name": "Book or chapter",
+          "objectTypeIds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            113
+          ]
+        },
+        {
+          "id": 44,
+          "name": "Other information resource",
+          "objectTypeIds": [
+            112,
+            120,
+            123,
+            126,
+            127,
+            128
+          ]
+        },
+        {
+          "id": 51,
           "name": "Website",
-          "class": "Text",
-          "id": 134
+          "objectTypeIds": [
+            134
+          ]
         },
         {
-          "name": "Working Paper",
-          "class": "Text",
-          "id": 135
+          "id": 52,
+          "name": "Software",
+          "objectTypeIds": [
+            166,
+            167,
+            168,
+            169,
+            170
+          ]
         },
         {
-          "name": "Grouped journal articles",
-          "class": "Collection",
-          "id": 152
-        },
-        {
-          "name": "Grouped analysis datasets",
-          "class": "Collection",
-          "id": 153
-        },
-        {
-          "name": "Grouped aggregated result datasets",
-          "class": "Collection",
-          "id": 154
-        },
-        {
-          "name": "Script(s) used in analysis",
-          "class": "Software",
-          "id": 166
-        },
-        {
-          "name": "CDMS",
-          "class": "Software",
-          "id": 167
-        },
-        {
-          "name": "Trial Management System",
-          "class": "Software",
-          "id": 168
-        },
-        {
-          "name": "eTMF",
-          "class": "Software",
-          "id": 169
-        },
-        {
-          "name": "Data Extraction System",
-          "class": "Software",
-          "id": 170
-        },
-        {
+          "id": 99,
           "name": "Other",
-          "class": "Audiovisual",
-          "id": 151
-        },
-        {
-          "name": "Other",
-          "class": "Collection",
-          "id": 155
-        },
-        {
-          "name": "Other",
-          "class": "Data Paper",
-          "id": 156
-        },
-        {
-          "name": "Other",
-          "class": "Dataset",
-          "id": 171
-        },
-        {
-          "name": "Other",
-          "class": "Event",
-          "id": 157
-        },
-        {
-          "name": "Other",
-          "class": "Image",
-          "id": 158
-        },
-        {
-          "name": "Other",
-          "class": "Interactive Resource",
-          "id": 159
-        },
-        {
-          "name": "Other",
-          "class": "Model",
-          "id": 160
-        },
-        {
-          "name": "Other",
-          "class": "Physical Object",
-          "id": 161
-        },
-        {
-          "name": "Other",
-          "class": "Service",
-          "id": 162
-        },
-        {
-          "name": "Other",
-          "class": "Software",
-          "id": 165
-        },
-        {
-          "name": "Other",
-          "class": "Sound",
-          "id": 163
-        },
-        {
-          "name": "Other",
-          "class": "Text",
-          "id": 37
-        },
-        {
-          "name": "Other",
-          "class": "Workflow",
-          "id": 164
-        },
-        {
-          "name": "Not yet known",
-          "class": "Not yet known",
-          "id": 0,
           "useForUnknown": true
         }
       ],
@@ -1535,11 +1152,6 @@
         {
           "name": "Other",
           "id": 90,
-          "indicator": "yellow"
-        },
-        {
-          "name": "Not yet known",
-          "id": 0,
           "indicator": "yellow",
           "useForUnknown": true
         }

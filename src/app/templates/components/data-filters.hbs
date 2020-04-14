@@ -134,15 +134,11 @@
   </div>
   <div class={{if (not-eq filtersModel "dataObject") "hidden"}}>
     {{#filter-collapse label=(tt this "dataObjectType")}}
-      {{#checkbox-filter
-        items=configuration.dataObjectTypeMapping
-        selectedItems=dataObjectTypeFilter
+      {{checkbox-filter
+        items=configuration.dataObjectFilterTypeMapping
+        selectedItems=dataObjectFilterTypeFilter
         disabled=isFetchingData
-        onChange=(action (mut dataObjectTypeFilter))
-        as |item|
-      }}
-        {{#truncated-string}}{{data-object-type-name item}}{{/truncated-string}}
-      {{/checkbox-filter}}
+        onChange=(action (mut dataObjectFilterTypeFilter))}}
     {{/filter-collapse}}
     {{#filter-collapse label=(tt this "dataObjectAccessType")}}
       {{checkbox-filter
