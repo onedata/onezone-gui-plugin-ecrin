@@ -1,3 +1,22 @@
+/**
+ * Is responsible for persistence layer of the application.
+ *
+ * @module utils/data-persister
+ * @author Michał Borzęcki
+ * @copyright (C) 2020 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
+/**
+ * @typedef {Object} PersistedResults
+ * @property {String} name
+ * @property {number} timestamp
+ * @property {Array<number>} studies array of study ids
+ * @property {Object} studyFilters dump of study filters state
+ * @property {Object} dataObjectFilters dump of data object filters state
+ * @property {Object} studySearchParams dump of latest study search params
+ */
+
 import EmberObject, { get, getProperties, setProperties } from '@ember/object';
 import {
   studyFiltersToSave,
@@ -29,18 +48,30 @@ export default EmberObject.extend({
 
   /**
    * @virtual
-   * @type {Utils.DataFetcher}
+   * @type {Utils.DataStore}
    */
   dataStore: undefined,
 
+  /**
+   * @returns {Promise<Array<PersistedResults>>}
+   */
   getSavedResultsList() {
     return this.get('indexeddbStorage').loadResultsList();
   },
 
+  /**
+   * @param {PersistedResults} results
+   * @returns {Promise}
+   */
   removeSavedResultsEntry(results) {
     return this.get('indexeddbStorage').removeResults(results);
   },
 
+  /**
+   * @param {String} name 
+   * @param {Utils.StudySearchParams} studySearchParams 
+   * @returns {Promise}
+   */
   saveResults(name, studySearchParams) {
     const {
       indexeddbStorage,
@@ -66,6 +97,11 @@ export default EmberObject.extend({
     return indexeddbStorage.saveResults(resultsToSave);
   },
 
+  /**
+   * @param {PersistedResults} results 
+   * @param {StudySearchParams} targetStudySearchParams
+   * @returns {Promise}
+   */
   loadResults(results, targetStudySearchParams) {
     const {
       configuration,

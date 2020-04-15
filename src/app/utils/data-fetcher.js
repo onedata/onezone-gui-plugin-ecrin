@@ -1,3 +1,13 @@
+/**
+ * Is responsible for fetching studies and data objects using Elasticsearch. Automatically
+ * places query results into the data store.
+ *
+ * @module utils/data-fetcher
+ * @author Michał Borzęcki
+ * @copyright (C) 2020 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import EmberObject, { get, getProperties, set } from '@ember/object';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
 import { resolve } from 'rsvp';

@@ -1,3 +1,12 @@
+/**
+ * Is responsible for containing studies and data objects with filters configuration.
+ *
+ * @module utils/data-store
+ * @author Michał Borzęcki
+ * @copyright (C) 2020 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import EmberObject, { computed, observer, get, getProperties } from '@ember/object';
 import {
   studyFiltersFromSaved,
