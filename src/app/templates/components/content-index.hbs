@@ -27,7 +27,7 @@
     removeSavedResults=(action "removeSavedResults")
     exportResultsToPdf=(action "exportResultsToPdf")
   }}
-    {{promise-proxy-container proxy=fetchDataPromiseObject isLoading=false}}
+    {{promise-proxy-container proxy=dataFetcher.fetchDataPromiseObject isLoading=false}}
   {{/query-results}}
 </div>
 {{yield}}

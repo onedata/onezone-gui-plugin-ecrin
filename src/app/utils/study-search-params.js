@@ -19,11 +19,12 @@ const paramsList = [
   'studyTitleTopicOperator',
   'doi',
   'dataObjectTitle',
+  'internalStudyIds',
 ];
 
 export default EmberObject.extend({
   /**
-   * One of 'specificStudy', 'studyCharact', 'viaPubPaper'
+   * One of 'specificStudy', 'studyCharact', 'viaPubPaper', 'viaInternalId'
    * @type {string}
    * @virtual
    */
@@ -72,6 +73,12 @@ export default EmberObject.extend({
   dataObjectTitle: '',
 
   /**
+   * Only for mode === 'viaInternalId'
+   * @type {Array<number>}
+   */
+  internalStudyIds: undefined,
+
+  /**
    * Only for mode === 'studyCharact'
    * @type {ComputedProperty<string>}
    */
@@ -98,6 +105,7 @@ export default EmberObject.extend({
       studyTopicsInclude,
       doi,
       dataObjectTitle,
+      internalStudyIds,
     } = this.getProperties(...paramsList);
 
     switch (mode) {
@@ -107,6 +115,8 @@ export default EmberObject.extend({
         return Boolean(studyTitleContains || studyTopicsInclude);
       case 'viaPubPaper':
         return Boolean(doi || dataObjectTitle);
+      case 'viaInternalId':
+        return Boolean(internalStudyIds && internalStudyIds.length);
       default:
         return false;
     }
