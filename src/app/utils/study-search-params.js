@@ -111,4 +111,16 @@ export default EmberObject.extend({
         return false;
     }
   }),
+
+  dumpValues() {
+    const dump = this.getProperties(...paramsList);
+    dump.studyIdType = (dump.studyIdType || {}).id;
+    return dump;
+  },
+
+  loadDumpedValues(dump, studyIdTypeMapping) {
+    this.setProperties(Object.assign({}, dump, {
+      studyIdType: studyIdTypeMapping.findBy('id', dump.studyIdType),
+    }));
+  },
 });

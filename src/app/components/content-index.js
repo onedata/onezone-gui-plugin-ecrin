@@ -10,6 +10,7 @@
 import Component from '@ember/component';
 import {
   computed,
+  observer,
   get,
   getProperties,
   set,
@@ -26,6 +27,14 @@ import { A } from '@ember/array';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
 import { isBlank } from '@ember/utils';
 import { array, raw } from 'ember-awesome-macros';
+import {
+  studyFiltersToSave,
+  studyFiltersFromSaved,
+  dataObjectFiltersToSave,
+  dataObjectFiltersFromSaved,
+} from 'onezone-gui-plugin-ecrin/utils/data-filters-converters';
+import stringToRanges from 'onezone-gui-plugin-ecrin/utils/string-to-ranges';
+import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 
 export default Component.extend(I18n, {
   classNames: ['content-index', 'content'],
@@ -54,13 +63,24 @@ export default Component.extend(I18n, {
   /**
    * @type {Object}
    */
-  latestStudyFilters: Object.freeze({}),
+  studyFilters: Object.freeze({}),
+
+  /**
+   * @type {Object}
+   */
+  dataObjectFilters: Object.freeze({}),
 
   /**
    * All data objects loaded for studies in results
    * @type {Array<Utils.DataObject>}
    */
   dataObjects: computed(() => A()),
+
+  /**
+   * @type {Array<Object>}
+   * Previous value of dataObjectPublisherMapping
+   */
+  prevDataObjectPublisherMapping: undefined,
 
   /**
    * Studies with at least one data object selected
@@ -77,12 +97,12 @@ export default Component.extend(I18n, {
    */
   filteredStudies: computed(
     'studiesWithDataObjectsSelected',
-    'latestStudyFilters',
+    'studyFilters',
     function filteredStudies() {
       const {
         studiesWithDataObjectsSelected,
-        latestStudyFilters,
-      } = this.getProperties('studiesWithDataObjectsSelected', 'latestStudyFilters');
+        studyFilters,
+      } = this.getProperties('studiesWithDataObjectsSelected', 'studyFilters');
 
       let filteredStudies = studiesWithDataObjectsSelected.slice();
       [
@@ -101,7 +121,7 @@ export default Component.extend(I18n, {
         filteredStudies = checkMatchOfCategorizedValue(
           filteredStudies,
           fieldName,
-          get(latestStudyFilters, fieldName)
+          get(studyFilters, fieldName)
         );
       });
 
@@ -164,6 +184,65 @@ export default Component.extend(I18n, {
    * @type {ComputedProperty<boolean>}
    */
   isFetchingData: reads('fetchDataPromiseObject.isPending'),
+
+  dataObjectPublisherMappingObserver: observer(
+    'dataObjectPublisherMapping.[]',
+    function dataObjectPublisherMappingObserver() {
+      const {
+        prevDataObjectPublisherMapping,
+        dataObjectPublisherMapping,
+        dataObjectFilters,
+      } = this.getProperties(
+        'prevDataObjectPublisherMapping',
+        'dataObjectPublisherMapping',
+        'dataObjectFilters'
+      );
+
+      const oldPublishersIds = prevDataObjectPublisherMapping.mapBy('id');
+      const newPublishersIds = dataObjectPublisherMapping.mapBy('id');
+      const addedPublishers = _.difference(newPublishersIds, oldPublishersIds)
+        .map(id => dataObjectPublisherMapping.findBy('id', id));
+      const filterInNewMapping = dataObjectFilters.publisher
+        .map(publisher =>
+          dataObjectPublisherMapping.findBy('id', get(publisher, 'id'))
+        )
+        .compact()
+        .addObjects(addedPublishers);
+
+      this.set('prevDataObjectPublisherMapping', dataObjectPublisherMapping.slice());
+      this.set(
+        'dataObjectFilters',
+        Object.assign({}, dataObjectFilters, { publisher: filterInNewMapping })
+      );
+    }
+  ),
+
+  init() {
+    this._super(...arguments);
+
+    const dataObjectPublisherMapping =
+      (this.get('dataObjectPublisherMapping') || []).slice();
+
+    this.set('prevDataObjectPublisherMapping', dataObjectPublisherMapping);
+    this.resetStudyFilters();
+    this.resetDataObjectFilters();
+  },
+
+  resetStudyFilters() {
+    this.set('studyFilters', studyFiltersFromSaved(null, this.get('configuration')));
+  },
+
+  resetDataObjectFilters() {
+    const {
+      configuration,
+      dataObjectPublisherMapping,
+    } = this.getProperties('configuration', 'dataObjectPublisherMapping');
+
+    this.set(
+      'dataObjectFilters',
+      dataObjectFiltersFromSaved(null, configuration, dataObjectPublisherMapping)
+    );
+  },
 
   searchStudies() {
     if (this.get('studySearchParams.hasMeaningfulParams')) {
@@ -508,7 +587,7 @@ export default Component.extend(I18n, {
     const idsOfFetchedDataObjects = dataObjects.mapBy('id');
     const idsOfDataObjectsToFetch = _.difference(
       _.uniq(_.flatten(
-        studiesWithoutFetchedDataObjects.mapBy('dataObjectsIdsToFetch')
+        studiesWithoutFetchedDataObjects.mapBy('dataObjectsIds')
       )),
       idsOfFetchedDataObjects
     );
@@ -550,13 +629,11 @@ export default Component.extend(I18n, {
 
     studiesWithoutFetchedDataObjects.forEach(study => {
       set(study, 'dataObjectsPromiseObject', PromiseObject.create({
-        promise: fetchDataObjectsPromise.then(dataObjects => {
-          const dataObjectsIdsToFetch =
-            get(study, 'dataObjectsIdsToFetch');
-          return dataObjectsIdsToFetch
-            .map(id => dataObjects.findBy('id', id))
-            .compact();
-        }),
+        promise: fetchDataObjectsPromise.then(dataObjects =>
+          get(study, 'dataObjectsIds')
+          .map(id => dataObjects.findBy('id', id))
+          .compact()
+        ),
       }));
     });
 
@@ -569,12 +646,13 @@ export default Component.extend(I18n, {
       dataObjects,
     } = this.getProperties('studies', 'dataObjects');
 
+    studiesToRemove = studiesToRemove.slice();
     studies.removeObjects(studiesToRemove);
 
     const dataObjectsOfRemovedStudies = _.uniq(_.flatten(
       studiesToRemove.mapBy('dataObjects').compact()
     ));
-    const usedDataObjectIds = _.flatten(studies.mapBy('dataObjectsIdsToFetch'));
+    const usedDataObjectIds = _.flatten(studies.mapBy('dataObjectsIds'));
     const dataObjectsToRemove = dataObjectsOfRemovedStudies.filter(dataObject => {
       const doId = get(dataObject, 'id');
       return !usedDataObjectIds.includes(doId);
@@ -601,18 +679,22 @@ export default Component.extend(I18n, {
     return elasticsearch.post('study', '_search', body)
       .then(results => {
         const studies = this.extractResultsFromResponse(results);
+        return this.loadDataObjectsForStudies(studies).then(() => studies);
+      })
+      .then(studies => {
         studies.forEach(study => {
           const correspondingSavedStudy =
             savedStudies.findBy('id', get(study, 'id'));
           if (correspondingSavedStudy) {
-            const dataObjectsIdsToFetch = _.intersection(
-              get(study, 'dataObjectsIds'),
-              get(correspondingSavedStudy, 'dataObjects')
-            );
-            set(study, 'dataObjectsIdsToFetch', dataObjectsIdsToFetch);
+            const selectedDataObjectsIds =
+              get(correspondingSavedStudy, 'selectedDataObjects') || [];
+            const selectedDataObjects = get(study, 'dataObjects')
+              .filter(dataObject =>
+                selectedDataObjectsIds.includes(get(dataObject, 'id'))
+              );
+            set(study, 'selectedDataObjects', selectedDataObjects);
           }
         });
-        return this.loadDataObjectsForStudies(studies);
       });
   },
 
@@ -623,10 +705,14 @@ export default Component.extend(I18n, {
     find() {
       this.searchStudies();
     },
-    removeStudies(studiesToRemove) {
-      this.removeStudies(studiesToRemove);
+    removeStudy(study) {
+      this.removeStudies([study]);
+    },
+    removeAllStudies() {
+      this.removeStudies(this.get('studies'));
     },
     filterDataObjects(filters) {
+      this.set('dataObjectFilters', filters);
       const {
         studies,
         dataObjects,
@@ -639,10 +725,11 @@ export default Component.extend(I18n, {
         'dataObjectPublisherUnknownValue'
       );
 
-      const {
+      let {
         year,
         publisher,
       } = getProperties(filters, 'year', 'publisher');
+      year = stringToRanges(year);
 
       let filteredDataObjects = dataObjects.slice();
       [
@@ -683,19 +770,37 @@ export default Component.extend(I18n, {
         set(study, 'selectedDataObjects', filteredStudyDOs);
       });
     },
+    resetStudyFilters() {
+      this.resetStudyFilters();
+    },
+    resetDataObjectFilters() {
+      this.resetDataObjectFilters();
+      this.send('filterDataObjects', this.get('dataObjectFilters'));
+    },
     saveResults(name) {
       const {
         indexeddbStorage,
         studies,
-      } = this.getProperties('indexeddbStorage', 'studies');
-
+        studyFilters,
+        dataObjectFilters,
+        studySearchParams,
+      } = this.getProperties(
+        'indexeddbStorage',
+        'studies',
+        'studyFilters',
+        'dataObjectFilters',
+        'studySearchParams'
+      );
       const resultsToSave = {
         name,
         timestamp: Math.floor(Date.now() / 1000),
         studies: studies.map(study => ({
           id: get(study, 'id'),
-          dataObjects: get(study, 'selectedDataObjects').mapBy('id'),
+          selectedDataObjects: get(study, 'selectedDataObjects').mapBy('id'),
         })),
+        studyFilters: studyFiltersToSave(studyFilters),
+        dataObjectFilters: dataObjectFiltersToSave(dataObjectFilters),
+        studySearchParams: studySearchParams.dumpValues(),
       };
 
       return indexeddbStorage.saveResults(resultsToSave);
@@ -704,8 +809,46 @@ export default Component.extend(I18n, {
       return this.get('indexeddbStorage').loadResultsList();
     },
     loadSavedResults(results) {
-      this.removeStudies(this.get('studies').slice());
-      return this.loadStudiesFromSavedResults(results);
+      const {
+        configuration,
+        studySearchParams,
+        studies,
+      } = this.getProperties('configuration', 'studySearchParams', 'studies');
+      if (results.studySearchParams) {
+        studySearchParams.loadDumpedValues(
+          results.studySearchParams,
+          get(configuration, 'studyIdTypeMapping')
+        );
+      }
+
+      this.removeStudies(studies.slice());
+      this.resetStudyFilters();
+      this.resetDataObjectFilters();
+      return this.loadStudiesFromSavedResults(results)
+        .then(() => safeExec(this, () => {
+          const {
+            studyFilters: savedStudyFilters,
+            dataObjectFilters: savedDataObjectFilters,
+          } = results;
+          const {
+            configuration,
+            dataObjectPublisherMapping,
+          } = this.getProperties('configuration', 'dataObjectPublisherMapping');
+          const dataObjectFilters = dataObjectFiltersFromSaved(
+            savedDataObjectFilters,
+            configuration,
+            dataObjectPublisherMapping
+          );
+
+          this.setProperties({
+            studyFilters: studyFiltersFromSaved(
+              savedStudyFilters,
+              configuration
+            ),
+            dataObjectFilters,
+          });
+          this.send('filterDataObjects', dataObjectFilters);
+        }));
     },
     removeSavedResults(results) {
       return this.get('indexeddbStorage').removeResults(results);

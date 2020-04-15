@@ -8,7 +8,7 @@
  */
 
 import Component from '@ember/component';
-import { get, getProperties, computed, observer } from '@ember/object';
+import { getProperties, computed, observer } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
@@ -78,10 +78,17 @@ export default Component.extend(I18n, {
   /**
    * @virtual
    * @type {Function}
-   * @param {Array<Util.Study>} studies
+   * @param {Util.Study} study
    * @returns {any}
    */
-  removeStudies: notImplementedIgnore,
+  removeStudy: notImplementedIgnore,
+
+  /**
+   * @virtual
+   * @type {Function}
+   * @returns {any}
+   */
+  removeAllStudies: notImplementedIgnore,
 
   /**
    * @type {boolean}
@@ -121,26 +128,6 @@ export default Component.extend(I18n, {
   }),
 
   actions: {
-    removeStudy(study) {
-      const {
-        removeStudies,
-        expandedStudyId,
-      } = this.getProperties('removeStudies', 'expandedStudyId');
-
-      removeStudies([study]);
-      if (expandedStudyId === get(study, 'id')) {
-        this.set('expandedStudyId', null);
-      }
-    },
-    removeAllStudies() {
-      const {
-        removeStudies,
-        studies,
-      } = this.getProperties('removeStudies', 'studies');
-
-      removeStudies(studies.slice());
-      this.set('expandedStudyId', null);
-    },
     loadSavedResults(results) {
       return this.get('loadSavedResults')(results)
         .then(() => safeExec(this, () => {

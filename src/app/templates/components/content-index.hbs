@@ -6,15 +6,20 @@
 }}
 <div class="query-content">
   {{data-filters
+    studyFilters=studyFilters
+    dataObjectFilters=dataObjectFilters
     isFetchingData=isFetchingData
     dataObjectPublisherMapping=dataObjectPublisherMapping
-    onFilterStudies=(action (mut latestStudyFilters))
+    onFilterStudies=(action (mut studyFilters))
     onFilterDataObjects=(action "filterDataObjects")
+    onResetStudyFilters=(action "resetStudyFilters")
+    onResetDataObjectFilters=(action "resetDataObjectFilters")
   }}
   {{#query-results
     isFetchingData=isFetchingData
     studies=filteredStudies
-    removeStudies=(action "removeStudies")
+    removeStudy=(action "removeStudy")
+    removeAllStudies=(action "removeAllStudies")
     saveResults=(action "saveResults")
     loadSavedResultsList=(action "loadSavedResultsList")
     loadSavedResults=(action "loadSavedResults")

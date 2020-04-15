@@ -96,8 +96,7 @@ export default EmberObject.extend(topicFields, {
   isDataSharingStatementExpanded: false,
 
   /**
-   * Promise object which is not resolved until data objects
-   * (specfied by field dataObjectsIdsToFetch) are fetched
+   * Promise object which is not resolved until data objects are fetched
    * @virtual
    * @type {PromiseObject<Array<Util.DataObject>>}
    */
@@ -137,12 +136,6 @@ export default EmberObject.extend(topicFields, {
    * @type {ComputedProperty<Array<number>>}
    */
   dataObjectsIds: or('raw.linked_data_objects', raw([])),
-
-  /**
-   * Used to narrow list of data objects allowed to be loaded for this study
-   * @type {ComputedProperty<Array<number>>}
-   */
-  dataObjectsIdsToFetch: reads('dataObjectsIds'),
 
   /**
    * @type {ComputedProperty<Ember.A<Util.DataObject>>}

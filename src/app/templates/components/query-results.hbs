@@ -31,7 +31,7 @@
       {{#bs-button
         type="danger"
         size="sm"
-        onClick=(action "removeAllStudies")
+        onClick=(action removeAllStudies)
         disabled=isFetchingData
       }}
         {{tt this "clear"}}
@@ -57,7 +57,7 @@
     {{#each pagedStudies as |study|}}
       {{query-results/study-record
         study=study
-        remove=(action "removeStudy" study)
+        remove=(action removeStudy study)
         isFetchingData=isFetchingData
       }}
     {{/each}}
