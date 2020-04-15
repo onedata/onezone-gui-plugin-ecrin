@@ -11,22 +11,14 @@ import Component from '@ember/component';
 import {
   computed,
   get,
-  getProperties,
-  setProperties,
 } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { inject as service } from '@ember/service';
 import StudySearchParams from 'onezone-gui-plugin-ecrin/utils/study-search-params';
-import {
-  studyFiltersToSave,
-  studyFiltersFromSaved,
-  dataObjectFiltersToSave,
-  dataObjectFiltersFromSaved,
-} from 'onezone-gui-plugin-ecrin/utils/data-filters-converters';
-import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 import DataStore from 'onezone-gui-plugin-ecrin/utils/data-store';
 import DataFetcher from 'onezone-gui-plugin-ecrin/utils/data-fetcher';
+import DataPersister from 'onezone-gui-plugin-ecrin/utils/data-persister';
 
 export default Component.extend(I18n, {
   classNames: ['content-index', 'content'],
@@ -52,6 +44,16 @@ export default Component.extend(I18n, {
   dataStore: undefined,
 
   /**
+   * @type {Utils.DataFetcher}
+   */
+  dataFetcher: undefined,
+
+  /**
+   * @type {Utils.DataPersister}
+   */
+  dataPersister: undefined,
+
+  /**
    * @type {ComputedProperty<boolean>}
    */
   isFetchingData: reads('dataFetcher.fetchDataPromiseObject.isPending'),
@@ -62,7 +64,8 @@ export default Component.extend(I18n, {
     const {
       configuration,
       elasticsearch,
-    } = this.getProperties('configuration', 'elasticsearch');
+      indexeddbStorage,
+    } = this.getProperties('configuration', 'elasticsearch', 'indexeddbStorage');
 
     const dataStore = DataStore.create({ configuration });
     const dataFetcher = DataFetcher.create({
@@ -70,17 +73,17 @@ export default Component.extend(I18n, {
       elasticsearch,
       dataStore,
     });
-    this.setProperties({
+    const dataPersister = DataPersister.create({
+      configuration,
+      indexeddbStorage,
       dataStore,
       dataFetcher,
     });
-  },
-
-  loadStudiesFromSavedResults(results) {
-    return this.get('dataFetcher').searchStudies(StudySearchParams.create({
-      mode: 'viaInternalId',
-      internalStudyIds: get(results, 'studies'),
-    }));
+    this.setProperties({
+      dataStore,
+      dataFetcher,
+      dataPersister,
+    });
   },
 
   actions: {
@@ -109,74 +112,26 @@ export default Component.extend(I18n, {
     },
     saveResults(name) {
       const {
-        indexeddbStorage,
-        dataStore,
+        dataPersister,
         studySearchParams,
       } = this.getProperties(
-        'indexeddbStorage',
-        'dataStore',
+        'dataPersister',
         'studySearchParams'
       );
-      const {
-        studies,
-        studyFilters,
-        dataObjectFilters,
-      } = getProperties(dataStore, 'studies', 'studyFilters', 'dataObjectFilters');
-      const resultsToSave = {
-        name,
-        timestamp: Math.floor(Date.now() / 1000),
-        studies: studies.mapBy('id'),
-        studyFilters: studyFiltersToSave(studyFilters),
-        dataObjectFilters: dataObjectFiltersToSave(dataObjectFilters),
-        studySearchParams: studySearchParams.dumpValues(),
-      };
-
-      return indexeddbStorage.saveResults(resultsToSave);
+      return dataPersister.saveResults(name, studySearchParams);
     },
     loadSavedResultsList() {
-      return this.get('indexeddbStorage').loadResultsList();
+      return this.get('dataPersister').getSavedResultsList();
     },
     loadSavedResults(results) {
       const {
-        configuration,
         studySearchParams,
-        dataStore,
-      } = this.getProperties('configuration', 'studySearchParams', 'dataStore');
-      if (results.studySearchParams) {
-        studySearchParams.loadDumpedValues(
-          results.studySearchParams,
-          get(configuration, 'studyIdTypeMapping')
-        );
-      }
-
-      dataStore.removeStudies(get(dataStore, 'studies'));
-      dataStore.resetStudyFilters();
-      dataStore.resetDataObjectFilters();
-      return this.loadStudiesFromSavedResults(results)
-        .then(() => safeExec(this, () => {
-          const {
-            studyFilters: savedStudyFilters,
-            dataObjectFilters: savedDataObjectFilters,
-          } = results;
-          const dataObjectPublisherMapping =
-            get(dataStore, 'dataObjectPublisherMapping');
-          const dataObjectFilters = dataObjectFiltersFromSaved(
-            savedDataObjectFilters,
-            configuration,
-            dataObjectPublisherMapping
-          );
-
-          setProperties(dataStore, {
-            studyFilters: studyFiltersFromSaved(
-              savedStudyFilters,
-              configuration
-            ),
-            dataObjectFilters,
-          });
-        }));
+        dataPersister,
+      } = this.getProperties('studySearchParams', 'dataPersister');
+      return dataPersister.loadResults(results, studySearchParams);
     },
     removeSavedResults(results) {
-      return this.get('indexeddbStorage').removeResults(results);
+      return this.get('dataPersister').removeSavedResultsEntry(results);
     },
     exportResultsToPdf() {
       const {
