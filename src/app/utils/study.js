@@ -9,11 +9,10 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-import EmberObject, { computed, observer, get } from '@ember/object';
+import EmberObject, { computed, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { A } from '@ember/array';
-import { and, or, raw, not, equal, bool } from 'ember-awesome-macros';
-import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
+import { and, or, raw, not, equal } from 'ember-awesome-macros';
 import _ from 'lodash';
 import categorizedValueComputed from 'onezone-gui-plugin-ecrin/utils/categorized-value-computed';
 
@@ -108,16 +107,6 @@ export default EmberObject.extend(topicFields, {
   expandedDataObjects: computed(() => A()),
 
   /**
-   * @type {ComputedProperty<Ember.A<Util.DataObject>>}
-   */
-  selectedDataObjects: computed(() => A()),
-
-  /**
-   * @type {ComputedProperty<boolean>}
-   */
-  hasSelectedDataObjects: bool('selectedDataObjects.length'),
-
-  /**
    * @type {ComputedProperty<String>}
    */
   title: reads('raw.display_title.title_text'),
@@ -183,27 +172,6 @@ export default EmberObject.extend(topicFields, {
     or(not('dataSharingStatement'), 'isDataSharingStatementExpanded'),
     equal('expandedDataObjects.length', or('dataObjects.length', raw(0))),
   ),
-
-  dataObjectsPromiseObjectObserver: observer(
-    'dataObjectsPromiseObject',
-    function dataObjectsPromiseObjectObserver() {
-      const dataObjectsPromiseObject = this.get('dataObjectsPromiseObject');
-      if (dataObjectsPromiseObject) {
-        dataObjectsPromiseObject.then(dataObjects => safeExec(this, () => {
-          this.collapseAll();
-          const selectedDataObjects = this.get('selectedDataObjects');
-          selectedDataObjects.clear();
-          selectedDataObjects.addObjects(dataObjects);
-        }));
-      }
-    }
-  ),
-
-  init() {
-    this._super(...arguments);
-
-    this.dataObjectsPromiseObjectObserver();
-  },
 
   expandAll() {
     const {

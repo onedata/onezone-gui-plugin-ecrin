@@ -39,6 +39,12 @@ export default Component.extend(I18n, {
 
   /**
    * @virtual
+   * @type {Object}
+   */
+  selectedDataObjects: undefined,
+
+  /**
+   * @virtual
    * @type {BsAccordion.Item}
    */
   item: undefined,
@@ -67,9 +73,6 @@ export default Component.extend(I18n, {
       } else {
         study.expandAll();
       }
-    },
-    toggleDataObjectSelection(dataObject) {
-      toggleListItemExistence(this.get('study.selectedDataObjects'), dataObject);
     },
     remove() {
       const {

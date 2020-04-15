@@ -57,6 +57,7 @@
     {{#each pagedStudies as |study|}}
       {{query-results/study-record
         study=study
+        selectedDataObjects=selectedDataObjects
         remove=(action removeStudy study)
         isFetchingData=isFetchingData
       }}

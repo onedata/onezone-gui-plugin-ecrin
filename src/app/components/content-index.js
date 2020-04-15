@@ -10,10 +10,10 @@
 import Component from '@ember/component';
 import {
   computed,
-  observer,
   get,
   getProperties,
   set,
+  setProperties,
 } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
@@ -23,18 +23,16 @@ import _ from 'lodash';
 import StudySearchParams from 'onezone-gui-plugin-ecrin/utils/study-search-params';
 import Study from 'onezone-gui-plugin-ecrin/utils/study';
 import DataObject from 'onezone-gui-plugin-ecrin/utils/data-object';
-import { A } from '@ember/array';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
 import { isBlank } from '@ember/utils';
-import { array, raw } from 'ember-awesome-macros';
 import {
   studyFiltersToSave,
   studyFiltersFromSaved,
   dataObjectFiltersToSave,
   dataObjectFiltersFromSaved,
 } from 'onezone-gui-plugin-ecrin/utils/data-filters-converters';
-import stringToRanges from 'onezone-gui-plugin-ecrin/utils/string-to-ranges';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
+import DataStore from 'onezone-gui-plugin-ecrin/utils/data-store';
 
 export default Component.extend(I18n, {
   classNames: ['content-index', 'content'],
@@ -55,123 +53,9 @@ export default Component.extend(I18n, {
   studySearchParams: computed(() => StudySearchParams.create()),
 
   /**
-   * Query results - studies
-   * @type {Array<Utils.Study>}
+   * @type {Utils.DataStore}
    */
-  studies: computed(() => A()),
-
-  /**
-   * @type {Object}
-   */
-  studyFilters: Object.freeze({}),
-
-  /**
-   * @type {Object}
-   */
-  dataObjectFilters: Object.freeze({}),
-
-  /**
-   * All data objects loaded for studies in results
-   * @type {Array<Utils.DataObject>}
-   */
-  dataObjects: computed(() => A()),
-
-  /**
-   * @type {Array<Object>}
-   * Previous value of dataObjectPublisherMapping
-   */
-  prevDataObjectPublisherMapping: undefined,
-
-  /**
-   * Studies with at least one data object selected
-   * @type {ComputedProperty<Array<Utils.Study>>}
-   */
-  studiesWithDataObjectsSelected: array.filterBy(
-    'studies',
-    raw('hasSelectedDataObjects')
-  ),
-
-  /**
-   * Finally filtered studies
-   * @type {ComputedProperty<Array<Utils.Study>>}
-   */
-  filteredStudies: computed(
-    'studiesWithDataObjectsSelected',
-    'studyFilters',
-    function filteredStudies() {
-      const {
-        studiesWithDataObjectsSelected,
-        studyFilters,
-      } = this.getProperties('studiesWithDataObjectsSelected', 'studyFilters');
-
-      let filteredStudies = studiesWithDataObjectsSelected.slice();
-      [
-        'type',
-        'status',
-        'genderEligibility',
-        'phase',
-        'interventionModel',
-        'allocationType',
-        'primaryPurpose',
-        'masking',
-        'observationalModel',
-        'timePerspective',
-        'biospecimensRetained',
-      ].forEach(fieldName => {
-        filteredStudies = checkMatchOfCategorizedValue(
-          filteredStudies,
-          fieldName,
-          get(studyFilters, fieldName)
-        );
-      });
-
-      return filteredStudies;
-    }
-  ),
-
-  /**
-   * Used as a special publisher for data objects without specified publisher
-   * @type {Object}
-   */
-  dataObjectPublisherUnknownValue: Object.freeze({
-    id: -1,
-    name: 'Not provided',
-    useForUnknown: true,
-  }),
-
-  /**
-   * @type {ComputedProperty<Array<Object>>}
-   */
-  dataObjectPublisherMapping: computed(
-    'dataObjects.@each.managingOrganisation',
-    'dataObjectPublisherUnknownValue',
-    function dataObjectPublisherMapping() {
-      const {
-        dataObjects,
-        dataObjectPublisherUnknownValue,
-      } = this.getProperties(
-        'dataObjects',
-        'dataObjectPublisherUnknownValue'
-      );
-      return dataObjects
-        .mapBy('managingOrganisation')
-        .compact()
-        .uniqBy('id')
-        .map(publisher => {
-          const publisherCopy = Object.assign({}, publisher);
-          const name = get(publisher, 'name');
-          // Sometimes publisher name is an array of strings
-          if (name && typeof name === 'object' && name[0]) {
-            publisherCopy.name = name[0];
-          } else if (typeof name !== 'string') {
-            publisherCopy.name = null;
-          }
-          return publisherCopy;
-        })
-        .rejectBy('name', null)
-        .concat([dataObjectPublisherUnknownValue]);
-    }
-  ),
+  dataStore: undefined,
 
   /**
    * @type {ComputedProperty<PromiseObject>}
@@ -185,63 +69,12 @@ export default Component.extend(I18n, {
    */
   isFetchingData: reads('fetchDataPromiseObject.isPending'),
 
-  dataObjectPublisherMappingObserver: observer(
-    'dataObjectPublisherMapping.[]',
-    function dataObjectPublisherMappingObserver() {
-      const {
-        prevDataObjectPublisherMapping,
-        dataObjectPublisherMapping,
-        dataObjectFilters,
-      } = this.getProperties(
-        'prevDataObjectPublisherMapping',
-        'dataObjectPublisherMapping',
-        'dataObjectFilters'
-      );
-
-      const oldPublishersIds = prevDataObjectPublisherMapping.mapBy('id');
-      const newPublishersIds = dataObjectPublisherMapping.mapBy('id');
-      const addedPublishers = _.difference(newPublishersIds, oldPublishersIds)
-        .map(id => dataObjectPublisherMapping.findBy('id', id));
-      const filterInNewMapping = dataObjectFilters.publisher
-        .map(publisher =>
-          dataObjectPublisherMapping.findBy('id', get(publisher, 'id'))
-        )
-        .compact()
-        .addObjects(addedPublishers);
-
-      this.set('prevDataObjectPublisherMapping', dataObjectPublisherMapping.slice());
-      this.set(
-        'dataObjectFilters',
-        Object.assign({}, dataObjectFilters, { publisher: filterInNewMapping })
-      );
-    }
-  ),
-
   init() {
     this._super(...arguments);
 
-    const dataObjectPublisherMapping =
-      (this.get('dataObjectPublisherMapping') || []).slice();
-
-    this.set('prevDataObjectPublisherMapping', dataObjectPublisherMapping);
-    this.resetStudyFilters();
-    this.resetDataObjectFilters();
-  },
-
-  resetStudyFilters() {
-    this.set('studyFilters', studyFiltersFromSaved(null, this.get('configuration')));
-  },
-
-  resetDataObjectFilters() {
-    const {
-      configuration,
-      dataObjectPublisherMapping,
-    } = this.getProperties('configuration', 'dataObjectPublisherMapping');
-
-    this.set(
-      'dataObjectFilters',
-      dataObjectFiltersFromSaved(null, configuration, dataObjectPublisherMapping)
-    );
+    this.set('dataStore', DataStore.create({
+      configuration: this.get('configuration'),
+    }));
   },
 
   searchStudies() {
@@ -277,9 +110,10 @@ export default Component.extend(I18n, {
     if (results) {
       results = get(results, 'hits.hits') || [];
       const {
-        studies: alreadyFetchedStudies,
+        dataStore,
         configuration,
-      } = this.getProperties('studies', 'configuration');
+      } = this.getProperties('dataStore', 'configuration');
+      const alreadyFetchedStudies = get(dataStore, 'studies');
       const alreadyFetchedStudiesIds = alreadyFetchedStudies.mapBy('id');
       const newStudies = results
         .mapBy('_source')
@@ -291,7 +125,7 @@ export default Component.extend(I18n, {
           configuration,
           raw: doc,
         }));
-      alreadyFetchedStudies.pushObjects(newStudies);
+      set(dataStore, 'studies', alreadyFetchedStudies.concat(newStudies));
       return newStudies;
     } else {
       return [];
@@ -568,10 +402,9 @@ export default Component.extend(I18n, {
   },
 
   generateExcludeFetchedStudiesClause() {
-    const studies = this.get('studies') || [];
     return {
       terms: {
-        id: studies.mapBy('id'),
+        id: this.get('dataStore.studies').mapBy('id'),
       },
     };
   },
@@ -579,12 +412,12 @@ export default Component.extend(I18n, {
   loadDataObjectsForStudies(studies) {
     const {
       elasticsearch,
-      dataObjects,
+      dataStore,
       configuration,
-    } = this.getProperties('elasticsearch', 'dataObjects', 'configuration');
+    } = this.getProperties('elasticsearch', 'dataStore', 'configuration');
     const studiesWithoutFetchedDataObjects =
       studies.rejectBy('dataObjectsPromiseObject');
-    const idsOfFetchedDataObjects = dataObjects.mapBy('id');
+    const idsOfFetchedDataObjects = get(dataStore, 'dataObjects').mapBy('id');
     const idsOfDataObjectsToFetch = _.difference(
       _.uniq(_.flatten(
         studiesWithoutFetchedDataObjects.mapBy('dataObjectsIds')
@@ -607,24 +440,22 @@ export default Component.extend(I18n, {
       };
       fetchDataObjectsPromise = elasticsearch.post('data_object', '_search', body)
         .then(results => {
+          const alreadyFetchedDataObjects = get(dataStore, 'dataObjects');
           const hits = results.hits.hits;
           const newDataObjects = hits.map(doHit => {
             const existingDataObjectInstance =
-              dataObjects.findBy('id', get(doHit, '_source.id'));
-            if (existingDataObjectInstance) {
-              return existingDataObjectInstance;
-            } else {
+              alreadyFetchedDataObjects.findBy('id', get(doHit, '_source.id'));
+            if (!existingDataObjectInstance) {
               return DataObject.create({
                 configuration,
                 raw: get(doHit, '_source'),
               });
             }
-          });
-          dataObjects.addObjects(newDataObjects);
-          return dataObjects;
+          }).compact();
+          return alreadyFetchedDataObjects.concat(newDataObjects);
         });
     } else {
-      fetchDataObjectsPromise = resolve(dataObjects);
+      fetchDataObjectsPromise = resolve(get(dataStore, 'dataObjects'));
     }
 
     studiesWithoutFetchedDataObjects.forEach(study => {
@@ -640,36 +471,16 @@ export default Component.extend(I18n, {
     return fetchDataObjectsPromise;
   },
 
-  removeStudies(studiesToRemove) {
-    const {
-      studies,
-      dataObjects,
-    } = this.getProperties('studies', 'dataObjects');
-
-    studiesToRemove = studiesToRemove.slice();
-    studies.removeObjects(studiesToRemove);
-
-    const dataObjectsOfRemovedStudies = _.uniq(_.flatten(
-      studiesToRemove.mapBy('dataObjects').compact()
-    ));
-    const usedDataObjectIds = _.flatten(studies.mapBy('dataObjectsIds'));
-    const dataObjectsToRemove = dataObjectsOfRemovedStudies.filter(dataObject => {
-      const doId = get(dataObject, 'id');
-      return !usedDataObjectIds.includes(doId);
-    });
-    dataObjects.removeObjects(dataObjectsToRemove);
-  },
-
   loadStudiesFromSavedResults(results) {
-    const savedStudies = get(results, 'studies');
+    const savedStudyIds = get(results, 'studies');
     const elasticsearch = this.get('elasticsearch');
     const body = Object.assign(this.constructQueryBodyBase('study'), {
-      size: savedStudies.length,
+      size: savedStudyIds.length,
       query: {
         bool: {
           filter: [{
             terms: {
-              id: savedStudies.mapBy('id'),
+              id: savedStudyIds,
             },
           }],
         },
@@ -680,21 +491,6 @@ export default Component.extend(I18n, {
       .then(results => {
         const studies = this.extractResultsFromResponse(results);
         return this.loadDataObjectsForStudies(studies).then(() => studies);
-      })
-      .then(studies => {
-        studies.forEach(study => {
-          const correspondingSavedStudy =
-            savedStudies.findBy('id', get(study, 'id'));
-          if (correspondingSavedStudy) {
-            const selectedDataObjectsIds =
-              get(correspondingSavedStudy, 'selectedDataObjects') || [];
-            const selectedDataObjects = get(study, 'dataObjects')
-              .filter(dataObject =>
-                selectedDataObjectsIds.includes(get(dataObject, 'id'))
-              );
-            set(study, 'selectedDataObjects', selectedDataObjects);
-          }
-        });
       });
   },
 
@@ -706,98 +502,37 @@ export default Component.extend(I18n, {
       this.searchStudies();
     },
     removeStudy(study) {
-      this.removeStudies([study]);
+      this.get('dataStore').removeStudies([study]);
     },
     removeAllStudies() {
-      this.removeStudies(this.get('studies'));
-    },
-    filterDataObjects(filters) {
-      this.set('dataObjectFilters', filters);
-      const {
-        studies,
-        dataObjects,
-        dataObjectPublisherMapping,
-        dataObjectPublisherUnknownValue,
-      } = this.getProperties(
-        'studies',
-        'dataObjects',
-        'dataObjectPublisherMapping',
-        'dataObjectPublisherUnknownValue'
-      );
-
-      let {
-        year,
-        publisher,
-      } = getProperties(filters, 'year', 'publisher');
-      year = stringToRanges(year);
-
-      let filteredDataObjects = dataObjects.slice();
-      [
-        'filterType',
-        'accessType',
-      ].forEach(fieldName => {
-        filteredDataObjects = checkMatchOfCategorizedValue(
-          filteredDataObjects,
-          fieldName,
-          get(filters, fieldName)
-        );
-      });
-      if (year && year.length) {
-        filteredDataObjects = filteredDataObjects.filter(dataObject => {
-          const doYear = get(dataObject, 'year');
-          if (doYear) {
-            return year.any(range => doYear >= range.start && doYear <= range.end);
-          } else {
-            return false;
-          }
-        });
-      }
-      if (publisher) {
-        const allowUnknownValue = publisher.isAny('useForUnknown');
-        const knownIds = dataObjectPublisherMapping
-          .mapBy('id')
-          .without(get(dataObjectPublisherUnknownValue, 'id'));
-        filteredDataObjects = filteredDataObjects.filter(dataObject => {
-          const doPublisherId = get(dataObject, 'managingOrganisation.id');
-          return publisher.isAny('id', doPublisherId) ||
-            (allowUnknownValue && !knownIds.includes(doPublisherId));
-        });
-      }
-
-      studies.forEach(study => {
-        const filteredStudyDOs = (get(study, 'dataObjects') || [])
-          .filter(dataObject => filteredDataObjects.includes(dataObject));
-        set(study, 'selectedDataObjects', filteredStudyDOs);
-      });
+      const dataStore = this.get('dataStore');
+      dataStore.removeStudies(get(dataStore, 'studies'));
     },
     resetStudyFilters() {
-      this.resetStudyFilters();
+      this.get('dataStore').resetStudyFilters();
     },
     resetDataObjectFilters() {
-      this.resetDataObjectFilters();
-      this.send('filterDataObjects', this.get('dataObjectFilters'));
+      this.get('dataStore').resetDataObjectFilters();
     },
     saveResults(name) {
       const {
         indexeddbStorage,
-        studies,
-        studyFilters,
-        dataObjectFilters,
+        dataStore,
         studySearchParams,
       } = this.getProperties(
         'indexeddbStorage',
-        'studies',
-        'studyFilters',
-        'dataObjectFilters',
+        'dataStore',
         'studySearchParams'
       );
+      const {
+        studies,
+        studyFilters,
+        dataObjectFilters,
+      } = getProperties(dataStore, 'studies', 'studyFilters', 'dataObjectFilters');
       const resultsToSave = {
         name,
         timestamp: Math.floor(Date.now() / 1000),
-        studies: studies.map(study => ({
-          id: get(study, 'id'),
-          selectedDataObjects: get(study, 'selectedDataObjects').mapBy('id'),
-        })),
+        studies: studies.mapBy('id'),
         studyFilters: studyFiltersToSave(studyFilters),
         dataObjectFilters: dataObjectFiltersToSave(dataObjectFilters),
         studySearchParams: studySearchParams.dumpValues(),
@@ -812,8 +547,8 @@ export default Component.extend(I18n, {
       const {
         configuration,
         studySearchParams,
-        studies,
-      } = this.getProperties('configuration', 'studySearchParams', 'studies');
+        dataStore,
+      } = this.getProperties('configuration', 'studySearchParams', 'dataStore');
       if (results.studySearchParams) {
         studySearchParams.loadDumpedValues(
           results.studySearchParams,
@@ -821,33 +556,30 @@ export default Component.extend(I18n, {
         );
       }
 
-      this.removeStudies(studies.slice());
-      this.resetStudyFilters();
-      this.resetDataObjectFilters();
+      dataStore.removeStudies(get(dataStore, 'studies'));
+      dataStore.resetStudyFilters();
+      dataStore.resetDataObjectFilters();
       return this.loadStudiesFromSavedResults(results)
         .then(() => safeExec(this, () => {
           const {
             studyFilters: savedStudyFilters,
             dataObjectFilters: savedDataObjectFilters,
           } = results;
-          const {
-            configuration,
-            dataObjectPublisherMapping,
-          } = this.getProperties('configuration', 'dataObjectPublisherMapping');
+          const dataObjectPublisherMapping =
+            get(dataStore, 'dataObjectPublisherMapping');
           const dataObjectFilters = dataObjectFiltersFromSaved(
             savedDataObjectFilters,
             configuration,
             dataObjectPublisherMapping
           );
 
-          this.setProperties({
+          setProperties(dataStore, {
             studyFilters: studyFiltersFromSaved(
               savedStudyFilters,
               configuration
             ),
             dataObjectFilters,
           });
-          this.send('filterDataObjects', dataObjectFilters);
         }));
     },
     removeSavedResults(results) {
@@ -856,17 +588,10 @@ export default Component.extend(I18n, {
     exportResultsToPdf() {
       const {
         pdfGenerator,
-        studies,
-      } = this.getProperties('pdfGenerator', 'studies');
+        dataStore,
+      } = this.getProperties('pdfGenerator', 'dataStore');
 
-      return pdfGenerator.generatePdfFromResults(studies);
+      return pdfGenerator.generatePdfFromResults(dataStore);
     },
   },
 });
-
-function checkMatchOfCategorizedValue(records, fieldName, filter) {
-  return records.filter(record =>
-    !record.isSupportingField(fieldName) ||
-    !filter || filter.includes(get(record, fieldName))
-  );
-}

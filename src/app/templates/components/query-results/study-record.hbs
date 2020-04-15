@@ -51,8 +51,7 @@
         year=dataObject.year
         accessTypeIndicator=(or dataObject.accessType.indicator "unknown")
         accessTypeName=dataObject.accessType.name
-        isChecked=(contains dataObject study.selectedDataObjects)
-        toggleSelection=(action "toggleDataObjectSelection" dataObject)
+        isChecked=(contains dataObject selectedDataObjects)
       }}
         {{#if dataObject.title}}
           <p>{{dataObject.title}}</p>

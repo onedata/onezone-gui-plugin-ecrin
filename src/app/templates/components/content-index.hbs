@@ -6,18 +6,19 @@
 }}
 <div class="query-content">
   {{data-filters
-    studyFilters=studyFilters
-    dataObjectFilters=dataObjectFilters
+    studyFilters=dataStore.studyFilters
+    dataObjectFilters=dataStore.dataObjectFilters
     isFetchingData=isFetchingData
-    dataObjectPublisherMapping=dataObjectPublisherMapping
-    onFilterStudies=(action (mut studyFilters))
-    onFilterDataObjects=(action "filterDataObjects")
+    dataObjectPublisherMapping=dataStore.dataObjectPublisherMapping
+    onFilterStudies=(action (mut dataStore.studyFilters))
+    onFilterDataObjects=(action (mut dataStore.dataObjectFilters))
     onResetStudyFilters=(action "resetStudyFilters")
     onResetDataObjectFilters=(action "resetDataObjectFilters")
   }}
   {{#query-results
     isFetchingData=isFetchingData
-    studies=filteredStudies
+    studies=dataStore.filteredStudies
+    selectedDataObjects=dataStore.filteredDataObjects
     removeStudy=(action "removeStudy")
     removeAllStudies=(action "removeAllStudies")
     saveResults=(action "saveResults")

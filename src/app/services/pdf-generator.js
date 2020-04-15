@@ -88,20 +88,23 @@ export default Service.extend(I18n, {
   },
 
   /**
-   * Generates PDF documents from passed array of studies with data objects
-   * @param {Array<Utils.Study>} results
+   * Generates PDF documents from passed data store
+   * @param {Array<Utils.DataStore>} dataStore
    * @returns {Promise}
    */
-  generatePdfFromResults(results) {
+  generatePdfFromResults(dataStore) {
     return this.loadPdfMake()
       .then(pdfMake => {
-        const dataObjects = _.flatten(
-          results.mapBy('selectedDataObjects')
-        ).uniqBy('id');
+        const {
+          filteredDataObjects,
+          filteredStudies,
+        } = getProperties(dataStore, 'filteredDataObjects', 'filteredStudies');
         const dataObjectsRepresentation =
-          this.generateDataObjectsPdfRepresentation(dataObjects);
-        const studiesRepresentation =
-          this.generateStudiesPdfRepresentation(results, dataObjectsRepresentation);
+          this.generateDataObjectsPdfRepresentation(filteredDataObjects);
+        const studiesRepresentation = this.generateStudiesPdfRepresentation(
+          filteredStudies,
+          dataObjectsRepresentation
+        );
         const docDefinition = {
           footer: function (currentPage) {
             const onRightSide = Boolean(currentPage % 2);
@@ -185,13 +188,13 @@ export default Service.extend(I18n, {
         title,
         description,
         dataSharingStatement,
-        selectedDataObjects,
+        dataObjects,
       } = getProperties(
         study,
         'title',
         'description',
         'dataSharingStatement',
-        'selectedDataObjects',
+        'dataObjects',
       );
       const tableColsCount = 4;
       const tableBody = [
@@ -223,10 +226,10 @@ export default Service.extend(I18n, {
           colSpan: tableColsCount,
         }, ..._.times(tableColsCount - 1, _.constant({}))]);
       }
-      if (get(selectedDataObjects, 'length')) {
-        tableBody.push(...selectedDataObjects.map(dataObject =>
+      if (get(dataObjects, 'length')) {
+        tableBody.push(...dataObjects.map(dataObject =>
           dataObjectsRepresentation.get(get(dataObject, 'id'))
-        ));
+        ).compact());
       }
 
       return {

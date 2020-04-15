@@ -40,6 +40,12 @@ export default Component.extend(I18n, {
 
   /**
    * @virtual
+   * @type {Array<Utils.DataObject>}
+   */
+  selectedDataObjects: computed(() => A()),
+
+  /**
+   * @virtual
    * @type {Function}
    * @returns {Promise<any>}
    */
