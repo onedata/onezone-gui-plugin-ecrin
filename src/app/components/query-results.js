@@ -34,6 +34,12 @@ export default Component.extend(I18n, {
 
   /**
    * @virtual
+   * @type {number}
+   */
+  allStudiesCount: 0,
+
+  /**
+   * @virtual
    * @type {Array<Utils.Study>}
    */
   studies: computed(() => A()),

@@ -1,5 +1,5 @@
 export default {
-  results: 'Results',
+  resultsCounter: 'Results: {{filteredCount}} ({{totalCount}} without filtering)',
   load: 'Load...',
   save: 'Save...',
   exportToPdf: 'Export to pdf',

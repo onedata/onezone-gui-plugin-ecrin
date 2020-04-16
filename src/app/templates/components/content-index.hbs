@@ -18,6 +18,7 @@
   }}
   {{#query-results
     isFetchingData=isFetchingData
+    allStudiesCount=dataStore.studies.length
     studies=dataStore.filteredStudies
     selectedDataObjects=dataStore.filteredDataObjects
     removeStudy=(action "removeStudy")
