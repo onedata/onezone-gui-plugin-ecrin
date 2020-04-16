@@ -383,10 +383,11 @@ export default EmberObject.extend({
       fetchDataObjectsPromise = elasticsearch.post('data_object', '_search', queryBody)
         .then(results => {
           const alreadyFetchedDataObjects = get(dataStore, 'dataObjects');
+          const alreadyFetchedDataObjectsIds = alreadyFetchedDataObjects.mapBy('id');
           const newDataObjects = results.hits.hits.map(doHit => {
-            const existingDataObjectInstance =
-              alreadyFetchedDataObjects.findBy('id', get(doHit, '_source.id'));
-            if (!existingDataObjectInstance) {
+            const dataObjectAlreadyExists =
+              alreadyFetchedDataObjectsIds.includes(get(doHit, '_source.id'));
+            if (!dataObjectAlreadyExists) {
               return DataObject.create({
                 configuration,
                 raw: get(doHit, '_source'),
