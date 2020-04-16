@@ -159,6 +159,7 @@ export default EmberObject.extend({
             simple_query_string: {
               query: studyTitleContains,
               fields: ['display_title.title'],
+              default_operator: 'and',
             },
           }, {
             nested: {
@@ -167,6 +168,7 @@ export default EmberObject.extend({
                 simple_query_string: {
                   query: studyTitleContains,
                   fields: ['study_titles.title_text'],
+                  default_operator: 'and',
                 },
               },
             },
@@ -261,6 +263,7 @@ export default EmberObject.extend({
             simple_query_string: {
               query: dataObjectTitle,
               fields: ['display_title'],
+              default_operator: 'and',
             },
           }, {
             nested: {
@@ -269,6 +272,7 @@ export default EmberObject.extend({
                 simple_query_string: {
                   query: dataObjectTitle,
                   fields: ['object_titles.title_text'],
+                  default_operator: 'and',
                 },
               },
             },
