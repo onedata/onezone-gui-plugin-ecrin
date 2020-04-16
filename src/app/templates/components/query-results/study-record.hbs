@@ -83,7 +83,4 @@
       {{/query-results/data-object-record}}
     {{/each}}
   </div>
-  {{#if study.dataObjectsPromiseObject.isPending}}
-    {{spin-spinner-block sizeClass="xs" class="loading-inner-spinner"}} <span>{{tt this "loading"}}</span>
-  {{/if}}
 {{/bs-collapse}}

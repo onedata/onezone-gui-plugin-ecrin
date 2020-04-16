@@ -116,7 +116,7 @@ export default EmberObject.extend({
       );
     }
 
-    dataStore.removeStudies(get(dataStore, 'studies'));
+    dataStore.removeAllStudies();
     dataStore.resetStudyFilters();
     dataStore.resetDataObjectFilters();
     return dataFetcher.searchStudies(StudySearchParams.create({

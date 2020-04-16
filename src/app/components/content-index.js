@@ -8,10 +8,6 @@
  */
 
 import Component from '@ember/component';
-import {
-  computed,
-  get,
-} from '@ember/object';
 import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { inject as service } from '@ember/service';
@@ -36,7 +32,7 @@ export default Component.extend(I18n, {
   /**
    * @type {StudySearchParams}
    */
-  studySearchParams: computed(() => StudySearchParams.create()),
+  studySearchParams: undefined,
 
   /**
    * @type {Utils.DataStore}
@@ -80,6 +76,7 @@ export default Component.extend(I18n, {
       dataFetcher,
     });
     this.setProperties({
+      studySearchParams: StudySearchParams.create(),
       dataStore,
       dataFetcher,
       dataPersister,
@@ -90,19 +87,19 @@ export default Component.extend(I18n, {
     parameterChanged(fieldName, newValue) {
       this.set(`studySearchParams.${fieldName}`, newValue);
     },
-    find() {
+    find(withStacking = false) {
       const {
         dataFetcher,
         studySearchParams,
       } = this.getProperties('dataFetcher', 'studySearchParams');
-      dataFetcher.searchStudies(studySearchParams);
+
+      dataFetcher.searchStudies(studySearchParams, withStacking);
     },
     removeStudy(study) {
       this.get('dataStore').removeStudies([study]);
     },
     removeAllStudies() {
-      const dataStore = this.get('dataStore');
-      dataStore.removeStudies(get(dataStore, 'studies'));
+      this.get('dataStore').removeAllStudies();
     },
     resetStudyFilters() {
       this.get('dataStore').resetStudyFilters();

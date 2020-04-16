@@ -113,10 +113,7 @@ export default EmberObject.extend({
   /**
    * @type {ComputedProperty<Array<Utils.DataObject>>}
    */
-  dataObjects: computed('studies.@each.dataObjects', function dataObjects() {
-    return _.flatten((this.get('studies') || []).mapBy('dataObjects').compact())
-      .uniqBy('id');
-  }),
+  dataObjects: undefined,
 
   /**
    * @type {ComputedProperty<Array<Utils.DataObject>>}
@@ -250,22 +247,23 @@ export default EmberObject.extend({
   init() {
     this._super(...arguments);
 
+    this.set('studies', this.get('studies') || []);
+    this.recalculateDataObjects();
+
     const {
-      studies,
       studyFilters,
       dataObjectFilters,
       dataObjectPublisherMapping,
     } = this.getProperties(
-      'studies',
       'studyFilters',
       'dataObjectFilters',
       'dataObjectPublisherMapping'
     );
 
-    this.setProperties({
-      studies: studies || [],
-      prevDataObjectPublisherMapping: (dataObjectPublisherMapping || []).slice(),
-    });
+    this.set(
+      'prevDataObjectPublisherMapping',
+      (dataObjectPublisherMapping || []).slice()
+    );
 
     if (!studyFilters) {
       this.resetStudyFilters();
@@ -273,6 +271,14 @@ export default EmberObject.extend({
     if (!dataObjectFilters) {
       this.resetDataObjectFilters();
     }
+  },
+
+  recalculateDataObjects() {
+    this.set(
+      'dataObjects',
+      _.flatten((this.get('studies') || []).mapBy('dataObjects').compact())
+      .uniqBy('id')
+    );
   },
 
   resetStudyFilters() {
@@ -292,23 +298,16 @@ export default EmberObject.extend({
   },
 
   removeStudies(studiesToRemove) {
-    const {
-      studies,
-      dataObjects,
-    } = this.getProperties('studies', 'dataObjects');
+    this.set(
+      'studies',
+      this.get('studies').filter(study => !studiesToRemove.includes(study))
+    );
+    this.recalculateDataObjects();
+  },
 
-    studiesToRemove = studiesToRemove.slice();
-    studies.removeObjects(studiesToRemove);
-
-    const dataObjectsOfRemovedStudies = _.uniq(_.flatten(
-      studiesToRemove.mapBy('dataObjects').compact()
-    ));
-    const usedDataObjectIds = _.flatten(studies.mapBy('dataObjectsIds'));
-    const dataObjectsToRemove = dataObjectsOfRemovedStudies.filter(dataObject => {
-      const doId = get(dataObject, 'id');
-      return !usedDataObjectIds.includes(doId);
-    });
-    dataObjects.removeObjects(dataObjectsToRemove);
+  removeAllStudies() {
+    this.set('studies', []);
+    this.recalculateDataObjects();
   },
 });
 

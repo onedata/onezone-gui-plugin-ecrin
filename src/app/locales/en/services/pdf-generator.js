@@ -5,5 +5,7 @@ export default {
     studyDescriptionLabel: 'Description: ',
     studyDataSharingStatementLabel: 'Data sharing statement: ',
     dataObjectAccessLabel: 'Access: ',
+    dataObjectAccessDetailsLabel: 'Access details: ',
+    dataObjectAccessDetailsUrlLabel: 'see: ',
   },
 };

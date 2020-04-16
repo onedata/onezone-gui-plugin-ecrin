@@ -147,6 +147,8 @@ export default Service.extend(I18n, {
         title,
         year,
         accessType,
+        accessDetails,
+        accessDetailsUrl,
         url,
       } = getProperties(
         dataObject,
@@ -155,16 +157,42 @@ export default Service.extend(I18n, {
         'title',
         'year',
         'accessType',
+        'accessDetails',
+        'accessDetailsUrl',
         'url'
       );
+
+      let accessSection = [];
+      if (url) {
+        accessSection.push({
+          text: '\n\n' + this.pdfT('dataObjectAccessLabel'),
+          bold: true,
+        }, url);
+      }
+
+      let accessDetailsSection = [];
+      if (accessDetails) {
+        accessDetailsSection.push({
+          text: '\n\n' + this.pdfT('dataObjectAccessDetailsLabel'),
+          bold: true,
+        }, accessDetails);
+        if (accessDetailsUrl) {
+          accessDetailsSection.push(
+            ` (${this.pdfT('dataObjectAccessDetailsUrlLabel')}${accessDetailsUrl})`
+          );
+        }
+      }
 
       if (!representationsMap.has(id)) {
         representationsMap.set(id, [{
           text: get(type, 'name'),
           bold: true,
         }, {
-          text: title +
-            (url ? '\n\n' + this.pdfT('dataObjectAccessLabel') + url : ''),
+          text: [
+            title,
+            { text: accessSection },
+            { text: accessDetailsSection },
+          ],
         }, {
           text: year || '‐',
         }, {

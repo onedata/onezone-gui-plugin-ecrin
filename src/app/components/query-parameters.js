@@ -55,6 +55,13 @@ export default Component.extend(I18n, {
   onFind: notImplementedIgnore,
 
   /**
+   * @virtual
+   * @type {Function}
+   * @returns {undefined}
+   */
+  onFindWithStacking: notImplementedIgnore,
+
+  /**
    * @type {Array<string>}
    */
   modeOptions: Object.freeze([

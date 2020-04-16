@@ -49,9 +49,10 @@ export default EmberObject.extend({
   /**
    * Starts study query
    * @param {Utils.StudySearchParams} searchParams
+   * @param {boolean} [withStacking=false]
    * @returns {Promise}
    */
-  searchStudies(searchParams) {
+  searchStudies(searchParams, withStacking = false) {
     const {
       hasMeaningfulParams,
       mode,
@@ -60,22 +61,23 @@ export default EmberObject.extend({
       const fetchDataPromiseObject = this.get('fetchDataPromiseObject');
       let promise = get(fetchDataPromiseObject, 'isSettled') ?
         resolve() : fetchDataPromiseObject;
-
-      switch (mode) {
-        case 'specificStudy':
-          promise = promise.then(() => this.fetchSpecificStudy(searchParams));
-          break;
-        case 'studyCharact':
-          promise = promise.then(() => this.fetchStudyCharact(searchParams));
-          break;
-        case 'viaPubPaper':
-          promise = promise.then(() => this.fetchViaPubPaper(searchParams));
-          break;
-        case 'viaInternalId':
-          promise = promise.then(() => this.fetchViaInternalId(searchParams));
-      }
-
       promise = promise
+        .then(() => {
+          if (!withStacking) {
+            this.get('dataStore').removeAllStudies();
+          }
+
+          switch (mode) {
+            case 'specificStudy':
+              return this.fetchSpecificStudy(searchParams);
+            case 'studyCharact':
+              return this.fetchStudyCharact(searchParams);
+            case 'viaPubPaper':
+              return this.fetchViaPubPaper(searchParams);
+            case 'viaInternalId':
+              return this.fetchViaInternalId(searchParams);
+          }
+        })
         .then(results => this.loadStudiesFromResponse(results))
         .then(newStudies => this.loadDataObjectsForStudies(newStudies));
       return this.set('fetchDataPromiseObject', PromiseObject.create({ promise }));
@@ -340,12 +342,10 @@ export default EmberObject.extend({
       dataStore,
       configuration,
     } = this.getProperties('elasticsearch', 'dataStore', 'configuration');
-    const studiesWithoutFetchedDataObjects =
-      studies.rejectBy('dataObjectsPromiseObject');
     const idsOfFetchedDataObjects = get(dataStore, 'dataObjects').mapBy('id');
     const idsOfDataObjectsToFetch = _.difference(
       _.uniq(_.flatten(
-        studiesWithoutFetchedDataObjects.mapBy('dataObjectsIds')
+        studies.mapBy('dataObjectsIds')
       )),
       idsOfFetchedDataObjects
     );
@@ -381,15 +381,17 @@ export default EmberObject.extend({
     } else {
       fetchDataObjectsPromise = resolve(get(dataStore, 'dataObjects'));
     }
-
-    studiesWithoutFetchedDataObjects.forEach(study => {
-      set(study, 'dataObjectsPromiseObject', PromiseObject.create({
-        promise: fetchDataObjectsPromise.then(dataObjects =>
-          get(study, 'dataObjectsIds')
-          .map(id => dataObjects.findBy('id', id))
-          .compact()
-        ),
-      }));
+    fetchDataObjectsPromise.then(dataObjects => {
+      const dataObjectsMap = new Map(dataObjects.map(dataObject => (
+        [get(dataObject, 'id'), dataObject]
+      )));
+      studies.forEach(study => {
+        const studyDataObjects = get(study, 'dataObjectsIds')
+          .map(id => dataObjectsMap.get(id))
+          .compact();
+        set(study, 'dataObjects', studyDataObjects);
+      });
+      dataStore.recalculateDataObjects();
     });
 
     return fetchDataObjectsPromise;

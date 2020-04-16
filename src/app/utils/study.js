@@ -95,11 +95,9 @@ export default EmberObject.extend(topicFields, {
   isDataSharingStatementExpanded: false,
 
   /**
-   * Promise object which is not resolved until data objects are fetched
-   * @virtual
-   * @type {PromiseObject<Array<Util.DataObject>>}
+   * @type {Ember.A<Util.DataObject>}
    */
-  dataObjectsPromiseObject: undefined,
+  dataObjects: Object.freeze([]),
 
   /**
    * @type {ComputedProperty<Ember.A<Util.DataObject>>}
@@ -125,11 +123,6 @@ export default EmberObject.extend(topicFields, {
    * @type {ComputedProperty<Array<number>>}
    */
   dataObjectsIds: or('raw.linked_data_objects', raw([])),
-
-  /**
-   * @type {ComputedProperty<Ember.A<Util.DataObject>>}
-   */
-  dataObjects: reads('dataObjectsPromiseObject.content'),
 
   /**
    * @type {ComputedProperty<Object>}
