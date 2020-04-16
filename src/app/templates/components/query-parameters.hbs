@@ -104,10 +104,15 @@
   }}
     {{tt this "find"}}
   {{/bs-button}}
-  {{#dd.button type="primary"}}<span class="caret"></span>{{/dd.button}}
+  {{#dd.button
+    type="primary"
+    disabled=isFetchingData
+  }}
+    <span class="caret"></span>
+  {{/dd.button}}
   {{#dd.menu align="right" as |ddm|}}
     {{#ddm.item}}
-      <a {{action onFindWithStacking}}>
+      <a {{action (if isFetchingData noop onFindWithStacking)}}>
         {{tt this "findAndAdd"}}
       </a>
     {{/ddm.item}}
