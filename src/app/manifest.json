@@ -131,14 +131,6 @@
         {
           "name": "Other",
           "id": 90
-        },
-        {
-          "name": "Type not provided",
-          "id": 1
-        },
-        {
-          "name": "Not yet known",
-          "id": 0
         }
       ],
       "studyTypeMapping": [

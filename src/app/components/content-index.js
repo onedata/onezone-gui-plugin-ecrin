@@ -11,6 +11,7 @@ import Component from '@ember/component';
 import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { inject as service } from '@ember/service';
+import { get } from '@ember/object';
 import StudySearchParams from 'onezone-gui-plugin-ecrin/utils/study-search-params';
 import DataStore from 'onezone-gui-plugin-ecrin/utils/data-store';
 import DataFetcher from 'onezone-gui-plugin-ecrin/utils/data-fetcher';
@@ -76,7 +77,9 @@ export default Component.extend(I18n, {
       dataFetcher,
     });
     this.setProperties({
-      studySearchParams: StudySearchParams.create(),
+      studySearchParams: StudySearchParams.create({
+        studyIdType: get(configuration, 'studyIdTypeMapping')[0],
+      }),
       dataStore,
       dataFetcher,
       dataPersister,

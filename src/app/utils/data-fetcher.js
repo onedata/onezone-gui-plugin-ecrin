@@ -185,11 +185,12 @@ export default EmberObject.extend({
     if (studyTopicsInclude) {
       filtersArray.push({
         nested: {
-          path: 'study_features',
+          path: 'study_topics',
           query: {
             simple_query_string: {
               query: studyTopicsInclude,
-              fields: ['study_features.feature_value'],
+              fields: ['study_topics.topic_value'],
+              default_operator: 'and',
             },
           },
         },
