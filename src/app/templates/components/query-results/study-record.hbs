@@ -70,14 +70,23 @@
             {{/if}}
           </p>
         {{/if}}
-        {{#if dataObject.url}}
+        {{#if dataObject.urls.length}}
           <p>
             {{tt this "urlAccess"}}:
-            {{#if dataObject.hasCorrectUrl}}
-              <a href={{dataObject.url}} target="_blank">{{dataObject.url}}</a>
-            {{else}}
-              {{dataObject.url}}
-            {{/if}}
+            <ul>
+              {{#each dataObject.urls as |urlContainer|}}
+                <li>
+                  {{#if (not-eq urlContainer.type "unknown")}}
+                    {{tt this (concat "urlType." urlContainer.type)}}:
+                  {{/if}}
+                  {{#if urlContainer.isUrlCorrect}}
+                    <a href={{urlContainer.url}} target="_blank">{{urlContainer.url}}</a>
+                  {{else}}
+                    {{urlContainer.url}}
+                  {{/if}}
+                </li>
+              {{/each}}
+            </ul>
           </p>
         {{/if}}
       {{/query-results/data-object-record}}

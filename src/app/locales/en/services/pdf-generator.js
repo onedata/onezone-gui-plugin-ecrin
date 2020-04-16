@@ -4,7 +4,11 @@ export default {
     title: 'MDR search results',
     studyDescriptionLabel: 'Description: ',
     studyDataSharingStatementLabel: 'Data sharing statement: ',
-    dataObjectAccessLabel: 'Access: ',
+    dataObjectUrlAccessLabel: 'Access: ',
+    dataObjectUrlType: {
+      journalAbstract: 'Abstract',
+      journalArticle: 'Article',
+    },
     dataObjectAccessDetailsLabel: 'Access details: ',
     dataObjectAccessDetailsUrlLabel: 'see: ',
   },

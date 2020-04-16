@@ -11,7 +11,7 @@
 
 import EmberObject, { computed, get } from '@ember/object';
 import { reads } from '@ember/object/computed';
-import { array, raw } from 'ember-awesome-macros';
+import { bool } from 'ember-awesome-macros';
 import isUrl from 'is-url';
 import categorizedValueComputed from 'onezone-gui-plugin-ecrin/utils/categorized-value-computed';
 
@@ -32,23 +32,6 @@ export default EmberObject.extend({
    * @type {ComputedProperty<String>}
    */
   title: reads('raw.display_title'),
-
-  /**
-   * @type {ComputedProperty<String>}
-   */
-  url: array.objectAt(
-    array.compact(
-      array.mapBy('raw.object_instances', raw('url'))
-    ),
-    raw(0)
-  ),
-
-  /**
-   * @type {ComputedProperty<boolean>}
-   */
-  hasCorrectUrl: computed('url', function hasCorrectUrl() {
-    return isUrl(this.get('url'));
-  }),
 
   /**
    * @type {ComputedProperty<number>}
@@ -111,6 +94,53 @@ export default EmberObject.extend({
    * @type {ComputedProperty<Object>}
    */
   managingOrganisation: reads('raw.managing_organisation'),
+
+  /**
+   * @type {ComputedProperty<boolean>}
+   */
+  isJournalArticle: bool('filterType.isJournalArticle'),
+
+  /**
+   * @type {ComputedProperty<Array<{ type: String, url: String, isUrlCorrect: boolean }>>}
+   */
+  urls: computed('raw.object_instances', 'isJournalArticle', function urls() {
+    let objectInstances = (this.get('raw.object_instances') || [])
+      .slice().filterBy('url');
+    const isJournalArticle = this.get('isJournalArticle');
+    const urlsCollection = [];
+
+    if (isJournalArticle) {
+      [{
+        type: 'journalAbstract',
+        id: 35,
+      }, {
+        type: 'journalArticle',
+        id: 36,
+      }].forEach(({ type, id }) => {
+        let instance;
+        do {
+          instance = objectInstances.findBy('resource_type.id', id);
+          if (instance) {
+            urlsCollection.push({
+              type,
+              url: instance.url,
+              isUrlCorrect: isUrl(instance.url),
+            });
+            objectInstances = objectInstances.without(instance);
+          }
+        } while (instance);
+      });
+    }
+    objectInstances.filterBy('url').forEach(instance =>
+      urlsCollection.push({
+        type: 'unknown',
+        url: instance.url,
+        isUrlCorrect: isUrl(instance.url),
+      })
+    );
+
+    return urlsCollection;
+  }),
 
   isSupportingField() {
     // Data object has no fields that exclude each other (like study has), hence

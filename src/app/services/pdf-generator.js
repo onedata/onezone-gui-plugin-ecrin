@@ -149,7 +149,7 @@ export default Service.extend(I18n, {
         accessType,
         accessDetails,
         accessDetailsUrl,
-        url,
+        urls,
       } = getProperties(
         dataObject,
         'id',
@@ -159,21 +159,27 @@ export default Service.extend(I18n, {
         'accessType',
         'accessDetails',
         'accessDetailsUrl',
-        'url'
+        'urls'
       );
 
       let accessSection = [];
-      if (url) {
+      if (urls.length) {
         accessSection.push({
-          text: '\n\n' + this.pdfT('dataObjectAccessLabel'),
+          text: '\n' + this.pdfT('dataObjectUrlAccessLabel'),
           bold: true,
-        }, url);
+        }, {
+          ul: urls.map(({ type, url }) => {
+            const label = type !== 'unknown' ?
+              this.pdfT(`dataObjectUrlType.${type}`) + ': ' : '';
+            return label + url;
+          }),
+        });
       }
 
       let accessDetailsSection = [];
       if (accessDetails) {
         accessDetailsSection.push({
-          text: '\n\n' + this.pdfT('dataObjectAccessDetailsLabel'),
+          text: '\n' + this.pdfT('dataObjectAccessDetailsLabel'),
           bold: true,
         }, accessDetails);
         if (accessDetailsUrl) {
@@ -188,9 +194,9 @@ export default Service.extend(I18n, {
           text: get(type, 'name'),
           bold: true,
         }, {
-          text: [
+          stack: [
             title,
-            { text: accessSection },
+            { stack: accessSection },
             { text: accessDetailsSection },
           ],
         }, {
@@ -255,9 +261,9 @@ export default Service.extend(I18n, {
         }, ..._.times(tableColsCount - 1, _.constant({}))]);
       }
       if (get(dataObjects, 'length')) {
-        tableBody.push(...dataObjects.map(dataObject =>
+        tableBody.push(...dataObjects.sortBy('year').map(dataObject =>
           dataObjectsRepresentation.get(get(dataObject, 'id'))
-        ).compact());
+        ).compact().map(dataObject => _.cloneDeep(dataObject)));
       }
 
       return {

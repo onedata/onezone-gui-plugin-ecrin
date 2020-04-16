@@ -8,6 +8,10 @@ export default {
     studyDescription: 'Description',
     studyDataSharingStatement: 'Data sharing statement',
     urlAccess: 'Access',
+    urlType: {
+      journalAbstract: 'Abstract',
+      journalArticle: 'Article',
+    },
     untitled: 'Untitled',
     loading: 'Loading...',
   },

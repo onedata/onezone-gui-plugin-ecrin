@@ -891,6 +891,7 @@
         {
           "id": 21,
           "name": "Journal article",
+          "isJournalArticle": true,
           "objectTypeIds": [
             12,
             100,
