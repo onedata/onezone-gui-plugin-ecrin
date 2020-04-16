@@ -33,6 +33,11 @@ export default Component.extend(I18n, {
   isFetchingData: false,
 
   /**
+   * @type {number}
+   */
+  latestSearchFittingStudiesCount: 0,
+
+  /**
    * @virtual
    * @type {number}
    */

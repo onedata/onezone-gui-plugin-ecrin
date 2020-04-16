@@ -1,4 +1,10 @@
 .query-results {
+  .results-alert {
+    flex-basis: 100%;
+    flex-grow: 1;
+    margin-top: 0;
+  }
+
   .studies-list-header {
     display: flex;
     flex-wrap: wrap;

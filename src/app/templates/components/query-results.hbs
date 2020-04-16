@@ -1,4 +1,9 @@
 <div class="studies-list-header clearfix">
+  {{#if (gt latestSearchFittingStudiesCount 1000)}}
+    {{#bs-alert type="warning" class="results-alert"}}
+      {{tt this "tooMuchResultsAlert" totalCount=latestSearchFittingStudiesCount}}
+    {{/bs-alert}}
+  {{/if}}
   <div class="results-counter">
     {{tt this "resultsCounter" totalCount=allStudiesCount filteredCount=studies.length}}
   </div>

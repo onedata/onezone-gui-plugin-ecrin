@@ -40,6 +40,11 @@ export default EmberObject.extend({
    */
   fetchDataPromiseObject: undefined,
 
+  /**
+   * @type {number}
+   */
+  latestSearchFittingStudiesCount: 0,
+
   init() {
     this._super(...arguments);
 
@@ -78,7 +83,8 @@ export default EmberObject.extend({
               return this.fetchViaInternalId(searchParams);
           }
         })
-        .then(results => this.loadStudiesFromResponse(results))
+        .then(results => this.loadStudiesFromResponse(results, mode !==
+          'viaInternalId'))
         .then(newStudies => this.loadDataObjectsForStudies(newStudies));
       return this.set('fetchDataPromiseObject', PromiseObject.create({ promise }));
     }
@@ -313,14 +319,21 @@ export default EmberObject.extend({
 
   /**
    * @param {Object} results 
+   * @param {boolean} [rememberFittingStudiesCount=true]
    * @returns {Promise<Array<Utils.Study>>}
    */
-  loadStudiesFromResponse(results) {
+  loadStudiesFromResponse(results, rememberFittingStudiesCount = true) {
     if (results) {
       const {
         dataStore,
         configuration,
       } = this.getProperties('dataStore', 'configuration');
+
+      const total = get(results, 'hits.total.value');
+      if (rememberFittingStudiesCount && typeof total === 'number') {
+        this.set('latestSearchFittingStudiesCount', total);
+      }
+
       const alreadyFetchedStudies = get(dataStore, 'studies');
       const alreadyFetchedStudiesIds = alreadyFetchedStudies.mapBy('id');
       const newStudies = (get(results, 'hits.hits') || [])
