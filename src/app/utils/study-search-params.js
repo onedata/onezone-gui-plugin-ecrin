@@ -17,6 +17,7 @@ const paramsList = [
   'studyTitleContains',
   'studyTopicsInclude',
   'studyTitleTopicOperator',
+  'paperSearchField',
   'doi',
   'dataObjectTitle',
   'internalStudyIds',
@@ -57,6 +58,14 @@ export default EmberObject.extend({
    * @virtual
    */
   studyTopicsInclude: '',
+
+  /**
+   * Only for mode === 'viaPubPaper'
+   * One of: 'doi', 'title'
+   * @type {string}
+   * @virtual
+   */
+  paperSearchField: 'doi',
 
   /**
    * Only for mode === 'viaPubPaper'
@@ -103,6 +112,7 @@ export default EmberObject.extend({
       studyId,
       studyTitleContains,
       studyTopicsInclude,
+      paperSearchField,
       doi,
       dataObjectTitle,
       internalStudyIds,
@@ -114,7 +124,7 @@ export default EmberObject.extend({
       case 'studyCharact':
         return Boolean(studyTitleContains || studyTopicsInclude);
       case 'viaPubPaper':
-        return Boolean(doi || dataObjectTitle);
+        return Boolean(paperSearchField === 'title' ? dataObjectTitle : doi);
       case 'viaInternalId':
         return Boolean(internalStudyIds && internalStudyIds.length);
       default:

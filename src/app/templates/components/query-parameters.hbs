@@ -48,17 +48,17 @@
         disabled={{isFetchingData}}>
     </div>
     <div class="form-group study-title-topic-operator-group">
-        <label class="control-label hidden-xs">&nbsp;</label>
-        {{#power-select
-          options=studyTitleTopicOperatorOptions
-          selected=studySearchParams.studyTitleTopicOperator
-          onchange=(action onChange "studyTitleTopicOperator")
-          searchEnabled=false
-          disabled=isFetchingData
-          as |studyTitleTopicOperator|}}
-          {{tt this (concat "studyTitleTopicOperatorOptions." studyTitleTopicOperator)}}
-        {{/power-select}}
-      </div>
+      <label class="control-label hidden-xs">&nbsp;</label>
+      {{#power-select
+        options=studyTitleTopicOperatorOptions
+        selected=studySearchParams.studyTitleTopicOperator
+        onchange=(action onChange "studyTitleTopicOperator")
+        searchEnabled=false
+        disabled=isFetchingData
+        as |studyTitleTopicOperator|}}
+        {{tt this (concat "studyTitleTopicOperatorOptions." studyTitleTopicOperator)}}
+      {{/power-select}}
+    </div>
     <div class="form-group study-topics-group">
       <label class="control-label" for="study-topics-include-input">{{tt this "studyTopicsInclude"}}</label>
       <input
@@ -71,28 +71,43 @@
         disabled={{isFetchingData}}>
     </div>
   {{else if (eq studySearchParams.mode "viaPubPaper")}}
-    <div class="form-group doi-group">
-      <label class="control-label" for="doi-input">{{tt this "doi"}}</label>
-      <input
-        id="doi-input"
-        class="form-control"
-        type="text"
-        value={{studySearchParams.doi}}
-        onkeydown={{invoke-on-enter onFind}}
-        oninput={{action (action onChange "doi") value="target.value"}}
-        disabled={{isFetchingData}}>
+   <div class="form-group paper-search-field-group">
+      <label class="control-label">{{tt this "paperSearchField"}}</label>
+      {{#power-select
+        options=(array "doi" "title")
+        selected=studySearchParams.paperSearchField
+        onchange=(action onChange "paperSearchField")
+        searchEnabled=false
+        disabled=isFetchingData
+        as |paperSearchField|}}
+        {{tt this (concat "paperSearchFieldsNames." paperSearchField)}}
+      {{/power-select}}
     </div>
-    <div class="form-group do-title-group">
-      <label class="control-label" for="data-object-title-input">{{tt this "dataObjectTitle"}}</label>
-      <input
-        id="data-object-title-input"
-        class="form-control"
-        type="text"
-        value={{studySearchParams.dataObjectTitle}}
-        onkeydown={{invoke-on-enter onFind}}
-        oninput={{action (action onChange "dataObjectTitle") value="target.value"}}
-        disabled={{isFetchingData}}>
-    </div>
+    {{#if (eq studySearchParams.paperSearchField "title")}}
+      <div class="form-group do-title-group">
+        <label class="control-label" for="data-object-title-input">{{tt this "paperSearchFieldsNames.title"}}</label>
+        <input
+          id="data-object-title-input"
+          class="form-control"
+          type="text"
+          value={{studySearchParams.dataObjectTitle}}
+          onkeydown={{invoke-on-enter onFind}}
+          oninput={{action (action onChange "dataObjectTitle") value="target.value"}}
+          disabled={{isFetchingData}}>
+      </div>
+    {{else}}
+      <div class="form-group doi-group">
+        <label class="control-label" for="doi-input">{{tt this "paperSearchFieldsNames.doi"}}</label>
+        <input
+          id="doi-input"
+          class="form-control"
+          type="text"
+          value={{studySearchParams.doi}}
+          onkeydown={{invoke-on-enter onFind}}
+          oninput={{action (action onChange "doi") value="target.value"}}
+          disabled={{isFetchingData}}>
+      </div>
+    {{/if}}
   {{/if}}
 </div>
 {{#bs-dropdown class="find-button-group" as |dd|}}

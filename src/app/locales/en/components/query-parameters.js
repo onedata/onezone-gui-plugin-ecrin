@@ -4,10 +4,13 @@ export default {
   studyId: 'Study ID',
   studyTitleContains: 'Title contains',
   studyTopicsInclude: 'Topics include',
-  doi: 'DOI',
-  dataObjectTitle: 'Title',
+  paperSearchField: 'Search paper by',
   find: 'Find',
   findAndAdd: 'Find and add to existing results',
+  paperSearchFieldsNames: {
+    doi: 'DOI',
+    title: 'Title',
+  },
   studyTitleTopicOperatorOptions: {
     and: 'AND',
     or: 'OR',

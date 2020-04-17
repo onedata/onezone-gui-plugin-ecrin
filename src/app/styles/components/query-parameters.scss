@@ -21,7 +21,8 @@
 
     .mode-group,
     .study-id-type-group,
-    .study-title-topic-operator-group {
+    .study-title-topic-operator-group,
+    .paper-search-field-group {
       flex-grow: 0;
       flex-shrink: 0;
     }
@@ -36,6 +37,10 @@
 
     .study-title-topic-operator-group {
       flex-basis: 100px;
+    }
+
+    .paper-search-field-group {
+      flex-basis: 150px;
     }
   }
 

@@ -254,6 +254,7 @@ label {
 
       .modal-content {
         display: flex;
+        flex-grow: 1;
         flex-direction: column;
         box-shadow: none;
         padding: 0em 2em 1em 2em;

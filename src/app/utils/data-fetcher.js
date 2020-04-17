@@ -254,16 +254,17 @@ export default EmberObject.extend({
       },
     };
     const {
+      paperSearchField,
       doi,
       dataObjectTitle,
-    } = getProperties(searchParams, 'doi', 'dataObjectTitle');
-    if (doi) {
+    } = getProperties(searchParams, 'paperSearchField', 'doi', 'dataObjectTitle');
+    if (paperSearchField === 'doi' && doi) {
       filters.push({
         term: {
           doi: doi,
         },
       });
-    } else if (dataObjectTitle) {
+    } else if (paperSearchField === 'title' && dataObjectTitle) {
       filters.push({
         bool: {
           should: [{
