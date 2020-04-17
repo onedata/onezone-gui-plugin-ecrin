@@ -25,4 +25,10 @@ export default {
   observationalStudiesFilters: 'Observational studies filters',
   clearStudyFilters: 'Reset study filters',
   clearDataObjectFilters: 'Reset data object filters',
+  help: {
+    header: {
+      dataObjectFilterType: 'Object types and filters',
+    },
+  },
+  closeHelpModal: 'Close',
 };

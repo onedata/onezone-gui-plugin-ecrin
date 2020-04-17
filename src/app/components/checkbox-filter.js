@@ -37,6 +37,13 @@ export default Component.extend(I18n, {
   onChange: notImplementedIgnore,
 
   /**
+   * @virtual optional
+   * @type {Function}
+   * @returns {any}
+   */
+  onShowHelp: undefined,
+
+  /**
    * @virtual
    * @type {ComputedProperty<Array<{ name: string }>>}
    */

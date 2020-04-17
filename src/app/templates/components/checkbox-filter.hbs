@@ -2,6 +2,11 @@
   <a {{action "toggleAllItems"}} class={{if disabled "disabled"}}>
     {{tt this (if areAllItemsSelected "deselectAll" "selectAll")}}
   </a>
+  {{#if onShowHelp}}
+    <a {{action onShowHelp}}>
+      {{tt this "helpTrigger"}}
+    </a>
+  {{/if}}
 </div>
 <ul class="items-list">
   {{#each items as |item index|}}

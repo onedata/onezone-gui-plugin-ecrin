@@ -10,6 +10,7 @@
 import Component from '@ember/component';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { inject as service } from '@ember/service';
+import { observer } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { array, raw } from 'ember-awesome-macros';
 import _ from 'lodash';
@@ -30,6 +31,10 @@ dataObjectCategorizedFilters.forEach(filterName => {
   filtersFields[`dataObject${upperFirstFilterName}Filter`] =
     reads(`configuration.dataObject${upperFirstFilterName}Mapping`);
 });
+
+const helpContentComponents = {
+  dataObjectFilterType: 'filters-help/data-object-filter-type',
+};
 
 export default Component.extend(I18n, filtersFields, {
   classNames: ['data-filters', 'clearfix'],
@@ -97,7 +102,7 @@ export default Component.extend(I18n, filtersFields, {
   dataObjectFilters: undefined,
 
   /**
-   * @type {study}
+   * @type {String}
    */
   filtersModel: 'study',
 
@@ -110,6 +115,16 @@ export default Component.extend(I18n, filtersFields, {
    * @type {Array<Object>}
    */
   dataObjectPublisherFilter: undefined,
+
+  /**
+   * @type {String}
+   */
+  visibleHelp: undefined,
+
+  /**
+   * @type {String}
+   */
+  visibleHelpContentComponent: undefined,
 
   /**
    * @type {ComputedProperty<boolean>}
@@ -126,6 +141,14 @@ export default Component.extend(I18n, filtersFields, {
     'studyTypeFilter',
     raw('isObservational')
   ),
+
+  visibleHelpObserver: observer('visibleHelp', function visibleHelpObserver() {
+    const visibleHelp = this.get('visibleHelp');
+
+    if (visibleHelp) {
+      this.set('visibleHelpContentComponent', helpContentComponents[visibleHelp]);
+    }
+  }),
 
   actions: {
     studyFiltersChanged(filterName, value) {

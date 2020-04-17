@@ -139,6 +139,7 @@
         selectedItems=dataObjectFilters.filterType
         disabled=isFetchingData
         onChange=(action "dataObjectFiltersChanged" "filterType")
+        onShowHelp=(action (mut visibleHelp) "dataObjectFilterType")
       }}
     {{/filter-collapse}}
     {{#filter-collapse label=(tt this "dataObjectFilters.accessType")}}
@@ -179,4 +180,26 @@
 }}
   {{tt this (if (eq filtersModel "study") "clearStudyFilters" "clearDataObjectFilters")}}
 {{/bs-button}}
+{{#bs-modal
+  open=visibleHelp
+  onHidden=(action (mut visibleHelp) undefined)
+  size="lg"
+  as |modal|}}
+  {{#modal.header}}
+    <h1>{{tt this (concat "help.header." visibleHelp)}}</h1>
+  {{/modal.header}}
+  {{#modal.body}}
+    {{#if visibleHelpContentComponent}}
+      {{component visibleHelpContentComponent}}
+    {{/if}}
+  {{/modal.body}}
+  {{#modal.footer}}
+    {{#bs-button
+      type="default"
+      onClick=modal.close
+    }}
+      {{tt this "closeHelpModal"}}
+    {{/bs-button}}
+  {{/modal.footer}}
+{{/bs-modal}}
 {{yield}}

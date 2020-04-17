@@ -1,6 +1,8 @@
 .checkbox-filter {
   .top-bar {
     display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
     white-space: nowrap;
     align-items: center;
     margin-bottom: $padding-base-vertical;
