@@ -16,21 +16,28 @@
     onResetStudyFilters=(action "resetStudyFilters")
     onResetDataObjectFilters=(action "resetDataObjectFilters")
   }}
-  {{#query-results
-    isFetchingData=isFetchingData
-    latestSearchFittingStudiesCount=dataFetcher.latestSearchFittingStudiesCount
-    allStudiesCount=dataStore.studies.length
-    studies=dataStore.filteredStudies
-    selectedDataObjects=dataStore.filteredDataObjects
-    removeStudy=(action "removeStudy")
-    removeAllStudies=(action "removeAllStudies")
-    saveResults=(action "saveResults")
-    loadSavedResultsList=(action "loadSavedResultsList")
-    loadSavedResults=(action "loadSavedResults")
-    removeSavedResults=(action "removeSavedResults")
-    exportResultsToPdf=(action "exportResultsToPdf")
-  }}
-    {{promise-proxy-container proxy=dataFetcher.fetchDataPromiseObject isLoading=false}}
-  {{/query-results}}
+  <div class="query-results-container">
+    {{filters-summary
+      activeStudyFilters=dataStore.studyFilters
+      activeDataObjectFilters=dataStore.dataObjectFilters
+      cleanStudyFilters=dataStore.cleanStudyFilters
+      cleanDataObjectFilters=dataStore.cleanDataObjectFilters}}
+    {{#query-results
+      isFetchingData=isFetchingData
+      latestSearchFittingStudiesCount=dataFetcher.latestSearchFittingStudiesCount
+      allStudiesCount=dataStore.studies.length
+      studies=dataStore.filteredStudies
+      selectedDataObjects=dataStore.filteredDataObjects
+      removeStudy=(action "removeStudy")
+      removeAllStudies=(action "removeAllStudies")
+      saveResults=(action "saveResults")
+      loadSavedResultsList=(action "loadSavedResultsList")
+      loadSavedResults=(action "loadSavedResults")
+      removeSavedResults=(action "removeSavedResults")
+      exportResultsToPdf=(action "exportResultsToPdf")
+    }}
+      {{promise-proxy-container proxy=dataFetcher.fetchDataPromiseObject isLoading=false}}
+    {{/query-results}}
+  </div>
 </div>
 {{yield}}

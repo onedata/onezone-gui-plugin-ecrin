@@ -29,7 +29,7 @@
 </div>
 <div class="filters-container">
   <div class={{if (not-eq filtersModel "study") "hidden"}}>
-    {{#filter-collapse label=(tt this "studyType")}}
+    {{#filter-collapse label=(tt this "studyFilters.type")}}
       {{checkbox-filter
         items=configuration.studyTypeMapping
         selectedItems=studyFilters.type
@@ -37,7 +37,7 @@
         onChange=(action "studyFiltersChanged" "type")
       }}
     {{/filter-collapse}}
-    {{#filter-collapse label=(tt this "studyStatus")}}
+    {{#filter-collapse label=(tt this "studyFilters.status")}}
       {{checkbox-filter
         items=configuration.studyStatusMapping
         selectedItems=studyFilters.status
@@ -45,7 +45,7 @@
         onChange=(action "studyFiltersChanged" "status")
       }}
     {{/filter-collapse}}
-    {{#filter-collapse label=(tt this "studyGenderEligibility")}}
+    {{#filter-collapse label=(tt this "studyFilters.genderEligibility")}}
       {{checkbox-filter
         items=configuration.studyGenderEligibilityMapping
         selectedItems=studyFilters.genderEligibility
@@ -57,7 +57,7 @@
       <div class="panel panel-default interventional-only-filters">
         <div class="panel-heading">{{tt this "interventionalStudiesFilters"}}</div>
         <div class="panel-body">
-          {{#filter-collapse label=(tt this "studyPhase")}}
+          {{#filter-collapse label=(tt this "studyFilters.phase")}}
             {{checkbox-filter
               items=configuration.studyPhaseMapping
               selectedItems=studyFilters.phase
@@ -65,7 +65,7 @@
               onChange=(action "studyFiltersChanged" "phase")
             }}
           {{/filter-collapse}}
-          {{#filter-collapse label=(tt this "studyInterventionModel")}}
+          {{#filter-collapse label=(tt this "studyFilters.interventionModel")}}
             {{checkbox-filter
               items=configuration.studyInterventionModelMapping
               selectedItems=studyFilters.interventionModel
@@ -73,7 +73,7 @@
               onChange=(action "studyFiltersChanged" "interventionModel")
             }}
           {{/filter-collapse}}
-          {{#filter-collapse label=(tt this "studyAllocationType")}}
+          {{#filter-collapse label=(tt this "studyFilters.allocationType")}}
             {{checkbox-filter
               items=configuration.studyAllocationTypeMapping
               selectedItems=studyFilters.allocationType
@@ -81,7 +81,7 @@
               onChange=(action "studyFiltersChanged" "allocationType")
             }}
           {{/filter-collapse}}
-          {{#filter-collapse label=(tt this "studyPrimaryPurpose")}}
+          {{#filter-collapse label=(tt this "studyFilters.primaryPurpose")}}
             {{checkbox-filter
               items=configuration.studyPrimaryPurposeMapping
               selectedItems=studyFilters.primaryPurpose
@@ -89,7 +89,7 @@
               onChange=(action "studyFiltersChanged" "primaryPurpose")
             }}
           {{/filter-collapse}}
-          {{#filter-collapse label=(tt this "studyMasking")}}
+          {{#filter-collapse label=(tt this "studyFilters.masking")}}
             {{checkbox-filter
               items=configuration.studyMaskingMapping
               selectedItems=studyFilters.masking
@@ -104,7 +104,7 @@
       <div class="panel panel-default observational-only-filters">
         <div class="panel-heading">{{tt this "observationalStudiesFilters"}}</div>
         <div class="panel-body">
-          {{#filter-collapse label=(tt this "studyObservationalModel")}}
+          {{#filter-collapse label=(tt this "studyFilters.observationalModel")}}
             {{checkbox-filter
               items=configuration.studyObservationalModelMapping
               selectedItems=studyFilters.observationalModel
@@ -112,7 +112,7 @@
               onChange=(action "studyFiltersChanged" "observationalModel")
             }}
           {{/filter-collapse}}
-          {{#filter-collapse label=(tt this "studyTimePerspective")}}
+          {{#filter-collapse label=(tt this "studyFilters.timePerspective")}}
             {{checkbox-filter
               items=configuration.studyTimePerspectiveMapping
               selectedItems=studyFilters.timePerspective
@@ -120,7 +120,7 @@
               onChange=(action "studyFiltersChanged" "timePerspective")
             }}
           {{/filter-collapse}}
-          {{#filter-collapse label=(tt this "studyBiospecimensRetained")}}
+          {{#filter-collapse label=(tt this "studyFilters.biospecimensRetained")}}
             {{checkbox-filter
               items=configuration.studyBiospecimensRetainedMapping
               selectedItems=studyFilters.biospecimensRetained
@@ -133,7 +133,7 @@
     {{/if}}
   </div>
   <div class={{if (not-eq filtersModel "dataObject") "hidden"}}>
-    {{#filter-collapse label=(tt this "dataObjectType")}}
+    {{#filter-collapse label=(tt this "dataObjectFilters.filterType")}}
       {{checkbox-filter
         items=configuration.dataObjectFilterTypeMapping
         selectedItems=dataObjectFilters.filterType
@@ -141,7 +141,7 @@
         onChange=(action "dataObjectFiltersChanged" "filterType")
       }}
     {{/filter-collapse}}
-    {{#filter-collapse label=(tt this "dataObjectAccessType")}}
+    {{#filter-collapse label=(tt this "dataObjectFilters.accessType")}}
       {{checkbox-filter
         items=configuration.dataObjectAccessTypeMapping
         selectedItems=dataObjectFilters.accessType
@@ -149,7 +149,7 @@
         onChange=(action "dataObjectFiltersChanged" "accessType")
       }}
     {{/filter-collapse}}
-    {{#filter-collapse label=(tt this "dataObjectYear") class="form-group-sm"}}
+    {{#filter-collapse label=(tt this "dataObjectFilters.year") class="form-group-sm"}}
       <input
         id="year-filter-input"
         class="form-control"
@@ -159,7 +159,7 @@
         disabled={{isFetchingData}}
       >
     {{/filter-collapse}}
-    {{#filter-collapse label=(tt this "dataObjectPublisher")}}
+    {{#filter-collapse label=(tt this "dataObjectFilters.publisher")}}
       {{checkbox-filter
         items=dataObjectPublisherMapping
         selectedItems=dataObjectFilters.publisher

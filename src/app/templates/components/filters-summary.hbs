@@ -1,0 +1,12 @@
+{{#if badges.length}}
+  <ul class="filter-badges-list">
+    <li class="badges-list-label semibold">{{tt this "activeFilters"}}</li>
+    {{#each badges as |badge|}}
+      <li class="filter-badge">
+        <span class="model-name">{{tt this badge.modelName}}</span>
+        <span class="filter">{{tt this (concat badge.modelName "Filters." badge.filterName)}}{{#if badge.state}}: {{badge.state}}{{/if}}</span>
+      </li>
+    {{/each}}
+  </ul>
+{{/if}}
+{{yield}}

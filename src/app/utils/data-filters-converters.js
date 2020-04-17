@@ -20,6 +20,14 @@ export const studyCategorizedFilters = [
   'biospecimensRetained',
 ];
 
+export function getCleanDataObjectFilters(configuration, publisherMapping) {
+  return dataObjectFiltersFromSaved(null, configuration, publisherMapping);
+}
+
+export function getCleanStudyFilters(configuration) {
+  return studyFiltersFromSaved(null, configuration);
+}
+
 export function dataObjectFiltersToSave(filters) {
   filters = filters || {};
 

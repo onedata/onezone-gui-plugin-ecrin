@@ -9,8 +9,8 @@
 
 import EmberObject, { computed, observer, get, getProperties } from '@ember/object';
 import {
-  studyFiltersFromSaved,
-  dataObjectFiltersFromSaved,
+  getCleanStudyFilters,
+  getCleanDataObjectFilters,
 } from 'onezone-gui-plugin-ecrin/utils/data-filters-converters';
 import _ from 'lodash';
 import stringToRanges from 'onezone-gui-plugin-ecrin/utils/string-to-ranges';
@@ -52,6 +52,21 @@ export default EmberObject.extend({
    * Previous value of dataObjectPublisherMapping
    */
   prevDataObjectPublisherMapping: undefined,
+
+  /**
+   * @type {Object}
+   */
+  cleanStudyFilters: undefined,
+
+  /**
+   * @type {Object}
+   */
+  cleanDataObjectFilters: computed(
+    'dataObjectPublisherMapping',
+    function cleanDataObjectFilters() {
+      return this.getCleanDataObjectFilters();
+    }
+  ),
 
   /**
    * Studies with at least one data object selected
@@ -260,10 +275,10 @@ export default EmberObject.extend({
       'dataObjectPublisherMapping'
     );
 
-    this.set(
-      'prevDataObjectPublisherMapping',
-      (dataObjectPublisherMapping || []).slice()
-    );
+    this.setProperties({
+      prevDataObjectPublisherMapping: (dataObjectPublisherMapping || []).slice(),
+      cleanStudyFilters: this.getCleanStudyFilters(),
+    });
 
     if (!studyFilters) {
       this.resetStudyFilters();
@@ -282,19 +297,24 @@ export default EmberObject.extend({
   },
 
   resetStudyFilters() {
-    this.set('studyFilters', studyFiltersFromSaved(null, this.get('configuration')));
+    this.set('studyFilters', this.getCleanStudyFilters());
   },
 
   resetDataObjectFilters() {
+    this.set('dataObjectFilters', this.getCleanDataObjectFilters());
+  },
+
+  getCleanStudyFilters() {
+    return getCleanStudyFilters(this.get('configuration'));
+  },
+
+  getCleanDataObjectFilters() {
     const {
       configuration,
       dataObjectPublisherMapping,
     } = this.getProperties('configuration', 'dataObjectPublisherMapping');
 
-    this.set(
-      'dataObjectFilters',
-      dataObjectFiltersFromSaved(null, configuration, dataObjectPublisherMapping)
-    );
+    return getCleanDataObjectFilters(configuration, dataObjectPublisherMapping);
   },
 
   removeStudies(studiesToRemove) {

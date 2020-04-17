@@ -2,6 +2,7 @@ import applicationContainer from './components/application-container';
 import checkboxFilter from './components/checkbox-filter';
 import contentDisclaimer from './components/content-disclaimer';
 import dataFilters from './components/data-filters';
+import filtersSummary from './components/filters-summary';
 import loadDialog from './components/load-dialog';
 import pageFooter from './components/page-footer';
 import pageHeader from './components/page-header';
@@ -20,6 +21,7 @@ export default {
     checkboxFilter,
     contentDisclaimer,
     dataFilters,
+    filtersSummary,
     loadDialog,
     pageFooter,
     pageHeader,
