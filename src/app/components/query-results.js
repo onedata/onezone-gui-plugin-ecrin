@@ -15,6 +15,7 @@ import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 import notImplementedReject from 'onezone-gui-plugin-ecrin/utils/not-implemented-reject';
 import pagedArray from 'ember-cli-pagination/computed/paged-array';
+import { next } from '@ember/runloop';
 
 export default Component.extend(I18n, {
   classNames: ['query-results'],
@@ -109,6 +110,11 @@ export default Component.extend(I18n, {
   studiesPerPage: 10,
 
   /**
+   * @type {boolean}
+   */
+  isExportingToPdf: false,
+
+  /**
    * @type {ComputedProperty<number>}
    */
   allStudiesCount: reads('dataStore.studies.length'),
@@ -162,6 +168,15 @@ export default Component.extend(I18n, {
         .then(() => safeExec(this, () => {
           this.set('isSaveDialogOpened', false);
         }));
+    },
+    exportResultsToPdf() {
+      this.set('isExportingToPdf', true);
+      // PDF generation is so CPU-heavy that sometimes browser does not rerender view
+      // immediately and new isExportingToPdf value is not visible. Hence usage of next().
+      next(() => {
+        this.get('exportResultsToPdf')()
+          .finally(() => safeExec(this, () => this.set('isExportingToPdf', false)));
+      });
     },
   },
 });

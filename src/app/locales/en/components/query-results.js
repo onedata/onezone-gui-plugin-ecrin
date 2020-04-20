@@ -5,6 +5,7 @@ export default {
   load: 'Load...',
   save: 'Save...',
   exportToPdf: 'Export to pdf',
+  exportingToPdf: 'Exporting to pdf...',
   clear: 'Clear results',
   studyRecord: {
     studyDescription: 'Description',

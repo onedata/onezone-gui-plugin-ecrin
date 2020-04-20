@@ -33,10 +33,10 @@
       {{#bs-button
         type="default"
         size="sm"
-        onClick=exportResultsToPdf
-        disabled=isFetchingData
+        onClick=(action "exportResultsToPdf")
+        disabled=(or isFetchingData isExportingToPdf)
       }}
-        {{tt this "exportToPdf"}}
+        {{tt this (if isExportingToPdf "exportingToPdf" "exportToPdf")}}
       {{/bs-button}}
       {{#bs-button
         type="danger"

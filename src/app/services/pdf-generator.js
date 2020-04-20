@@ -128,7 +128,7 @@ export default Service.extend(I18n, {
             },
           },
         };
-        pdfMake.createPdf(docDefinition).open();
+        return pdfMake.createPdf(docDefinition).download();
       });
   },
 
