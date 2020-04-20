@@ -267,6 +267,11 @@ export default EmberObject.extend({
     } else if (paperSearchField === 'title' && dataObjectTitle) {
       filters.push({
         bool: {
+          filter: [{
+            term: {
+              'object_type.id': 12,
+            },
+          }],
           should: [{
             simple_query_string: {
               query: dataObjectTitle,
@@ -285,6 +290,7 @@ export default EmberObject.extend({
               },
             },
           }],
+          minimum_should_match: 1,
         },
       });
     } else {

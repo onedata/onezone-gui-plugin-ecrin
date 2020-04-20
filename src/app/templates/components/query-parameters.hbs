@@ -102,6 +102,7 @@
           id="doi-input"
           class="form-control"
           type="text"
+          placeholder={{tt this "doiPlaceholder"}}
           value={{studySearchParams.doi}}
           onkeydown={{invoke-on-enter onFind}}
           oninput={{action (action onChange "doi") value="target.value"}}

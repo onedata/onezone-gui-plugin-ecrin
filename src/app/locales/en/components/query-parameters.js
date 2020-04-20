@@ -11,6 +11,7 @@ export default {
     doi: 'DOI',
     title: 'Title',
   },
+  doiPlaceholder: 'Example: 10.1002/j.1879-3479.1976.tb12345.x',
   studyTitleTopicOperatorOptions: {
     and: 'AND',
     or: 'OR',

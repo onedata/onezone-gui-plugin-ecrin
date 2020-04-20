@@ -32,12 +32,9 @@
     margin-bottom: $padding-small-vertical;
   }
 
-  .data-row .panel-heading:hover {
-    background-color: darken($panel-default-heading-bg, 5%);
-  }
-
   .panel-heading {
     padding: $padding-base-vertical 100px $padding-base-vertical $padding-base-horizontal;
+    cursor: pointer;
     a:hover {
       color: $main-text-color;
     }
