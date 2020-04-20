@@ -39,6 +39,12 @@ export default Component.extend(I18n, {
   studySearchParams: undefined,
 
   /**
+   * @virtual optional
+   * @type {boolean}
+   */
+  isStackingBlocked: false,
+
+  /**
    * @virtual
    * @type {Function}
    * @param {string} fieldName

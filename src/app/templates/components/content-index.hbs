@@ -1,6 +1,7 @@
 {{query-parameters
   isFetchingData=isFetchingData
   studySearchParams=studySearchParams
+  isStackingBlocked=dataStore.isStudiesLimitReached
   onChange=(action "parameterChanged")
   onFind=(action "find" false)
   onFindWithStacking=(action "find" true)
@@ -25,9 +26,7 @@
     {{#query-results
       isFetchingData=isFetchingData
       latestSearchFittingStudiesCount=dataFetcher.latestSearchFittingStudiesCount
-      allStudiesCount=dataStore.studies.length
-      studies=dataStore.filteredStudies
-      selectedDataObjects=dataStore.filteredDataObjects
+      dataStore=dataStore
       removeStudy=(action "removeStudy")
       removeAllStudies=(action "removeAllStudies")
       saveResults=(action "saveResults")

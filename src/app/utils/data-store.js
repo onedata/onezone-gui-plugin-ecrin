@@ -14,6 +14,7 @@ import {
 } from 'onezone-gui-plugin-ecrin/utils/data-filters-converters';
 import _ from 'lodash';
 import stringToRanges from 'onezone-gui-plugin-ecrin/utils/string-to-ranges';
+import { gte } from 'ember-awesome-macros';
 
 export default EmberObject.extend({
   /**
@@ -57,6 +58,11 @@ export default EmberObject.extend({
    * @type {Object}
    */
   cleanStudyFilters: undefined,
+
+  /**
+   * @type {number}
+   */
+  studiesLimit: 3000,
 
   /**
    * @type {Object}
@@ -124,6 +130,11 @@ export default EmberObject.extend({
       return filteredStudies;
     }
   ),
+
+  /**
+   * @type {ComputedProperty<boolean>}
+   */
+  isStudiesLimitReached: gte('studies.length', 'studiesLimit'),
 
   /**
    * @type {ComputedProperty<Array<Utils.DataObject>>}

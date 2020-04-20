@@ -128,7 +128,7 @@
   {{/dd.button}}
   {{#dd.menu align="right" as |ddm|}}
     {{#ddm.item}}
-      <a {{action (if isFetchingData noop onFindWithStacking)}}>
+      <a class={{if (or isStackingBlocked isFetchingData) "disabled"}} {{action onFindWithStacking}}>
         {{tt this "findAndAdd"}}
       </a>
     {{/ddm.item}}

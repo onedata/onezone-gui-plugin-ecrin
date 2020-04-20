@@ -106,7 +106,7 @@ export default EmberObject.extend({
       'studyId'
     );
 
-    queryBody.size = 1000;
+    queryBody.size = this.getStudiesLimit();
     queryBody.query = {
       bool: {
         filter: [{
@@ -141,7 +141,7 @@ export default EmberObject.extend({
    */
   fetchStudyCharact(searchParams) {
     const queryBody = this.constructQueryBodyBase('study');
-    queryBody.size = 1000;
+    queryBody.size = this.getStudiesLimit();
     queryBody.query = {
       bool: {
         must_not: this.generateExcludeFetchedStudiesClause(),
@@ -218,7 +218,7 @@ export default EmberObject.extend({
       .then(studyIds => {
         if (studyIds.length) {
           const queryBody = this.constructQueryBodyBase('study');
-          queryBody.size = 1000;
+          queryBody.size = this.getStudiesLimit();
           queryBody.query = {
             bool: {
               filter: [{
@@ -461,6 +461,13 @@ export default EmberObject.extend({
     return {
       _source,
     };
+  },
+
+  getStudiesLimit() {
+    return Math.max(0, Math.min(
+      1000,
+      this.get('dataStore.studiesLimit') - this.get('dataStore.studies.length')
+    ));
   },
 
   generateExcludeFetchedStudiesClause() {

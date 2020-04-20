@@ -4,6 +4,11 @@
       {{tt this "tooMuchResultsAlert" totalCount=latestSearchFittingStudiesCount}}
     {{/bs-alert}}
   {{/if}}
+  {{#if isStudiesLimitReached}}
+    {{#bs-alert type="warning" class="results-alert"}}
+      {{tt this "resultsLimitReachedAlert"}}
+    {{/bs-alert}}
+  {{/if}}
   <div class="results-counter">
     {{tt this "resultsCounter" totalCount=allStudiesCount filteredCount=studies.length}}
   </div>

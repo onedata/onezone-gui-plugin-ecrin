@@ -8,11 +8,10 @@
  */
 
 import Component from '@ember/component';
-import { getProperties, computed, observer } from '@ember/object';
+import { getProperties, observer } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
-import { A } from '@ember/array';
 import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 import notImplementedReject from 'onezone-gui-plugin-ecrin/utils/not-implemented-reject';
 import pagedArray from 'ember-cli-pagination/computed/paged-array';
@@ -38,22 +37,9 @@ export default Component.extend(I18n, {
   latestSearchFittingStudiesCount: 0,
 
   /**
-   * @virtual
-   * @type {number}
+   * @type {Utils.DataStore}
    */
-  allStudiesCount: 0,
-
-  /**
-   * @virtual
-   * @type {Array<Utils.Study>}
-   */
-  studies: computed(() => A()),
-
-  /**
-   * @virtual
-   * @type {Array<Utils.DataObject>}
-   */
-  selectedDataObjects: computed(() => A()),
+  dataStore: undefined,
 
   /**
    * @virtual
@@ -121,6 +107,26 @@ export default Component.extend(I18n, {
    * @type {number}
    */
   studiesPerPage: 10,
+
+  /**
+   * @type {ComputedProperty<number>}
+   */
+  allStudiesCount: reads('dataStore.studies.length'),
+
+  /**
+   * @type {ComputedProperty<boolean>}
+   */
+  isStudiesLimitReached: reads('dataStore.isStudiesLimitReached'),
+
+  /**
+   * @type {ComputedProperty<Array<Utils.Study>>}
+   */
+  studies: reads('dataStore.filteredStudies'),
+
+  /**
+   * @type {ComputedProperty<Array<Utils.DataObject>>}
+   */
+  selectedDataObjects: reads('dataStore.filteredDataObjects'),
 
   /**
    * @type {PagedArray<Util.Study>}
