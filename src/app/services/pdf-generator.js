@@ -128,7 +128,7 @@ export default Service.extend(I18n, {
             },
           },
         };
-        return pdfMake.createPdf(docDefinition).download();
+        return pdfMake.createPdf(docDefinition).download('mdr-results-snapshot.pdf');
       });
   },
 

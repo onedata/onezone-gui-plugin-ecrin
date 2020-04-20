@@ -7,7 +7,8 @@
     display: initial;
     margin: 0;
 
-    a {
+    // ember-cli-pagination styles also use these ugly-generic selectors
+    a, span {
       padding: ($padding-small-vertical + 1) $padding-small-horizontal;
     }
 

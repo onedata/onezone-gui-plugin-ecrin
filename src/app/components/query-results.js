@@ -105,11 +105,6 @@ export default Component.extend(I18n, {
   isLoadDialogOpened: false,
 
   /**
-   * @type {number}
-   */
-  studiesPerPage: 10,
-
-  /**
    * @type {boolean}
    */
   isExportingToPdf: false,
@@ -138,12 +133,15 @@ export default Component.extend(I18n, {
    * @type {PagedArray<Util.Study>}
    */
   pagedStudies: pagedArray('studies', {
-    perPage: reads('parent.studiesPerPage'),
+    perPage: 10,
   }),
 
-  studiesPerPageObserver: observer('studiesPerPage', function studiesPerPageObserver() {
-    this.set('pagedStudies.page', 1);
-  }),
+  studiesPerPageObserver: observer(
+    'pagedStudies.perPage',
+    function studiesPerPageObserver() {
+      this.set('pagedStudies.page', 1);
+    }
+  ),
 
   studiesNumberObserver: observer('studies.length', function studiesNumberObserver() {
     const {

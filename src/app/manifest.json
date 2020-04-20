@@ -231,7 +231,7 @@
           "useForUnknown": true
         }
       ],
-      "studyTopicTypeMapping": [
+      "studyFeatureTypeMapping": [
         {
           "id": 11,
           "name": "keywords"
@@ -263,42 +263,42 @@
         {
           "id": 20,
           "name": "phase",
-          "isPhaseTopicType": true
+          "isPhaseFeatureType": true
         },
         {
           "id": 21,
           "name": "primary purpose",
-          "isPrimaryPurposeTopicType": true
+          "isPrimaryPurposeFeatureType": true
         },
         {
           "id": 22,
           "name": "allocation type",
-          "isAllocationTypeTopicType": true
+          "isAllocationTypeFeatureType": true
         },
         {
           "id": 23,
           "name": "intervention model",
-          "isInterventionModelTopicType": true
+          "isInterventionModelFeatureType": true
         },
         {
           "id": 24,
           "name": "masking",
-          "isMaskingTopicType": true
+          "isMaskingFeatureType": true
         },
         {
           "id": 30,
           "name": "observational model",
-          "isObservationalModelTopicType": true
+          "isObservationalModelFeatureType": true
         },
         {
           "id": 31,
           "name": "time perspective",
-          "isTimePerspectiveTopicType": true
+          "isTimePerspectiveFeatureType": true
         },
         {
           "id": 32,
           "name": "biospecimens retained",
-          "isBiospecimensRetainedTopicType": true
+          "isBiospecimensRetainedFeatureType": true
         },
         {
           "id": 41,

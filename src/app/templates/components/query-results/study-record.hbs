@@ -9,7 +9,7 @@
   {{/if}}
   <li class="result-action remove-action {{if isFetchingData "disabled"}}" {{action "remove"}}>{{one-icon icon="x"}}</li>
 </ul>
-{{#bs-collapse class="panel-body" collapsed=(not study.isRecordExpanded)}}
+{{#bs-collapse class="panel-body" collapsed=(not study.isRecordExpanded) transitionDuration=0}}
   <div class="data-object-records">
     {{#if study.description}}
       {{#query-results/data-object-record

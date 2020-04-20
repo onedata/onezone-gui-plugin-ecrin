@@ -8,13 +8,40 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
-import EmberObject, { get, getProperties, set } from '@ember/object';
+import EmberObject, { get, getProperties, set, computed } from '@ember/object';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
 import { resolve } from 'rsvp';
 import { isBlank } from '@ember/utils';
 import Study from 'onezone-gui-plugin-ecrin/utils/study';
-import DataObject from 'onezone-gui-plugin-ecrin/utils/data-object';
 import _ from 'lodash';
+import isUrl from 'is-url';
+
+const studyCategorizedFields = [{
+  fieldName: 'type',
+  rawFieldName: 'study_type',
+}, {
+  fieldName: 'status',
+  rawFieldName: 'study_status',
+}, {
+  fieldName: 'genderEligibility',
+  rawFieldName: 'study_gender_elig',
+}];
+
+const studyFeatureTypeNames = [
+  'phase',
+  'interventionModel',
+  'allocationType',
+  'primaryPurpose',
+  'masking',
+  'observationalModel',
+  'timePerspective',
+  'biospecimensRetained',
+];
+
+const dataObjectCategorizedFields = [{
+  fieldName: 'accessType',
+  rawFieldName: 'access_type',
+}];
 
 export default EmberObject.extend({
   /**
@@ -45,10 +72,79 @@ export default EmberObject.extend({
    */
   latestSearchFittingStudiesCount: 0,
 
+  studyInstanceCreatorData: computed(
+    function studyInstanceCreatorData() {
+      const studyFeatureTypeMapping = this.get(
+        'configuration.studyFeatureTypeMapping');
+      const creatorData = {};
+      [
+        ...studyCategorizedFields,
+        ...studyFeatureTypeNames.map(name => ({ fieldName: name })),
+      ].forEach(({ fieldName }) => {
+        creatorData[fieldName] = {
+          valuesMap: this.get(
+            `configuration.study${_.upperFirst(fieldName)}Map`
+          ),
+          unknownValue: this.get(
+            `configuration.study${_.upperFirst(fieldName)}UnknownValue`
+          ),
+        };
+      });
+
+      creatorData.featureNameToFeatureId = new Map(
+        studyFeatureTypeNames.map(featureName => {
+          const featureType = studyFeatureTypeMapping
+            .findBy(`is${_.upperFirst(featureName)}FeatureType`);
+          if (featureType) {
+            return [featureName, featureType.id];
+          }
+        }).compact()
+      );
+
+      return creatorData;
+    }
+  ),
+
+  dataObjectInstanceCreatorData: computed(
+    function dataObjectInstanceCreatorData() {
+      const {
+        dataObjectFilterTypeMapping,
+        dataObjectFilterTypeUnknownValue,
+      } = getProperties(
+        this.get('configuration'),
+        'dataObjectFilterTypeMapping',
+        'dataObjectFilterTypeUnknownValue'
+      );
+      const creatorData = {};
+      dataObjectCategorizedFields.forEach(({ fieldName }) => {
+        creatorData[fieldName] = {
+          valuesMap: this.get(
+            `configuration.dataObject${_.upperFirst(fieldName)}Map`
+          ),
+          unknownValue: this.get(
+            `configuration.dataObject${_.upperFirst(fieldName)}UnknownValue`
+          ),
+        };
+      });
+      const typeIdToFilterTypeIdMapDef = dataObjectFilterTypeMapping
+        .reduce((mapDef, filterType) => {
+          const objectTypeIds = filterType.objectTypeIds || [];
+          return mapDef.concat(objectTypeIds.map(typeId => ([typeId, filterType])));
+        }, []);
+      creatorData.filterType = {
+        valuesMap: new Map(typeIdToFilterTypeIdMapDef),
+        unknownValue: dataObjectFilterTypeUnknownValue,
+      };
+
+      return creatorData;
+    }
+  ),
+
   init() {
     this._super(...arguments);
 
     this.set('fetchDataPromiseObject', PromiseObject.create({ promise: resolve() }));
+    this.getProperties('studyInstanceCreatorData', 'dataObjectInstanceCreatorData');
   },
 
   /**
@@ -334,8 +430,8 @@ export default EmberObject.extend({
     if (results) {
       const {
         dataStore,
-        configuration,
-      } = this.getProperties('dataStore', 'configuration');
+        studyInstanceCreatorData,
+      } = this.getProperties('dataStore', 'studyInstanceCreatorData');
 
       const total = get(results, 'hits.total.value');
       if (rememberFittingStudiesCount && typeof total === 'number') {
@@ -350,10 +446,7 @@ export default EmberObject.extend({
           const studyId = get(doc, 'id');
           return !isBlank(studyId) && !alreadyFetchedStudiesIds.includes(studyId);
         })
-        .map(doc => Study.create({
-          configuration,
-          raw: doc,
-        }));
+        .map(doc => this.createStudyInstance(doc, studyInstanceCreatorData));
       set(dataStore, 'studies', alreadyFetchedStudies.concat(newStudies));
       return newStudies;
     } else {
@@ -365,8 +458,12 @@ export default EmberObject.extend({
     const {
       elasticsearch,
       dataStore,
-      configuration,
-    } = this.getProperties('elasticsearch', 'dataStore', 'configuration');
+      dataObjectInstanceCreatorData,
+    } = this.getProperties(
+      'elasticsearch',
+      'dataStore',
+      'dataObjectInstanceCreatorData'
+    );
     const idsOfFetchedDataObjects = get(dataStore, 'dataObjects').mapBy('id');
     const idsOfDataObjectsToFetch = _.difference(
       _.uniq(_.flatten(
@@ -396,10 +493,10 @@ export default EmberObject.extend({
             const dataObjectAlreadyExists =
               alreadyFetchedDataObjectsIds.includes(get(doHit, '_source.id'));
             if (!dataObjectAlreadyExists) {
-              return DataObject.create({
-                configuration,
-                raw: get(doHit, '_source'),
-              });
+              return this.createDataObjectInstance(
+                doHit._source,
+                dataObjectInstanceCreatorData
+              );
             }
           }).compact();
           return alreadyFetchedDataObjects.concat(newDataObjects);
@@ -476,5 +573,127 @@ export default EmberObject.extend({
         id: this.get('dataStore.studies').mapBy('id'),
       },
     };
+  },
+
+  createStudyInstance(rawData, creatorData) {
+    const studyComputedData = {
+      id: rawData.id,
+      title: get(rawData, 'display_title.title_text'),
+      description: rawData.brief_description,
+      dataSharingStatement: rawData.data_sharing_statement,
+      dataObjectsIds: rawData.linked_data_objects || [],
+      dataObjects: [],
+      expandedDataObjects: [],
+    };
+    studyCategorizedFields.forEach(({ fieldName, rawFieldName }) =>
+      studyComputedData[fieldName] = this.categorizeValue(
+        rawData[rawFieldName],
+        creatorData[fieldName].valuesMap,
+        creatorData[fieldName].unknownValue
+      )
+    );
+    studyComputedData.isInterventional =
+      Boolean(studyComputedData.type.isInterventional);
+    studyComputedData.isObservational =
+      Boolean(studyComputedData.type.isObservational);
+
+    studyFeatureTypeNames.forEach(featureName =>
+      studyComputedData[featureName] = this.categorizeStudyFeature(
+        rawData.study_features || [],
+        creatorData.featureNameToFeatureId.get(featureName),
+        creatorData[featureName].valuesMap,
+        creatorData[featureName].unknownValue
+      )
+    );
+
+    return Study.create(studyComputedData);
+  },
+
+  createDataObjectInstance(rawData, creatorData) {
+    const dataObjectComputedData = {
+      id: rawData.id,
+      title: rawData.display_title,
+      type: rawData.object_type,
+      year: rawData.publication_year,
+      accessDetails: rawData.access_details,
+      accessDetailsUrl: rawData.access_details_url,
+      hasCorrectAccessDetailsUrl: isUrl(rawData.access_details_url),
+      managingOrganisation: rawData.managing_organisation,
+    };
+    dataObjectCategorizedFields.forEach(({ fieldName, rawFieldName }) =>
+      dataObjectComputedData[fieldName] = this.categorizeValue(
+        rawData[rawFieldName],
+        creatorData[fieldName].valuesMap,
+        creatorData[fieldName].unknownValue
+      )
+    );
+    dataObjectComputedData.filterType = this.categorizeValue(
+      rawData.object_type,
+      creatorData.filterType.valuesMap,
+      creatorData.filterType.unknownValue
+    );
+    dataObjectComputedData.isJournalArticle =
+      Boolean(dataObjectComputedData.filterType.isJournalArticle);
+    dataObjectComputedData.urls = this.generateUrlsForDataObject(
+      rawData.object_instances || [],
+      dataObjectComputedData.isJournalArticle
+    );
+
+    return dataObjectComputedData;
+  },
+
+  categorizeValue(value, valuesMap, unknownValue) {
+    if (value && value.id !== undefined) {
+      return valuesMap.get(value.id) || unknownValue;
+    } else {
+      return unknownValue;
+    }
+  },
+
+  categorizeStudyFeature(rawFeatures, featureId, featuresMap, unknownValue) {
+    if (typeof featureId === 'number') {
+      const rawFeature = rawFeatures.find(rawFeature =>
+        (rawFeature.feature_value && rawFeature.feature_type.id) === featureId
+      );
+      return rawFeature && featuresMap.get(rawFeature.feature_value.id) ||
+        unknownValue;
+    }
+  },
+
+  generateUrlsForDataObject(objectInstances, isJournalArticle) {
+    objectInstances = objectInstances.filterBy('url');
+    const urlsCollection = [];
+
+    if (isJournalArticle) {
+      [{
+        type: 'journalAbstract',
+        id: 35,
+      }, {
+        type: 'journalArticle',
+        id: 36,
+      }].forEach(({ type, id }) => {
+        let instance;
+        do {
+          instance = objectInstances.findBy('resource_type.id', id);
+          if (instance) {
+            urlsCollection.push({
+              type,
+              url: instance.url,
+              isUrlCorrect: isUrl(instance.url),
+            });
+            objectInstances = objectInstances.without(instance);
+          }
+        } while (instance);
+      });
+    }
+    objectInstances.filterBy('url').forEach(instance =>
+      urlsCollection.push({
+        type: 'unknown',
+        url: instance.url,
+        isUrlCorrect: isUrl(instance.url),
+      })
+    );
+
+    return urlsCollection;
   },
 });

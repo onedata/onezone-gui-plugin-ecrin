@@ -344,7 +344,7 @@ export default EmberObject.extend({
 
 function checkMatchOfCategorizedValue(records, fieldName, filter) {
   return records.filter(record =>
-    !record.isSupportingField(fieldName) ||
+    (record.isSupportingField && !record.isSupportingField(fieldName)) ||
     !filter || filter.includes(get(record, fieldName))
   );
 }
