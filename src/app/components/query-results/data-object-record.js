@@ -1,7 +1,18 @@
+/**
+ * Is responsible for showing one data object record in study.
+ * 
+ * @module components/query-results/data-object-record
+ * @author Michał Borzęcki
+ * @copyright (C) 2020 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import Component from '@ember/component';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 import { computed } from '@ember/object';
+import { reads } from '@ember/object/computed';
+import { or } from 'ember-awesome-macros';
 import { debounce } from '@ember/runloop';
 
 export default Component.extend(I18n, {
@@ -18,6 +29,11 @@ export default Component.extend(I18n, {
   i18nPrefix: 'components.queryResults.dataObjectRecord',
 
   /**
+   * @virtual optional
+   */
+  dataObject: undefined,
+
+  /**
    * @virtual
    * @type {boolean}
    */
@@ -30,57 +46,29 @@ export default Component.extend(I18n, {
   toggleExpansion: notImplementedIgnore,
 
   /**
-   * @virtual
-   * @type {String}
+   * @type {ComputedProperty<String>}
    */
-  typeText: undefined,
+  typeName: reads('dataObject.type.name'),
 
   /**
-   * @virtual optional
-   * @type {number}
+   * @type {ComputedProperty<number>}
    */
-  year: undefined,
+  year: or('dataObject.year', '‐'),
 
   /**
-   * @virtual optional
-   * @type {String}
+   * @type {ComputedProperty<String>}
    */
-  accessTypeIndicator: undefined,
+  accessTypeIndicator: reads('dataObject.accessType.indicator'),
 
   /**
-   * @virtual optional
-   * @type {String}
+   * @type {ComputedProperty<String>}
    */
-  accessTypeName: undefined,
-
-  /**
-   * @virtual optional
-   * @type {boolean}
-   */
-  showYear: true,
-
-  /**
-   * @virtual optional
-   * @type {boolean}
-   */
-  showAccessIndicator: true,
-
-  /**
-   * @virtual optional
-   * @type {boolean}
-   */
-  showCheckbox: true,
-
-  /**
-   * @type {Function}
-   * @returns {any}
-   */
-  toggleSelection: notImplementedIgnore,
+  accessTypeName: reads('dataObject.accessType.name'),
 
   /**
    * @type {ComputedProperty<Function>}
    */
-  windowResizeHandler: computed(function () {
+  windowResizeHandler: computed(function windowResizeHandler() {
     return () => debounce(this, 'recalculateIsExpandable', 200);
   }),
 

@@ -1,5 +1,5 @@
 <div class="data-object-type">
-  <div class="object-type-name">{{typeText}}</div>
+  <div class="object-type-name">{{typeName}}</div>
   {{#if isExpandable}}
     <a {{action toggleExpansion}} class="show-more-link">
       {{tt this (if isExpanded "showLess" "showMore")}}
@@ -14,19 +14,15 @@
     <div class="content-hidden-shadow"></div>
   {{/if}}
 </div>
-{{#if showYear}}
+{{#if dataObject}}
   <div class="data-object-year">{{or year "‐"}}</div>
-{{/if}}
-{{#if showAccessIndicator}}
   <div class="data-object-status">
-    <span class="data-object-status-icon {{accessTypeIndicator}}">
+    <span class="data-object-status-icon {{or accessTypeIndicator "unknown"}}">
       {{#if accessTypeName}}
         {{bs-tooltip title=accessTypeName}}
       {{/if}}
     </span>
   </div>
-{{/if}}
-{{#if showCheckbox}}
   <div class="data-object-checkbox">
     {{one-checkbox
       checked=isChecked

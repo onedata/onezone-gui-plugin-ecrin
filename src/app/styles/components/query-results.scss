@@ -33,7 +33,7 @@
   }
 
   .panel-heading {
-    padding: $padding-base-vertical 100px $padding-base-vertical $padding-base-horizontal;
+    padding: $padding-base-vertical 70px $padding-base-vertical $padding-base-horizontal;
     cursor: pointer;
     a:hover {
       color: $main-text-color;
@@ -98,6 +98,14 @@
     margin: 0;
     padding: 0;
     list-style-type: none;
+
+    .expand-action .one-icon {
+      font-weight: bold;
+    }
+
+    .remove-action:hover {
+      color: $color-one-danger;
+    }
   }
 
   .result-action {
@@ -203,25 +211,6 @@
 
     .one-checkbox {
       vertical-align: middle;
-    }
-  }
-
-  .loading-inner-spinner {
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  .load-more {
-    margin-top: $padding-base-vertical;
-  }
-
-  .result-actions {
-    .expand-action .one-icon {
-      font-weight: bold;
-    }
-
-    .remove-action:hover {
-      color: $color-one-danger;
     }
   }
 

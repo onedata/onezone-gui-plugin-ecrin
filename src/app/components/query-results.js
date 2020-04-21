@@ -33,11 +33,16 @@ export default Component.extend(I18n, {
   isFetchingData: false,
 
   /**
+   * Number of studies which fulfilled the latest search parameters. May be larger
+   * than the total number of studies in dataStore due to the limit of studies fetched per
+   * single query.
+   * @virtual
    * @type {number}
    */
   latestSearchFittingStudiesCount: 0,
 
   /**
+   * @virtual
    * @type {Utils.DataStore}
    */
   dataStore: undefined,

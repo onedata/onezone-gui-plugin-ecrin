@@ -1,4 +1,4 @@
-<div class="studies-list-header clearfix">
+<div class="studies-list-header">
   {{#if (gt latestSearchFittingStudiesCount 1000)}}
     {{#bs-alert type="warning" class="results-alert"}}
       {{tt this "tooMuchResultsAlert" totalCount=latestSearchFittingStudiesCount}}
@@ -49,18 +49,7 @@
     {{/if}}
   </div>
 </div>
-{{save-dialog
-  isOpened=isSaveDialogOpened
-  onSave=(action "saveResults")
-  onCancel=(action (mut isSaveDialogOpened) false)
-}}
-{{load-dialog
-  isOpened=isLoadDialogOpened
-  onLoadList=loadSavedResultsList
-  onLoad=(action "loadSavedResults")
-  onRemove=removeSavedResults
-  onCancel=(action (mut isLoadDialogOpened) false)
-}}
+{{yield}}
 {{#if studies.length}}
   <div class="studies-list">
     {{pagination-selector pagedContent=pagedStudies}}
@@ -78,3 +67,15 @@
     }}
   </div>
 {{/if}}
+{{save-dialog
+  isOpened=isSaveDialogOpened
+  onSave=(action "saveResults")
+  onCancel=(action (mut isSaveDialogOpened) false)
+}}
+{{load-dialog
+  isOpened=isLoadDialogOpened
+  onLoadList=loadSavedResultsList
+  onLoad=(action "loadSavedResults")
+  onRemove=removeSavedResults
+  onCancel=(action (mut isLoadDialogOpened) false)
+}}

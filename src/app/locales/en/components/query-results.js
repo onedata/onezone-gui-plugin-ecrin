@@ -10,6 +10,8 @@ export default {
   studyRecord: {
     studyDescription: 'Description',
     studyDataSharingStatement: 'Data sharing statement',
+    accessDetails: 'Access details',
+    accessDetailsSeeMore: 'see',
     urlAccess: 'Access',
     urlType: {
       journalAbstract: 'Abstract',

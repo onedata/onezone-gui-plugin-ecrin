@@ -55,7 +55,7 @@ export default EmberObject.extend({
   /**
    * @returns {Promise<Array<PersistedResults>>}
    */
-  getSavedResultsList() {
+  getResultsList() {
     return this.get('indexeddbStorage').loadResultsList();
   },
 
@@ -63,7 +63,7 @@ export default EmberObject.extend({
    * @param {PersistedResults} results
    * @returns {Promise}
    */
-  removeSavedResultsEntry(results) {
+  removeResults(results) {
     return this.get('indexeddbStorage').removeResults(results);
   },
 
@@ -130,6 +130,10 @@ export default EmberObject.extend({
         } = results;
         const dataObjectPublisherMapping =
           get(dataStore, 'dataObjectPublisherMapping');
+        const studyFilters = studyFiltersFromSaved(
+          savedStudyFilters,
+          configuration
+        );
         const dataObjectFilters = dataObjectFiltersFromSaved(
           savedDataObjectFilters,
           configuration,
@@ -137,10 +141,7 @@ export default EmberObject.extend({
         );
 
         setProperties(dataStore, {
-          studyFilters: studyFiltersFromSaved(
-            savedStudyFilters,
-            configuration
-          ),
+          studyFilters,
           dataObjectFilters,
         });
       }));

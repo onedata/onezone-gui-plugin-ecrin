@@ -121,7 +121,7 @@ export default Component.extend(I18n, {
       return dataPersister.saveResults(name, studySearchParams);
     },
     loadSavedResultsList() {
-      return this.get('dataPersister').getSavedResultsList();
+      return this.get('dataPersister').getResultsList();
     },
     loadSavedResults(results) {
       const {
@@ -131,7 +131,7 @@ export default Component.extend(I18n, {
       return dataPersister.loadResults(results, studySearchParams);
     },
     removeSavedResults(results) {
-      return this.get('dataPersister').removeSavedResultsEntry(results);
+      return this.get('dataPersister').removeResults(results);
     },
     exportResultsToPdf() {
       const {

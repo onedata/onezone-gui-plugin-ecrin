@@ -29,6 +29,12 @@ export default EmberObject.extend({
   studies: undefined,
 
   /**
+   * Should by modified only via `recalculateDataObjects` method
+   * @type {Array<Utils.DataObject>}
+   */
+  dataObjects: undefined,
+
+  /**
    * @type {Object}
    */
   studyFilters: undefined,
@@ -135,11 +141,6 @@ export default EmberObject.extend({
    * @type {ComputedProperty<boolean>}
    */
   isStudiesLimitReached: gte('studies.length', 'studiesLimit'),
-
-  /**
-   * @type {ComputedProperty<Array<Utils.DataObject>>}
-   */
-  dataObjects: undefined,
 
   /**
    * @type {ComputedProperty<Array<Utils.DataObject>>}

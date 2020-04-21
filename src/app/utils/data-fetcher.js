@@ -1,5 +1,5 @@
 /**
- * Is responsible for fetching studies and data objects using Elasticsearch. Automatically
+ * Is responsible for fetching studies and data objects from Elasticsearch. Automatically
  * places query results into the data store.
  *
  * @module utils/data-fetcher
@@ -10,7 +10,7 @@
 
 import EmberObject, { get, getProperties, set, computed } from '@ember/object';
 import PromiseObject from 'onezone-gui-plugin-ecrin/utils/promise-object';
-import { resolve } from 'rsvp';
+import { resolve, reject } from 'rsvp';
 import { isBlank } from '@ember/utils';
 import Study from 'onezone-gui-plugin-ecrin/utils/study';
 import _ from 'lodash';
@@ -72,6 +72,11 @@ export default EmberObject.extend({
    */
   latestSearchFittingStudiesCount: 0,
 
+  /**
+   * Additional data needed to construct study from query result. Calculated once
+   * for performance reasons.
+   * @type {ComputedProperty<Object>}
+   */
   studyInstanceCreatorData: computed(
     function studyInstanceCreatorData() {
       const studyFeatureTypeMapping = this.get(
@@ -105,6 +110,11 @@ export default EmberObject.extend({
     }
   ),
 
+  /**
+   * Additional data needed to construct data object from query result. Calculated once
+   * for performance reasons.
+   * @type {ComputedProperty<Object>}
+   */
   dataObjectInstanceCreatorData: computed(
     function dataObjectInstanceCreatorData() {
       const {
@@ -144,6 +154,7 @@ export default EmberObject.extend({
     this._super(...arguments);
 
     this.set('fetchDataPromiseObject', PromiseObject.create({ promise: resolve() }));
+    // Precalculate creators data to make the first query faster
     this.getProperties('studyInstanceCreatorData', 'dataObjectInstanceCreatorData');
   },
 
@@ -177,10 +188,13 @@ export default EmberObject.extend({
               return this.fetchViaPubPaper(searchParams);
             case 'viaInternalId':
               return this.fetchViaInternalId(searchParams);
+            default:
+              return reject('incorrect search method');
           }
         })
-        .then(results => this.loadStudiesFromResponse(results, mode !==
-          'viaInternalId'))
+        .then(results =>
+          this.loadStudiesFromResponse(results, mode !== 'viaInternalId')
+        )
         .then(newStudies => this.loadDataObjectsForStudies(newStudies));
       return this.set('fetchDataPromiseObject', PromiseObject.create({ promise }));
     }
@@ -365,6 +379,7 @@ export default EmberObject.extend({
         bool: {
           filter: [{
             term: {
+              // Journal article
               'object_type.id': 12,
             },
           }],
@@ -667,7 +682,7 @@ export default EmberObject.extend({
     if (isJournalArticle) {
       [{
         type: 'journalAbstract',
-        id: 35,
+        id: 40,
       }, {
         type: 'journalArticle',
         id: 36,

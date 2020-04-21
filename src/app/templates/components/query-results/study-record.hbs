@@ -1,4 +1,7 @@
-<div class="panel-heading" {{action (mut study.isRecordExpanded) (not study.isRecordExpanded)}}>
+<div
+  class="panel-heading"
+  {{action (mut study.isRecordExpanded) (not study.isRecordExpanded)}}
+>
   {{#truncated-string}}{{or study.title (tt this "untitled")}}{{/truncated-string}}
 </div>
 <ul class="result-actions">
@@ -7,9 +10,20 @@
       {{one-icon icon=(if study.hasAllElementsExpanded "arrow-up" "arrow-down")}}
     </li>
   {{/if}}
-  <li class="result-action remove-action {{if isFetchingData "disabled"}}" {{action "remove"}}>{{one-icon icon="x"}}</li>
+  <li
+    class="result-action remove-action {{if isFetchingData "disabled"}}"
+    {{action "remove"}}
+  >
+    {{one-icon icon="x"}}
+  </li>
 </ul>
-{{#bs-collapse class="panel-body" collapsed=(not study.isRecordExpanded) transitionDuration=0}}
+{{!-- Animation is disabled, because it becomes really heavy for browser when there are
+100 studies visible (repainting of layout causes delays). --}}
+{{#bs-collapse
+  class="panel-body"
+  collapsed=(not study.isRecordExpanded)
+  transitionDuration=0
+}}
   <div class="data-object-records">
     {{#if study.description}}
       {{#query-results/data-object-record
@@ -19,10 +33,7 @@
           (mut study.isDescriptionExpanded)
           (not study.isDescriptionExpanded)
         )
-        showYear=false
-        showAccessIndicator=false
-        showCheckbox=false
-        typeText=(tt this "studyDescription")
+        typeName=(tt this "studyDescription")
       }}
         {{study.description}}
       {{/query-results/data-object-record}}
@@ -35,10 +46,7 @@
           (mut study.isDataSharingStatementExpanded)
           (not study.isDataSharingStatementExpanded)
         )
-        showYear=false
-        showAccessIndicator=false
-        showCheckbox=false
-        typeText=(tt this "studyDataSharingStatement")
+        typeName=(tt this "studyDataSharingStatement")
       }}
         {{study.dataSharingStatement}}
       {{/query-results/data-object-record}}
@@ -47,10 +55,7 @@
       {{#query-results/data-object-record
         isExpanded=(contains dataObject study.expandedDataObjects)
         toggleExpansion=(action "toggleDataObjectExpansion" dataObject)
-        typeText=dataObject.type.name
-        year=dataObject.year
-        accessTypeIndicator=(or dataObject.accessType.indicator "unknown")
-        accessTypeName=dataObject.accessType.name
+        dataObject=dataObject
         isChecked=(contains dataObject selectedDataObjects)
       }}
         {{#if dataObject.title}}
@@ -58,15 +63,15 @@
         {{/if}}
         {{#if dataObject.accessDetails}}
           <p>
-            <strong>Access details:</strong> {{dataObject.accessDetails}}
+            <strong>{{tt this "accessDetails"}}:</strong>
+            {{dataObject.accessDetails}}
             {{#if dataObject.accessDetailsUrl}}
-              (see: 
+              ({{tt this "accessDetailsSeeMore"}}: 
               {{#if dataObject.hasCorrectAccessDetailsUrl}}
-                <a href={{dataObject.accessDetailsUrl}} target="_blank">{{dataObject.accessDetailsUrl}}</a>
+                <a href={{dataObject.accessDetailsUrl}} target="_blank">{{dataObject.accessDetailsUrl}}</a>)
               {{else}}
-                {{dataObject.accessDetailsUrl}}
+                {{dataObject.accessDetailsUrl}})
               {{/if}}
-              )
             {{/if}}
           </p>
         {{/if}}

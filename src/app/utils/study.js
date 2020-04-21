@@ -154,11 +154,13 @@ export default EmberObject.extend({
   biospecimensRetained: undefined,
 
   /**
+   * @virtual
    * @type {boolean}
    */
   isInterventional: undefined,
 
   /**
+   * @virtual
    * @type {boolean}
    */
   isObservational: undefined,

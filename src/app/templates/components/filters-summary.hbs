@@ -4,7 +4,9 @@
     {{#each badges as |badge|}}
       <li class="filter-badge">
         <span class="model-name">{{tt this badge.modelName}}</span>
-        <span class="filter">{{tt this (concat badge.modelName "Filters." badge.filterName)}}{{#if badge.state}}: {{badge.state}}{{/if}}</span>
+        <span class="filter">
+          {{tt this (concat badge.modelName "Filters." badge.filterName)}}{{#if badge.state}}: {{badge.state}}{{/if}}
+        </span>
       </li>
     {{/each}}
   </ul>

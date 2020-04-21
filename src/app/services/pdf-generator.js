@@ -162,7 +162,7 @@ export default Service.extend(I18n, {
         'urls'
       );
 
-      let accessSection = [];
+      const accessSection = [];
       if (urls.length) {
         accessSection.push({
           text: '\n' + this.pdfT('dataObjectUrlAccessLabel'),
@@ -176,7 +176,7 @@ export default Service.extend(I18n, {
         });
       }
 
-      let accessDetailsSection = [];
+      const accessDetailsSection = [];
       if (accessDetails) {
         accessDetailsSection.push({
           text: '\n' + this.pdfT('dataObjectAccessDetailsLabel'),
@@ -261,6 +261,10 @@ export default Service.extend(I18n, {
         }, ..._.times(tableColsCount - 1, _.constant({}))]);
       }
       if (get(dataObjects, 'length')) {
+        // dataObjectsRepresentation contains only selected data objects, so compact()
+        // will remove all not-selected data object entries. cloneDeep is used, because
+        // makePdf modifies passed object and using the same data object twice in
+        // different studies causes rendering empty data object entry for the second study.
         tableBody.push(...dataObjects.sortBy('year').map(dataObject =>
           dataObjectsRepresentation.get(get(dataObject, 'id'))
         ).compact().map(dataObject => _.cloneDeep(dataObject)));
