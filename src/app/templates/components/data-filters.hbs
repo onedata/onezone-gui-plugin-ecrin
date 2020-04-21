@@ -155,6 +155,7 @@
         id="year-filter-input"
         class="form-control"
         type="text"
+        placeholder={{concat (tt this "examplePlaceholderLabel") "2010, 2012-2014, <2001, >2015"}}
         value={{dataObjectFilters.year}}
         oninput={{action (action "dataObjectFiltersChanged" "year") value="target.value"}}
         disabled={{isFetchingData}}

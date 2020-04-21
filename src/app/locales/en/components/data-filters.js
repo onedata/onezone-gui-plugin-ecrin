@@ -23,6 +23,7 @@ export default {
   },
   interventionalStudiesFilters: 'Interventional studies filters',
   observationalStudiesFilters: 'Observational studies filters',
+  examplePlaceholderLabel: 'Example: ',
   clearStudyFilters: 'Reset study filters',
   clearDataObjectFilters: 'Reset data object filters',
   help: {

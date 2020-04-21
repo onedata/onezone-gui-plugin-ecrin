@@ -30,6 +30,16 @@ export default function stringToRanges(rangeString) {
       } else {
         ranges.push({ start: partSections[0], end: partSections[1] });
       }
+    } else if (part.includes('<')) {
+      const compareNumber = parseInt(part.split('<')[1]);
+      if (!isNaN(compareNumber)) {
+        ranges.push({ end: compareNumber - 1 });
+      }
+    } else if (part.includes('>')) {
+      const compareNumber = parseInt(part.split('>')[1]);
+      if (!isNaN(compareNumber)) {
+        ranges.push({ start: compareNumber + 1 });
+      }
     } else {
       const num = parseInt(part);
       if (isNaN(num)) {

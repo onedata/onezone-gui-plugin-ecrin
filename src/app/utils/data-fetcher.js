@@ -339,7 +339,10 @@ export default EmberObject.extend({
               must_not: this.generateExcludeFetchedStudiesClause(),
             },
           };
-          return this.get('elasticsearch').post('study', '_search', queryBody);
+          return this.get('elasticsearch').post('study', '_search', queryBody)
+            .then(results =>
+              this.sortStudyResultsAccordingToIdsList(results, studyIds)
+            );
         } else {
           return null;
         }
@@ -419,21 +422,40 @@ export default EmberObject.extend({
   },
 
   fetchViaInternalId(searchParams) {
-    const savedStudyIds = get(searchParams, 'internalStudyIds');
+    const internalStudyIds = get(searchParams, 'internalStudyIds');
     const queryBody = Object.assign(this.constructQueryBodyBase('study'), {
-      size: savedStudyIds.length,
+      size: internalStudyIds.length,
       query: {
         bool: {
           filter: [{
             terms: {
-              id: savedStudyIds,
+              id: internalStudyIds,
             },
           }],
+          must_not: this.generateExcludeFetchedStudiesClause(),
         },
       },
     });
 
-    return this.get('elasticsearch').post('study', '_search', queryBody);
+    return this.get('elasticsearch').post('study', '_search', queryBody)
+      .then(results =>
+        this.sortStudyResultsAccordingToIdsList(results, internalStudyIds)
+      );
+  },
+
+  sortStudyResultsAccordingToIdsList(results, idsList) {
+    const rawStudies = results && results.hits && results.hits.hits;
+    if (rawStudies && rawStudies.length) {
+      const idToRawStudyMap = new Map(rawStudies.map(rawStudy => ([
+        rawStudy._source && rawStudy._source.id,
+        rawStudy,
+      ])));
+      const sortedRawStudies = idsList
+        .map(id => idToRawStudyMap.get(id))
+        .compact();
+      results.hits.hits = sortedRawStudies;
+    }
+    return results;
   },
 
   /**

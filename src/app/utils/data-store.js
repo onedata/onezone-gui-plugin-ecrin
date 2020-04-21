@@ -182,8 +182,10 @@ export default EmberObject.extend({
         filteredDataObjects = filteredDataObjects.filter(dataObject => {
           const doYear = get(dataObject, 'year');
           if (doYear) {
-            return year.any(range => doYear >= range.start && doYear <= range
-              .end);
+            return year.any(range =>
+              (range.start === undefined || doYear >= range.start) &&
+              (range.end === undefined || doYear <= range.end)
+            );
           } else {
             return false;
           }
