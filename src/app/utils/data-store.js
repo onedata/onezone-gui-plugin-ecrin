@@ -19,18 +19,18 @@ import { gte } from 'ember-awesome-macros';
 export default EmberObject.extend({
   /**
    * @virtual
-   * @type {Service.Configuration}
+   * @type {Services.Configuration}
    */
   configuration: undefined,
 
   /**
-   * @type {Array<Utils.Studies>}
+   * @type {Array<Utils.Study>}
    */
   studies: undefined,
 
   /**
    * Should by modified only via `recalculateDataObjects` method
-   * @type {Array<Utils.DataObject>}
+   * @type {Array<DataObject>}
    */
   dataObjects: undefined,
 
@@ -56,7 +56,7 @@ export default EmberObject.extend({
 
   /**
    * @type {Array<Object>}
-   * Previous value of dataObjectPublisherMapping
+   * Previous value of dataObjectPublisherMapping, set by dataObjectPublisherMapping.
    */
   prevDataObjectPublisherMapping: undefined,
 
@@ -126,7 +126,7 @@ export default EmberObject.extend({
         'timePerspective',
         'biospecimensRetained',
       ].forEach(fieldName => {
-        filteredStudies = checkMatchOfCategorizedValue(
+        filteredStudies = filterByCategorizedValue(
           filteredStudies,
           fieldName,
           get(studyFilters, fieldName)
@@ -143,7 +143,7 @@ export default EmberObject.extend({
   isStudiesLimitReached: gte('studies.length', 'studiesLimit'),
 
   /**
-   * @type {ComputedProperty<Array<Utils.DataObject>>}
+   * @type {ComputedProperty<Array<DataObject>>}
    */
   filteredDataObjects: computed(
     'dataObjects.[]',
@@ -172,7 +172,7 @@ export default EmberObject.extend({
         'filterType',
         'accessType',
       ].forEach(fieldName => {
-        filteredDataObjects = checkMatchOfCategorizedValue(
+        filteredDataObjects = filterByCategorizedValue(
           filteredDataObjects,
           fieldName,
           get(dataObjectFilters, fieldName)
@@ -182,10 +182,7 @@ export default EmberObject.extend({
         filteredDataObjects = filteredDataObjects.filter(dataObject => {
           const doYear = get(dataObject, 'year');
           if (doYear) {
-            return year.any(range =>
-              (range.start === undefined || doYear >= range.start) &&
-              (range.end === undefined || doYear <= range.end)
-            );
+            return year.any(range => isYearInRange(doYear, range));
           } else {
             return false;
           }
@@ -208,7 +205,8 @@ export default EmberObject.extend({
   ),
 
   /**
-   * @type {ComputedProperty<Array<Object>>}
+   * Objects compatible with mapppings taken from configuration service.
+   * @type {ComputedProperty<Array<Mapping>>}
    */
   dataObjectPublisherMapping: computed(
     'dataObjects.@each.managingOrganisation',
@@ -345,9 +343,14 @@ export default EmberObject.extend({
   },
 });
 
-function checkMatchOfCategorizedValue(records, fieldName, filter) {
+function filterByCategorizedValue(records, fieldName, filter) {
   return records.filter(record =>
     (record.isSupportingField && !record.isSupportingField(fieldName)) ||
     !filter || filter.includes(get(record, fieldName))
   );
+}
+
+function isYearInRange(year, range) {
+  return (range.start === undefined || year >= range.start) &&
+    (range.end === undefined || year <= range.end);
 }

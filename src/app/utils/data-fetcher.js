@@ -46,13 +46,13 @@ const dataObjectCategorizedFields = [{
 export default EmberObject.extend({
   /**
    * @virtual
-   * @type {Service.Configuration}
+   * @type {Services.Configuration}
    */
   configuration: undefined,
 
   /**
    * @virtual
-   * @type {Service.Elasticsearch}
+   * @type {Services.Elasticsearch}
    */
   elasticsearch: undefined,
 
@@ -63,6 +63,7 @@ export default EmberObject.extend({
   dataStore: undefined,
 
   /**
+   * Set by searchStudies to indicate query status (only one query at a time is possible).
    * @type {PromiseObject}
    */
   fetchDataPromiseObject: undefined,
@@ -74,13 +75,17 @@ export default EmberObject.extend({
 
   /**
    * Additional data needed to construct study from query result. Calculated once
-   * for performance reasons.
+   * for performance reasons. Contains fields:
+   * [type|status|...]: {
+   *   valuesMap: Map<number,Mapping>, // Map id -> corresponding value mapping
+   *   unknownValue: Mapping, // mapping used for values without known categorization
+   * }
+   * featureNameToFeatureId: Map<String,number>
    * @type {ComputedProperty<Object>}
    */
   studyInstanceCreatorData: computed(
     function studyInstanceCreatorData() {
-      const studyFeatureTypeMapping = this.get(
-        'configuration.studyFeatureTypeMapping');
+      const studyFeatureTypeMapping = this.get('configuration.studyFeatureTypeMapping');
       const creatorData = {};
       [
         ...studyCategorizedFields,
@@ -112,7 +117,11 @@ export default EmberObject.extend({
 
   /**
    * Additional data needed to construct data object from query result. Calculated once
-   * for performance reasons.
+   * for performance reasons. Contains fields:
+   * [accessType|filterType|...]: {
+   *   valuesMap: Map<number,Mapping>, // Map id -> corresponding value mapping
+   *   unknownValue: Mapping, // mapping used for values without known categorization
+   * }
    * @type {ComputedProperty<Object>}
    */
   dataObjectInstanceCreatorData: computed(
@@ -139,7 +148,7 @@ export default EmberObject.extend({
       const typeIdToFilterTypeIdMapDef = dataObjectFilterTypeMapping
         .reduce((mapDef, filterType) => {
           const objectTypeIds = filterType.objectTypeIds || [];
-          return mapDef.concat(objectTypeIds.map(typeId => ([typeId, filterType])));
+          return mapDef.concat(objectTypeIds.map(typeId => [typeId, filterType]));
         }, []);
       creatorData.filterType = {
         valuesMap: new Map(typeIdToFilterTypeIdMapDef),
@@ -412,9 +421,9 @@ export default EmberObject.extend({
     }
     return this.get('elasticsearch').post('data_object', '_search', dataObjectBody)
       .then(results => {
-        results = results.hits.hits;
+        const hits = (results && results.hits && results.hits.hits) || [];
         return _.uniq(_.flatten(
-          results.map(dataObject =>
+          hits.map(dataObject =>
             (get(dataObject, '_source.related_studies') || [])
           )
         ));
@@ -446,10 +455,10 @@ export default EmberObject.extend({
   sortStudyResultsAccordingToIdsList(results, idsList) {
     const rawStudies = results && results.hits && results.hits.hits;
     if (rawStudies && rawStudies.length) {
-      const idToRawStudyMap = new Map(rawStudies.map(rawStudy => ([
+      const idToRawStudyMap = new Map(rawStudies.map(rawStudy => [
         rawStudy._source && rawStudy._source.id,
         rawStudy,
-      ])));
+      ]));
       const sortedRawStudies = idsList
         .map(id => idToRawStudyMap.get(id))
         .compact();
@@ -541,7 +550,7 @@ export default EmberObject.extend({
     } else {
       fetchDataObjectsPromise = resolve(get(dataStore, 'dataObjects'));
     }
-    fetchDataObjectsPromise.then(dataObjects => {
+    return fetchDataObjectsPromise.then(dataObjects => {
       const dataObjectsMap = new Map(dataObjects.map(dataObject => (
         [get(dataObject, 'id'), dataObject]
       )));
@@ -552,9 +561,8 @@ export default EmberObject.extend({
         set(study, 'dataObjects', studyDataObjects);
       });
       dataStore.recalculateDataObjects();
+      return dataObjects;
     });
-
-    return fetchDataObjectsPromise;
   },
 
   /**

@@ -1,5 +1,7 @@
 /**
- * Is responsible for persistence layer of the application.
+ * Is responsible for persistence layer of the application. It works on dataStore instance
+ * passed while persister creation (but can be changed later). Persists and loads studies,
+ * filters state and query params.
  *
  * @module utils/data-persister
  * @author Michał Borzęcki
@@ -30,13 +32,13 @@ import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 export default EmberObject.extend({
   /**
    * @virtual
-   * @type {Service.IndexeddbStorage}
+   * @type {Services.IndexeddbStorage}
    */
   indexeddbStorage: undefined,
 
   /**
    * @virtual
-   * @type {Service.Configuration}
+   * @type {Services.Configuration}
    */
   configuration: undefined,
 
@@ -98,20 +100,21 @@ export default EmberObject.extend({
   },
 
   /**
-   * @param {PersistedResults} results 
-   * @param {StudySearchParams} targetStudySearchParams
-   * @returns {Promise}
+   * Loads passed saved results to data store
+   * @param {PersistedResults} savedResults 
+   * @returns {Promise<StudySearchParams>} query params loaded from saved results
    */
-  loadResults(results, targetStudySearchParams) {
+  loadResults(savedResults) {
     const {
       configuration,
       dataStore,
       dataFetcher,
     } = this.getProperties('configuration', 'dataStore', 'dataFetcher');
 
-    if (results.studySearchParams) {
-      targetStudySearchParams.loadDumpedValues(
-        results.studySearchParams,
+    const studySearchParams = StudySearchParams.create();
+    if (savedResults.studySearchParams) {
+      studySearchParams.loadDumpedValues(
+        savedResults.studySearchParams,
         get(configuration, 'studyIdTypeMapping')
       );
     }
@@ -121,13 +124,13 @@ export default EmberObject.extend({
     dataStore.resetDataObjectFilters();
     return dataFetcher.searchStudies(StudySearchParams.create({
         mode: 'viaInternalId',
-        internalStudyIds: get(results, 'studies'),
+        internalStudyIds: get(savedResults, 'studies'),
       }))
       .then(() => safeExec(this, () => {
         const {
           studyFilters: savedStudyFilters,
           dataObjectFilters: savedDataObjectFilters,
-        } = results;
+        } = savedResults;
         const dataObjectPublisherMapping =
           get(dataStore, 'dataObjectPublisherMapping');
         const studyFilters = studyFiltersFromSaved(
@@ -144,6 +147,9 @@ export default EmberObject.extend({
           studyFilters,
           dataObjectFilters,
         });
+      }))
+      .then(() => ({
+        studySearchParams,
       }));
   },
 });

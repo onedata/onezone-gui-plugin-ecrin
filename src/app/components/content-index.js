@@ -16,6 +16,7 @@ import StudySearchParams from 'onezone-gui-plugin-ecrin/utils/study-search-param
 import DataStore from 'onezone-gui-plugin-ecrin/utils/data-store';
 import DataFetcher from 'onezone-gui-plugin-ecrin/utils/data-fetcher';
 import DataPersister from 'onezone-gui-plugin-ecrin/utils/data-persister';
+import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 
 export default Component.extend(I18n, {
   classNames: ['content-index', 'content'],
@@ -124,11 +125,10 @@ export default Component.extend(I18n, {
       return this.get('dataPersister').getResultsList();
     },
     loadSavedResults(results) {
-      const {
-        studySearchParams,
-        dataPersister,
-      } = this.getProperties('studySearchParams', 'dataPersister');
-      return dataPersister.loadResults(results, studySearchParams);
+      return this.get('dataPersister').loadResults(results)
+        .then(({ studySearchParams }) =>
+          safeExec(this, () => this.set('studySearchParams', studySearchParams))
+        );
     },
     removeSavedResults(results) {
       return this.get('dataPersister').removeResults(results);

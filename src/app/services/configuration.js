@@ -7,6 +7,12 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
+/**
+ * @typedef {Object} Mapping
+ * @property {number} id
+ * @property {String} name
+ */
+
 import Service, { inject as service } from '@ember/service';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
 import { computed } from '@ember/object';

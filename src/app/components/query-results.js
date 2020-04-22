@@ -130,7 +130,7 @@ export default Component.extend(I18n, {
   studies: reads('dataStore.filteredStudies'),
 
   /**
-   * @type {ComputedProperty<Array<Utils.DataObject>>}
+   * @type {ComputedProperty<Array<DataObject>>}
    */
   selectedDataObjects: reads('dataStore.filteredDataObjects'),
 

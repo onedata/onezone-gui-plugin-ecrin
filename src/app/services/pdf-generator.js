@@ -12,6 +12,7 @@ import { resolve, Promise } from 'rsvp';
 import { getProperties, get } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import _ from 'lodash';
+import moment from 'moment';
 
 const scriptsToLoad = [
   'assets/pdfmake/pdfmake.min.js',
@@ -128,13 +129,16 @@ export default Service.extend(I18n, {
             },
           },
         };
-        return pdfMake.createPdf(docDefinition).download('mdr-results-snapshot.pdf');
+        const nowString = moment().format('YYYY.MM.DD-HH.mm');
+        return pdfMake
+          .createPdf(docDefinition)
+          .download(`mdr-results-snapshot-${nowString}.pdf`);
       });
   },
 
   /**
    * Generates map dataObject.id -> dataObject pdf representation object
-   * @param {Array<Utils.DataObject>} dataObjects 
+   * @param {Array<DataObject>} dataObjects 
    * @returns {Map<number,Object>}
    */
   generateDataObjectsPdfRepresentation(dataObjects) {
@@ -265,9 +269,11 @@ export default Service.extend(I18n, {
         // will remove all not-selected data object entries. cloneDeep is used, because
         // makePdf modifies passed object and using the same data object twice in
         // different studies causes rendering empty data object entry for the second study.
-        tableBody.push(...dataObjects.sortBy('year').map(dataObject =>
-          dataObjectsRepresentation.get(get(dataObject, 'id'))
-        ).compact().map(dataObject => _.cloneDeep(dataObject)));
+        tableBody.push(...dataObjects.sortBy('year')
+          .map(dataObject => dataObjectsRepresentation.get(get(dataObject, 'id')))
+          .compact()
+          .map(dataObject => _.cloneDeep(dataObject))
+        );
       }
 
       return {

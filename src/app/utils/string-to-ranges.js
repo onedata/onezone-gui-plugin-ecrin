@@ -19,7 +19,7 @@ export default function stringToRanges(rangeString) {
   }
   const parts = rangeString.split(',');
   const ranges = [];
-  for (let part of parts) {
+  for (const part of parts) {
     if (part.includes('-')) {
       const partSections = part.split('-').map((n) => parseInt(n));
       if (partSections.length !== 2 ||

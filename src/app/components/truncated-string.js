@@ -67,11 +67,11 @@ export default Component.extend({
     if (widthBased) {
       shrinkBy = shrinkBy || 0;
       scheduleOnce('afterRender', this, function () {
-        let parent = parentSelector ?
+        const parent = parentSelector ?
           this.$().closest(parentSelector) : this.$().parent();
-        let $element = this.$();
-        let changeMaxWidth = ( /*event*/ ) => {
-          let maxWidth = parent.width();
+        const $element = this.$();
+        const changeMaxWidth = ( /*event*/ ) => {
+          const maxWidth = parent.width();
           $element.css({
             maxWidth: (parseInt(maxWidth) - shrinkBy),
           });
@@ -86,7 +86,7 @@ export default Component.extend({
   },
 
   willDestroyElement() {
-    let {
+    const {
       _changeMaxWidthFun,
       widthBased,
     } = this.getProperties('_changeMaxWidthFun', 'widthBased');
@@ -96,13 +96,13 @@ export default Component.extend({
   },
 
   updateTooltipText() {
-    let element = !this.get('widthBased') ?
+    const element = !this.get('widthBased') ?
       this.$() : this.$().find('.truncated-string-content');
     this.set('tooltipText', element.text().trim());
   },
 
   mouseEnter() {
-    let overflowElement =
+    const overflowElement =
       this.$('.truncate.truncated-string-content')[0] || this.$()[0];
     this.set('tooltipEnabled',
       overflowElement.offsetWidth < overflowElement.scrollWidth
