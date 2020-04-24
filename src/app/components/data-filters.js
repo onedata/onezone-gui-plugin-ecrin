@@ -130,7 +130,7 @@ export default Component.extend(I18n, filtersFields, {
    * @type {ComputedProperty<boolean>}
    */
   hasInterventionalStudyTypeSelected: array.isAny(
-    'studyTypeFilter',
+    'studyFilters.type',
     raw('isInterventional')
   ),
 
@@ -138,7 +138,7 @@ export default Component.extend(I18n, filtersFields, {
    * @type {ComputedProperty<boolean>}
    */
   hasObservationalStudyTypeSelected: array.isAny(
-    'studyTypeFilter',
+    'studyFilters.type',
     raw('isObservational')
   ),
 

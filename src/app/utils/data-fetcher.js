@@ -283,7 +283,7 @@ export default EmberObject.extend({
           should: [{
             simple_query_string: {
               query: studyTitleContains,
-              fields: ['display_title.title'],
+              fields: ['display_title.title_text'],
               default_operator: 'and',
             },
           }, {
@@ -706,7 +706,7 @@ export default EmberObject.extend({
   },
 
   generateUrlsForDataObject(objectInstances, isJournalArticle) {
-    objectInstances = objectInstances.filterBy('url');
+    objectInstances = objectInstances.uniqBy('url').filterBy('url');
     const urlsCollection = [];
 
     if (isJournalArticle) {
@@ -731,7 +731,7 @@ export default EmberObject.extend({
         } while (instance);
       });
     }
-    objectInstances.filterBy('url').forEach(instance =>
+    objectInstances.forEach(instance =>
       urlsCollection.push({
         type: 'unknown',
         url: instance.url,

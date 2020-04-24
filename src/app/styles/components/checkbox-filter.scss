@@ -1,9 +1,6 @@
 .checkbox-filter {
-  padding: 0 $padding-xs-horizontal;
-
   .top-bar {
     display: flex;
-    flex-direction: row-reverse;
     justify-content: space-between;
     white-space: nowrap;
     align-items: center;
@@ -18,7 +15,6 @@
   .items-list {
     list-style-type: none;
     padding: 0;
-    font-size: 90%;
     margin: 0;
   }
 
@@ -27,7 +23,7 @@
   }
 
   .one-checkbox {
-    margin-left: $padding-small-horizontal;
+    margin-right: $padding-xs-horizontal;
     flex-shrink: 0;
   }
 

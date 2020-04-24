@@ -2,6 +2,8 @@
   display: flex;
 
   @media (min-width: $screen-sm-min) {
+    margin-bottom: $padding-base-vertical;
+
     .study-filters {
       flex-grow: 1;
       display: flex;

@@ -11,6 +11,11 @@
 <ul class="items-list">
   {{#each items as |item index|}}
     <li class="checkbox-item">
+      {{one-checkbox
+        inputId=(concat elementId "-" index)
+        checked=(contains item selectedItems)
+        isReadOnly=disabled
+        update=(action "toggleItem" item)}}
       <label class="item-name" for={{concat elementId "-" index}}>
         {{#if hasBlock}}
           {{yield item}}
@@ -18,11 +23,6 @@
           {{#truncated-string}}{{item.name}}{{/truncated-string}}
         {{/if}}
       </label>
-      {{one-checkbox
-        inputId=(concat elementId "-" index)
-        checked=(contains item selectedItems)
-        isReadOnly=disabled
-        update=(action "toggleItem" item)}}
     </li>
   {{/each}}
 </ul>
