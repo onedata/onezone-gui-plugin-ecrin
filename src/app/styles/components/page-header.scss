@@ -24,4 +24,10 @@
     flex-grow: 1;
     flex-basis: 800px;
   }
+
+  .version {
+    align-self: flex-start;
+    opacity: 0.5;
+    font-size: 90%;
+  }
 }
