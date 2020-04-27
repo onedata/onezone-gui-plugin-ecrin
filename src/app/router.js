@@ -7,7 +7,9 @@ const Router = EmberRouter.extend({
 });
 
 Router.map(function () {
+  this.route('search-help');
   this.route('disclaimer');
+  this.route('organisations');
 });
 
 export default Router;

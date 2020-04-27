@@ -134,3 +134,6 @@
     {{/ddm.item}}
   {{/dd.menu}}
 {{/bs-dropdown}}
+{{#one-icon class="help-trigger clickable" icon="sign-question-rounded" click=(action "goToHelp")}}
+  {{bs-tooltip title=(tt this "help")}}
+{{/one-icon}}

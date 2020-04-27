@@ -21,4 +21,5 @@ export default {
     studyCharact: 'Study characteristics',
     viaPubPaper: 'Via published paper',
   },
+  help: 'Help',
 };

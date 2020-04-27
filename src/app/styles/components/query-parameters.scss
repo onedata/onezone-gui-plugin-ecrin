@@ -1,6 +1,11 @@
 .query-parameters {
   display: flex;
 
+  .help-trigger {
+    margin-left: $padding-small-horizontal;
+    font-size: 120%;
+  }
+
   @media (min-width: $screen-sm-min) {
     margin-bottom: $padding-base-vertical;
 
@@ -21,6 +26,12 @@
       margin-top: $line-height-computed + 5px;
     }
 
+    .help-trigger {
+      align-self: center;
+      flex-shrink: 0;
+      margin-top: ($line-height-computed + 5px) / 2;
+    }
+
     .mode-group,
     .study-id-type-group,
     .study-title-topic-operator-group,
@@ -34,7 +45,7 @@
     }
 
     .study-id-type-group {
-      flex-basis: 350px;
+      flex-basis: 200px;
     }
 
     .study-title-topic-operator-group {
@@ -47,10 +58,14 @@
   }
 
   @media (max-width: $screen-xs-max) {
-    flex-direction: column;
+    flex-wrap: wrap;
 
-    .find-button-group {
-      align-self: flex-end;
+    .study-filters {
+      flex-basis: 100%;
+    }
+
+    .help-trigger {
+      align-self: center;
     }
   }
 }

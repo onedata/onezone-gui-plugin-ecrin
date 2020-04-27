@@ -1,8 +1,7 @@
 <div class="panel-body">
   <div class="messages">
     <div class="footer-section sources-section">
-      {{!-- TODO: link target --}}
-      {{!-- <a>{{tt this "sourcesAndOrganisations"}}</a> | --}}
+      {{#link-to "organisations"}}{{tt this "sourcesAndOrganisations"}}{{/link-to}} |
       {{#link-to "disclaimer"}}{{tt this "disclaimer"}}{{/link-to}}
     </div>
     <div class="footer-section include-metadata-section">

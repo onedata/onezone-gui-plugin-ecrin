@@ -19,6 +19,7 @@ export default Component.extend(I18n, {
   classNames: ['query-parameters', 'form'],
 
   configuration: service(),
+  router: service(),
 
   /**
    * @override
@@ -88,5 +89,11 @@ export default Component.extend(I18n, {
 
   entryMatcher(item, term) {
     return get(item, 'name').toLowerCase().indexOf(term.trim().toLowerCase());
+  },
+
+  actions: {
+    goToHelp() {
+      this.get('router').transitionTo('search-help');
+    },
   },
 });

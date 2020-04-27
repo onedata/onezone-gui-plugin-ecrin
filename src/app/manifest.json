@@ -9,14 +9,6 @@
           "id": 11
         },
         {
-          "name": "Regulatory Body ID",
-          "id": 41
-        },
-        {
-          "name": "Ethics Review ID",
-          "id": 12
-        },
-        {
           "name": "Funder's ID",
           "id": 13
         },
@@ -29,108 +21,8 @@
           "id": 39
         },
         {
-          "name": "DAIDS ID",
-          "id": 40
-        },
-        {
-          "name": "Repository accession number",
-          "id": 15
-        },
-        {
-          "name": "PMID",
-          "id": 16
-        },
-        {
-          "name": "PMCID",
-          "id": 31
-        },
-        {
-          "name": "NIH Manuscript ID",
-          "id": 32
-        },
-        {
-          "name": "Medline UID",
-          "id": 36
-        },
-        {
-          "name": "bioRxiv ID",
-          "id": 17
-        },
-        {
-          "name": "arXiv ID",
-          "id": 18
-        },
-        {
-          "name": "psyXiv ID",
-          "id": 19
-        },
-        {
-          "name": "socXiv ID",
-          "id": 20
-        },
-        {
-          "name": "Handle ID",
-          "id": 21
-        },
-        {
-          "name": "ISBN",
-          "id": 22
-        },
-        {
-          "name": "ISTC",
-          "id": 23
-        },
-        {
-          "name": "ISAN",
-          "id": 24
-        },
-        {
-          "name": "LSID",
-          "id": 25
-        },
-        {
-          "name": "Other Bibliographic ID",
-          "id": 26
-        },
-        {
-          "name": "NRCBL",
-          "id": 33
-        },
-        {
-          "name": "Publisher article ID",
-          "id": 34
-        },
-        {
-          "name": "PMC Publisher ID",
-          "id": 37
-        },
-        {
-          "name": "PM Publisher ID",
-          "id": 38
-        },
-        {
-          "name": "Serial Item and Contribution Identifier",
-          "id": 35
-        },
-        {
-          "name": "URL",
-          "id": 27
-        },
-        {
-          "name": "PURL",
-          "id": 28
-        },
-        {
-          "name": "URN",
-          "id": 29
-        },
-        {
-          "name": "ARK",
-          "id": 30
-        },
-        {
-          "name": "Other",
-          "id": 90
+          "name": "NHLBI ID",
+          "id": 42
         }
       ],
       "studyTypeMapping": [
