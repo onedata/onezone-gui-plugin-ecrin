@@ -1,6 +1,6 @@
 {
   "onedata": {
-    "version": "0.8",
+    "version": "1.0.0",
     "defaultGuiConfiguration": {
       "contactEmail": "contact@ecrin.org",
       "studyIdTypeMapping": [

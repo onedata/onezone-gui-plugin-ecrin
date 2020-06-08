@@ -1,7 +1,7 @@
 SRC_DIR	 ?= src
 REL_DIR	 ?= rel
 
-.PHONY: deps build_dev build_prod doc clean test test_xunit_output submodules
+.PHONY: deps build_dev build_prod build_plugin_dev build_plugin_prod doc clean test test_xunit_output submodules
 
 all: build_dev
 
