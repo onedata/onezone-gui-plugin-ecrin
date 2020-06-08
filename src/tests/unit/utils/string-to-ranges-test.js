@@ -31,4 +31,14 @@ describe('Unit | Utility | string to ranges', function () {
         { start: 1995, end: 1996 },
       ]);
   });
+
+  it('interprets string with ">" range', function () {
+    expect(stringToRanges('>1998'))
+      .to.have.deep.members([{ start: 1999 }]);
+  });
+
+  it('interprets string with "<" range', function () {
+    expect(stringToRanges('<1998'))
+      .to.have.deep.members([{ end: 1997 }]);
+  });
 });

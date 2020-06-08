@@ -14,7 +14,10 @@ import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 
 export default Component.extend(I18n, {
-  classNames: ['study-record'],
+  classNames: ['study-record', 'panel', 'panel-default'],
+  classNameBindings: [
+    'study.isRecordExpanded:is-expanded:is-collapsed',
+  ],
 
   /**
    * @override
@@ -33,6 +36,12 @@ export default Component.extend(I18n, {
    * @type {Object}
    */
   study: undefined,
+
+  /**
+   * @virtual
+   * @type {Object}
+   */
+  selectedDataObjects: undefined,
 
   /**
    * @virtual
@@ -64,9 +73,6 @@ export default Component.extend(I18n, {
       } else {
         study.expandAll();
       }
-    },
-    toggleDataObjectSelection(dataObject) {
-      toggleListItemExistence(this.get('study.selectedDataObjects'), dataObject);
     },
     remove() {
       const {

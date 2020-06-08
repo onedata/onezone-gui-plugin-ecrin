@@ -12,6 +12,7 @@ import { resolve, Promise } from 'rsvp';
 import { getProperties, get } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import _ from 'lodash';
+import moment from 'moment';
 
 const scriptsToLoad = [
   'assets/pdfmake/pdfmake.min.js',
@@ -88,20 +89,23 @@ export default Service.extend(I18n, {
   },
 
   /**
-   * Generates PDF documents from passed array of studies with data objects
-   * @param {Array<Utils.Study>} results
+   * Generates PDF documents from passed data store
+   * @param {Array<Utils.DataStore>} dataStore
    * @returns {Promise}
    */
-  generatePdfFromResults(results) {
+  generatePdfFromResults(dataStore) {
     return this.loadPdfMake()
       .then(pdfMake => {
-        const dataObjects = _.flatten(
-          results.mapBy('selectedDataObjects')
-        ).uniqBy('id');
+        const {
+          filteredDataObjects,
+          filteredStudies,
+        } = getProperties(dataStore, 'filteredDataObjects', 'filteredStudies');
         const dataObjectsRepresentation =
-          this.generateDataObjectsPdfRepresentation(dataObjects);
-        const studiesRepresentation =
-          this.generateStudiesPdfRepresentation(results, dataObjectsRepresentation);
+          this.generateDataObjectsPdfRepresentation(filteredDataObjects);
+        const studiesRepresentation = this.generateStudiesPdfRepresentation(
+          filteredStudies,
+          dataObjectsRepresentation
+        );
         const docDefinition = {
           footer: function (currentPage) {
             const onRightSide = Boolean(currentPage % 2);
@@ -125,13 +129,16 @@ export default Service.extend(I18n, {
             },
           },
         };
-        pdfMake.createPdf(docDefinition).open();
+        const nowString = moment().format('YYYY.MM.DD-HH.mm');
+        return pdfMake
+          .createPdf(docDefinition)
+          .download(`mdr-results-snapshot-${nowString}.pdf`);
       });
   },
 
   /**
    * Generates map dataObject.id -> dataObject pdf representation object
-   * @param {Array<Utils.DataObject>} dataObjects 
+   * @param {Array<DataObject>} dataObjects 
    * @returns {Map<number,Object>}
    */
   generateDataObjectsPdfRepresentation(dataObjects) {
@@ -144,7 +151,9 @@ export default Service.extend(I18n, {
         title,
         year,
         accessType,
-        url,
+        accessDetails,
+        accessDetailsUrl,
+        urls,
       } = getProperties(
         dataObject,
         'id',
@@ -152,16 +161,48 @@ export default Service.extend(I18n, {
         'title',
         'year',
         'accessType',
-        'url'
+        'accessDetails',
+        'accessDetailsUrl',
+        'urls'
       );
+
+      const accessSection = [];
+      if (urls.length) {
+        accessSection.push({
+          text: '\n' + this.pdfT('dataObjectUrlAccessLabel'),
+          bold: true,
+        }, {
+          ul: urls.map(({ type, url }) => {
+            const label = type !== 'unknown' ?
+              this.pdfT(`dataObjectUrlType.${type}`) + ': ' : '';
+            return label + url;
+          }),
+        });
+      }
+
+      const accessDetailsSection = [];
+      if (accessDetails) {
+        accessDetailsSection.push({
+          text: '\n' + this.pdfT('dataObjectAccessDetailsLabel'),
+          bold: true,
+        }, accessDetails);
+        if (accessDetailsUrl) {
+          accessDetailsSection.push(
+            ` (${this.pdfT('dataObjectAccessDetailsUrlLabel')}${accessDetailsUrl})`
+          );
+        }
+      }
 
       if (!representationsMap.has(id)) {
         representationsMap.set(id, [{
           text: get(type, 'name'),
           bold: true,
         }, {
-          text: title +
-            (url ? '\n\n' + this.pdfT('dataObjectAccessLabel') + url : ''),
+          stack: [
+            title,
+            { stack: accessSection },
+            { text: accessDetailsSection },
+          ],
         }, {
           text: year || '‐',
         }, {
@@ -185,13 +226,13 @@ export default Service.extend(I18n, {
         title,
         description,
         dataSharingStatement,
-        selectedDataObjects,
+        dataObjects,
       } = getProperties(
         study,
         'title',
         'description',
         'dataSharingStatement',
-        'selectedDataObjects',
+        'dataObjects',
       );
       const tableColsCount = 4;
       const tableBody = [
@@ -223,10 +264,16 @@ export default Service.extend(I18n, {
           colSpan: tableColsCount,
         }, ..._.times(tableColsCount - 1, _.constant({}))]);
       }
-      if (get(selectedDataObjects, 'length')) {
-        tableBody.push(...selectedDataObjects.map(dataObject =>
-          dataObjectsRepresentation.get(get(dataObject, 'id'))
-        ));
+      if (get(dataObjects, 'length')) {
+        // dataObjectsRepresentation contains only selected data objects, so compact()
+        // will remove all not-selected data object entries. cloneDeep is used, because
+        // makePdf modifies passed object and using the same data object twice in
+        // different studies causes rendering empty data object entry for the second study.
+        tableBody.push(...dataObjects.sortBy('year')
+          .map(dataObject => dataObjectsRepresentation.get(get(dataObject, 'id')))
+          .compact()
+          .map(dataObject => _.cloneDeep(dataObject))
+        );
       }
 
       return {

@@ -1,6 +1,16 @@
-<div class="studies-list-header clearfix">
+<div class="studies-list-header">
+  {{#if (gt latestSearchFittingStudiesCount 1000)}}
+    {{#bs-alert type="warning" class="results-alert"}}
+      {{tt this "tooMuchResultsAlert" totalCount=latestSearchFittingStudiesCount}}
+    {{/bs-alert}}
+  {{/if}}
+  {{#if isStudiesLimitReached}}
+    {{#bs-alert type="warning" class="results-alert"}}
+      {{tt this "resultsLimitReachedAlert"}}
+    {{/bs-alert}}
+  {{/if}}
   <div class="results-counter">
-    {{tt this "results"}}: <span class="one-label">{{studies.length}}</span>
+    {{tt this "resultsCounter" totalCount=allStudiesCount filteredCount=studies.length}}
   </div>
   <div class="results-actions">
     {{#bs-button
@@ -23,15 +33,15 @@
       {{#bs-button
         type="default"
         size="sm"
-        onClick=exportResultsToPdf
-        disabled=isFetchingData
+        onClick=(action "exportResultsToPdf")
+        disabled=(or isFetchingData isExportingToPdf)
       }}
-        {{tt this "exportToPdf"}}
+        {{tt this (if isExportingToPdf "exportingToPdf" "exportToPdf")}}
       {{/bs-button}}
       {{#bs-button
         type="danger"
         size="sm"
-        onClick=(action "removeAllStudies")
+        onClick=(action removeAllStudies)
         disabled=isFetchingData
       }}
         {{tt this "clear"}}
@@ -39,6 +49,24 @@
     {{/if}}
   </div>
 </div>
+{{yield}}
+{{#if studies.length}}
+  <div class="studies-list">
+    {{pagination-selector pagedContent=pagedStudies}}
+    {{#each pagedStudies as |study|}}
+      {{query-results/study-record
+        study=study
+        selectedDataObjects=selectedDataObjects
+        remove=(action removeStudy study)
+        isFetchingData=isFetchingData
+      }}
+    {{/each}}
+    {{pagination-selector
+      pagedContent=pagedStudies
+      perPageDropdownVerticalPosition="above"
+    }}
+  </div>
+{{/if}}
 {{save-dialog
   isOpened=isSaveDialogOpened
   onSave=(action "saveResults")
@@ -51,22 +79,3 @@
   onRemove=removeSavedResults
   onCancel=(action (mut isLoadDialogOpened) false)
 }}
-<div class="studies-list">
-  <div class="data-start-row" style={{firstRowStyle}}></div>
-  {{#bs-accordion onChange=(action "resultExpanded") as |acc|}}
-    {{#each studiesChunksArray as |study|}}
-      <div class="data-row" data-row-id={{study.id}}>
-        {{#acc.item value=study.id as |accItem|}}
-          {{query-results/study-record
-            item=accItem
-            study=study
-            isExpanded=(eq study.id expandedStudyId)
-            remove=(action "removeStudy" study)
-            isFetchingData=isFetchingData
-          }}
-        {{/acc.item}}
-      </div>
-    {{/each}}
-  {{/bs-accordion}}
-  {{yield}}
-</div>

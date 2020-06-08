@@ -8,7 +8,7 @@
  */
 
 import Component from '@ember/component';
-import { computed, get } from '@ember/object';
+import { computed } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { A } from '@ember/array';
 import { equal } from 'ember-awesome-macros';
@@ -37,10 +37,11 @@ export default Component.extend(I18n, {
   onChange: notImplementedIgnore,
 
   /**
-   * Filter string for filtering by item name
-   * @type {String}
+   * @virtual optional
+   * @type {Function}
+   * @returns {any}
    */
-  itemsFilter: '',
+  onShowHelp: undefined,
 
   /**
    * @virtual
@@ -55,38 +56,9 @@ export default Component.extend(I18n, {
   selectedItems: computed(() => A()),
 
   /**
-   * @type {Function}
-   * @param {Object} item
-   * @param {string} filter
-   * @returns {boolean}
-   */
-  matcher: computed(() => {
-    return (item, filter) =>
-      get(item, 'name').toLowerCase().includes(filter.trim().toLowerCase());
-  }),
-
-  /**
-   * @type {ComputedProperty<Array<{ name: string }>>}
-   */
-  filteredItems: computed(
-    'items.@each.name',
-    'itemsFilter',
-    'matcher',
-    function filteredItems() {
-      const {
-        items,
-        itemsFilter,
-        matcher,
-      } = this.getProperties('items', 'itemsFilter', 'matcher');
-
-      return items.filter(item => matcher(item, itemsFilter));
-    }
-  ),
-
-  /**
    * @type {ComputedProperty<boolean>}
    */
-  areAllItemsSelected: equal('selectedItems.length', 'filteredItems.length'),
+  areAllItemsSelected: equal('selectedItems.length', 'items.length'),
 
   actions: {
     toggleItem(item) {
@@ -110,14 +82,14 @@ export default Component.extend(I18n, {
       if (!this.get('disabled')) {
         const {
           onChange,
-          filteredItems,
+          items,
           areAllItemsSelected,
-        } = this.getProperties('filteredItems', 'onChange', 'areAllItemsSelected');
+        } = this.getProperties('items', 'onChange', 'areAllItemsSelected');
 
         if (areAllItemsSelected) {
           onChange([]);
         } else {
-          onChange(filteredItems.slice(0));
+          onChange(items.slice(0));
         }
       }
     },

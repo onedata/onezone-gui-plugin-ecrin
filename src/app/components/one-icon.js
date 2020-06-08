@@ -44,7 +44,7 @@ export default Component.extend({
   },
 
   _applyStyles() {
-    let color = this.get('color');
+    const color = this.get('color');
     this.$().css({
       color,
     });

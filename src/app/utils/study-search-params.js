@@ -17,13 +17,15 @@ const paramsList = [
   'studyTitleContains',
   'studyTopicsInclude',
   'studyTitleTopicOperator',
+  'paperSearchField',
   'doi',
   'dataObjectTitle',
+  'internalStudyIds',
 ];
 
 export default EmberObject.extend({
   /**
-   * One of 'specificStudy', 'studyCharact', 'viaPubPaper'
+   * One of 'specificStudy', 'studyCharact', 'viaPubPaper', 'viaInternalId'
    * @type {string}
    * @virtual
    */
@@ -59,6 +61,14 @@ export default EmberObject.extend({
 
   /**
    * Only for mode === 'viaPubPaper'
+   * One of: 'doi', 'title'
+   * @type {string}
+   * @virtual
+   */
+  paperSearchField: 'doi',
+
+  /**
+   * Only for mode === 'viaPubPaper'
    * @type {string}
    * @virtual
    */
@@ -70,6 +80,12 @@ export default EmberObject.extend({
    * @virtual
    */
   dataObjectTitle: '',
+
+  /**
+   * Only for mode === 'viaInternalId'
+   * @type {Array<number>}
+   */
+  internalStudyIds: undefined,
 
   /**
    * Only for mode === 'studyCharact'
@@ -96,8 +112,10 @@ export default EmberObject.extend({
       studyId,
       studyTitleContains,
       studyTopicsInclude,
+      paperSearchField,
       doi,
       dataObjectTitle,
+      internalStudyIds,
     } = this.getProperties(...paramsList);
 
     switch (mode) {
@@ -106,9 +124,23 @@ export default EmberObject.extend({
       case 'studyCharact':
         return Boolean(studyTitleContains || studyTopicsInclude);
       case 'viaPubPaper':
-        return Boolean(doi || dataObjectTitle);
+        return Boolean(paperSearchField === 'title' ? dataObjectTitle : doi);
+      case 'viaInternalId':
+        return Boolean(internalStudyIds && internalStudyIds.length);
       default:
         return false;
     }
   }),
+
+  dumpValues() {
+    const dump = this.getProperties(...paramsList);
+    dump.studyIdType = (dump.studyIdType || {}).id;
+    return dump;
+  },
+
+  loadDumpedValues(dump, studyIdTypeMapping) {
+    this.setProperties(Object.assign({}, dump, {
+      studyIdType: studyIdTypeMapping.findBy('id', dump.studyIdType),
+    }));
+  },
 });

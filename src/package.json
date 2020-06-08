@@ -1,6 +1,6 @@
 {
   "name": "onezone-gui-plugin-ecrin",
-  "version": "0.3.0",
+  "version": "0.8.0",
   "description": "A Onezone Ecrin plugin",
   "license": "MIT",
   "author": "ACK CYFRONET AGH",
@@ -40,6 +40,7 @@
     "ember-cli-json-module": "1.0.0",
     "ember-cli-moment-shim": "3.7.1",
     "ember-cli-node-assets": "0.2.2",
+    "ember-cli-pagination": "3.1.5",
     "ember-cli-sass": "10.0.0",
     "ember-cli-sri": "2.1.1",
     "ember-cli-uglify": "2.1.0",
@@ -47,7 +48,6 @@
     "ember-data": "3.7.0",
     "ember-export-application-global": "2.0.0",
     "ember-i18n": "5.3.1",
-    "ember-line-clamp": "1.0.1",
     "ember-load-initializers": "1.1.0",
     "ember-lodash": "4.19.4",
     "ember-maybe-import-regenerator": "0.1.6",
@@ -65,7 +65,8 @@
     "eslint-plugin-promise": "4.0.1",
     "is-url": "1.2.4",
     "loader.js": "4.7.0",
-    "pdfmake": "0.1.63",
+    "moment": "2.19.3",
+    "pdfmake": "0.1.65",
     "sass": "1.16.1",
     "sinon": "7.2.3",
     "sinon-chai": "3.3.0"

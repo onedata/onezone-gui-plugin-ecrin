@@ -145,7 +145,6 @@ label {
 .btn-group {
   .btn {
     @include box-shadow(none);
-    border-color: $color-one-default;
     border-width: 1px;
     & + .btn {
       margin-left: -2px;
@@ -243,6 +242,7 @@ label {
     .modal-dialog {
       @include absolute-align-middle-center();
 
+      display: flex;
       margin: 0;
       transition: initial;
       border-radius: $border-radius-large;
@@ -253,6 +253,9 @@ label {
       }
 
       .modal-content {
+        display: flex;
+        flex-grow: 1;
+        flex-direction: column;
         box-shadow: none;
         padding: 0em 2em 1em 2em;
 
@@ -267,6 +270,8 @@ label {
 
         .modal-body {
           padding: 0 $modal-inner-padding;
+          min-height: 0;
+          overflow: auto;
           &:first-child {
             padding-top: $modal-inner-padding;
           }

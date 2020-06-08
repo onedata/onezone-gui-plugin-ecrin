@@ -19,6 +19,7 @@ export default Component.extend(I18n, {
   classNames: ['query-parameters', 'form'],
 
   configuration: service(),
+  router: service(),
 
   /**
    * @override
@@ -39,6 +40,12 @@ export default Component.extend(I18n, {
   studySearchParams: undefined,
 
   /**
+   * @virtual optional
+   * @type {boolean}
+   */
+  isStackingBlocked: false,
+
+  /**
    * @virtual
    * @type {Function}
    * @param {string} fieldName
@@ -53,6 +60,13 @@ export default Component.extend(I18n, {
    * @returns {undefined}
    */
   onFind: notImplementedIgnore,
+
+  /**
+   * @virtual
+   * @type {Function}
+   * @returns {undefined}
+   */
+  onFindWithStacking: notImplementedIgnore,
 
   /**
    * @type {Array<string>}
@@ -75,5 +89,11 @@ export default Component.extend(I18n, {
 
   entryMatcher(item, term) {
     return get(item, 'name').toLowerCase().indexOf(term.trim().toLowerCase());
+  },
+
+  actions: {
+    goToHelp() {
+      this.get('router').transitionTo('search-help');
+    },
   },
 });

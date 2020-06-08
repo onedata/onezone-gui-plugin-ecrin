@@ -1,14 +1,18 @@
 .data-filters {
+  border: 1px solid $main-border-color;
+  padding: $padding-base-horizontal;
+  border-radius: $border-radius-base;
+
   .panel-body {
     padding: 0 $padding-small-horizontal
   }
 
   .form-group {
-    padding-top: $padding-base-vertical;
+    padding-top: $padding-small-vertical;
     margin-bottom: $padding-base-vertical;
 
-    + .form-group {
-      border-top: 1px solid $main-border-color;
+    &.filter-collapse:first-child {
+      padding-top: $padding-base-vertical;
     }
   }
 
@@ -18,18 +22,30 @@
     padding-top: 0;
 
     .control-label {
-        flex-grow: 1;
-        margin: 0;
+      flex-grow: 1;
+      margin: 0;
     }
+  }
+
+  .filters-container {
+    font-size: 85%;
   }
 
   @media (min-width: $screen-sm-min) {
     display: flex;
     flex-direction: column;
 
+    .filters-model-group {
+      flex-shrink: 0;
+    }
+
     .filters-container {
       overflow: auto;
       margin-bottom: $padding-base-vertical;
+    }
+
+    .reset-button {
+      flex-shrink: 0;
     }
   }
 }

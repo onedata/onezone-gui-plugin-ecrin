@@ -1,5 +1,5 @@
 export default {
-  itemsFilterPlaceholder: 'Filter options...',
+  helpTrigger: 'Help',
   deselectAll: 'Deselect all',
   selectAll: 'Select all',
 };

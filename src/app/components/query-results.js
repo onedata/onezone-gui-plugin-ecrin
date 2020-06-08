@@ -8,23 +8,17 @@
  */
 
 import Component from '@ember/component';
-import { set, get, getProperties, computed, observer } from '@ember/object';
-import { htmlSafe } from '@ember/string';
-import ListWatcher from 'onezone-gui-plugin-ecrin/utils/list-watcher';
+import { getProperties, observer } from '@ember/object';
+import { reads } from '@ember/object/computed';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
-import $ from 'jquery';
-import { inject as service } from '@ember/service';
-import ReplacingChunksArray from 'onezone-gui-plugin-ecrin/utils/replacing-chunks-array';
-import { resolve } from 'rsvp';
-import { A } from '@ember/array';
 import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 import notImplementedReject from 'onezone-gui-plugin-ecrin/utils/not-implemented-reject';
+import pagedArray from 'ember-cli-pagination/computed/paged-array';
+import { later } from '@ember/runloop';
 
 export default Component.extend(I18n, {
   classNames: ['query-results'],
-
-  media: service(),
 
   /**
    * @override
@@ -39,10 +33,19 @@ export default Component.extend(I18n, {
   isFetchingData: false,
 
   /**
+   * Number of studies which fulfilled the latest search parameters. May be larger
+   * than the total number of studies in dataStore due to the limit of studies fetched per
+   * single query.
    * @virtual
-   * @type {Array<Utils.Study>}
+   * @type {number}
    */
-  studies: computed(() => A()),
+  latestSearchFittingStudiesCount: 0,
+
+  /**
+   * @virtual
+   * @type {Utils.DataStore}
+   */
+  dataStore: undefined,
 
   /**
    * @virtual
@@ -84,40 +87,17 @@ export default Component.extend(I18n, {
   /**
    * @virtual
    * @type {Function}
-   * @param {Array<Util.Study>} studies
+   * @param {Util.Study} study
    * @returns {any}
    */
-  removeStudies: notImplementedIgnore,
+  removeStudy: notImplementedIgnore,
 
   /**
-   * @type {number}
+   * @virtual
+   * @type {Function}
+   * @returns {any}
    */
-  rowHeight: 43,
-
-  /**
-   * @type {number}
-   */
-  expandedRowExtraHeight: 250,
-
-  /**
-   * @type {JQuery}
-   */
-  $scrollContainer: undefined,
-
-  /**
-   * @type {string}
-   */
-  expandedStudyId: undefined,
-
-  /**
-   * @type {Util.ListWatcher}
-   */
-  listWatcher: null,
-
-  /**
-   * @type {ReplacingChunksArray<Utils.Study>}
-   */
-  studiesChunksArray: undefined,
+  removeAllStudies: notImplementedIgnore,
 
   /**
    * @type {boolean}
@@ -130,156 +110,56 @@ export default Component.extend(I18n, {
   isLoadDialogOpened: false,
 
   /**
-   * @type {Ember.ComputedProperty<number>}
+   * @type {boolean}
    */
-  firstRowHeight: computed(
-    'rowHeight',
-    'studiesChunksArray._start',
-    'expandedStudyId',
-    'expandedRowExtraHeight',
-    function firstRowHeight() {
-      const {
-        expandedStudyId,
-        studiesChunksArray,
-        rowHeight,
-        expandedRowExtraHeight,
-      } = this.getProperties(
-        'expandedStudyId',
-        'studiesChunksArray',
-        'rowHeight',
-        'expandedRowExtraHeight'
-      );
-      const {
-        _start,
-        sourceArray,
-      } = getProperties(studiesChunksArray, '_start', 'sourceArray');
-      if (!_start) {
-        return 0;
-      } else {
-        let height = _start * rowHeight;
-        if (sourceArray.slice(0, _start).findBy('id', expandedStudyId)) {
-          height += expandedRowExtraHeight;
-        }
-        return height;
-      }
+  isExportingToPdf: false,
+
+  /**
+   * @type {ComputedProperty<number>}
+   */
+  allStudiesCount: reads('dataStore.studies.length'),
+
+  /**
+   * @type {ComputedProperty<boolean>}
+   */
+  isStudiesLimitReached: reads('dataStore.isStudiesLimitReached'),
+
+  /**
+   * @type {ComputedProperty<Array<Utils.Study>>}
+   */
+  studies: reads('dataStore.filteredStudies'),
+
+  /**
+   * @type {ComputedProperty<Array<DataObject>>}
+   */
+  selectedDataObjects: reads('dataStore.filteredDataObjects'),
+
+  /**
+   * @type {PagedArray<Util.Study>}
+   */
+  pagedStudies: pagedArray('studies', {
+    perPage: 10,
+  }),
+
+  studiesPerPageObserver: observer(
+    'pagedStudies.perPage',
+    function studiesPerPageObserver() {
+      this.set('pagedStudies.page', 1);
     }
   ),
 
-  /**
-   * @type {Ember.ComputedProperty<HTMLSafe>}
-   */
-  firstRowStyle: computed('firstRowHeight', function firstRowStyle() {
-    return htmlSafe(`height: ${this.get('firstRowHeight')}px;`);
-  }),
+  studiesNumberObserver: observer('studies.length', function studiesNumberObserver() {
+    const {
+      page,
+      totalPages,
+    } = getProperties(this.get('pagedStudies'), 'page', 'totalPages');
 
-  scrollContainerModifier: observer(
-    'media.isMobile',
-    function scrollContainerModifier() {
-      const isMobile = this.get('media.isMobile');
-      const $newScrollContainer = isMobile ?
-        $('#application-container') : this.$('.studies-list');
-
-      const $oldScrollContainer = this.get('$scrollContainer');
-      if (!$oldScrollContainer || $oldScrollContainer[0] !== $newScrollContainer[0]) {
-        const oldListWatcher = this.get('listWatcher');
-        if (oldListWatcher) {
-          oldListWatcher.destroy();
-        }
-
-        const newListWatcher = new ListWatcher(
-          $newScrollContainer,
-          '.data-row',
-          (items, onTop) => safeExec(this, 'onListScroll', items, onTop),
-          '.data-start-row',
-        );
-        newListWatcher.scrollHandler();
-
-        this.setProperties({
-          $newScrollContainer,
-          listWatcher: newListWatcher,
-        });
-      }
+    if (totalPages < page) {
+      this.set('pagedStudies.page', totalPages || 1);
     }
-  ),
-
-  studiesObserver: observer('studies', function studiesObserver() {
-    this.set('studiesChunksArray.sourceArray', this.get('studies'));
   }),
-
-  init() {
-    this._super(...arguments);
-
-    const studiesChunksArray = ReplacingChunksArray.create({
-      fetch() { return resolve([]); },
-      startIndex: 0,
-      endIndex: 50,
-      indexMargin: 24,
-    });
-    get(studiesChunksArray, 'initialLoad')
-      .then(() => set(studiesChunksArray, '_endReached', true));
-
-    this.set('studiesChunksArray', studiesChunksArray);
-    this.studiesObserver();
-  },
-
-  didInsertElement() {
-    this._super(...arguments);
-
-    this.scrollContainerModifier();
-  },
-
-  /**
-   * @param {Array<HTMLElement>} items 
-   * @param {boolean} headerVisible
-   * @returns {undefined}
-   */
-  onListScroll(items, headerVisible) {
-    const studiesChunksArray = this.get('studiesChunksArray');
-    const sourceArray = get(studiesChunksArray, 'sourceArray');
-    const sourceArrayIds = sourceArray.mapBy('id');
-    const firstId = items[0] && Number(items[0].getAttribute('data-row-id')) || null;
-    const lastId = items[items.length - 1] &&
-      Number(items[items.length - 1].getAttribute('data-row-id')) || null;
-    let startIndex, endIndex;
-    if (firstId === null && get(sourceArray, 'length') !== 0) {
-      const rowHeight = this.get('rowHeight');
-      const $firstRow = this.$('.data-start-row');
-      const blankStart = $firstRow.offset().top * -1;
-      const blankEnd = blankStart + window.innerHeight;
-      startIndex = Math.floor(blankStart / rowHeight);
-      endIndex = Math.floor(blankEnd / rowHeight);
-    } else {
-      startIndex = sourceArrayIds.indexOf(firstId);
-      endIndex = sourceArrayIds.indexOf(lastId);
-    }
-    studiesChunksArray.setProperties({ startIndex, endIndex });
-    safeExec(this, 'set', 'headerVisible', headerVisible);
-  },
 
   actions: {
-    resultExpanded(resultId) {
-      this.set('expandedStudyId', resultId);
-    },
-    removeStudy(study) {
-      const {
-        removeStudies,
-        expandedStudyId,
-      } = this.getProperties('removeStudies', 'expandedStudyId');
-
-      removeStudies([study]);
-      if (expandedStudyId === get(study, 'id')) {
-        this.set('expandedStudyId', null);
-      }
-    },
-    removeAllStudies() {
-      const {
-        removeStudies,
-        studies,
-      } = this.getProperties('removeStudies', 'studies');
-
-      removeStudies(studies.slice());
-      this.set('expandedStudyId', null);
-    },
     loadSavedResults(results) {
       return this.get('loadSavedResults')(results)
         .then(() => safeExec(this, () => {
@@ -291,6 +171,15 @@ export default Component.extend(I18n, {
         .then(() => safeExec(this, () => {
           this.set('isSaveDialogOpened', false);
         }));
+    },
+    exportResultsToPdf() {
+      this.set('isExportingToPdf', true);
+      // PDF generation is so CPU-heavy that sometimes browser does not rerender view
+      // immediately and new isExportingToPdf value is not visible. Hence usage of later().
+      later(this, () => {
+        this.get('exportResultsToPdf')()
+          .finally(() => safeExec(this, () => this.set('isExportingToPdf', false)));
+      }, 100);
     },
   },
 });

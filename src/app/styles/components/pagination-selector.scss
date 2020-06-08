@@ -1,0 +1,31 @@
+.pagination-selector {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  .pagination {
+    display: initial;
+    margin: 0;
+
+    // ember-cli-pagination styles also use these ugly-generic selectors
+    a, span {
+      padding: ($padding-small-vertical + 1) $padding-small-horizontal;
+    }
+
+    .active a {
+      background-color: $color-one-blue-gray;
+      border-color: $color-one-blue-gray;
+      font-weight: bold;
+    }
+  }
+
+  > * {
+    margin-bottom: $padding-small-vertical;
+  }
+
+  .ember-basic-dropdown,
+  label {
+    display: inline-block;
+    vertical-align: middle;
+  }
+}

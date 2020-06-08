@@ -1,90 +1,91 @@
-<div class="relative clearfix">
-  <div class="row study-filters">
-    <div class="col-xs-12 col-sm-4 form-group">
-      <label class="control-label">{{tt this "selectMode"}}</label>
+<div class="study-filters">
+  <div class="form-group mode-group">
+    <label class="control-label">{{tt this "selectMode"}}</label>
+    {{#power-select
+      selected=studySearchParams.mode
+      options=modeOptions
+      onchange=(action onChange "mode")
+      searchEnabled=false
+      disabled=isFetchingData
+      as |mode|}}
+      {{tt this (concat "modes." mode)}}
+    {{/power-select}}
+  </div>
+  {{#if (eq studySearchParams.mode "specificStudy")}}
+    <div class="form-group study-id-type-group">
+      <label class="control-label">{{tt this "studyIdType"}}</label>
       {{#power-select
-        selected=studySearchParams.mode
-        options=modeOptions
-        onchange=(action onChange "mode")
-        searchEnabled=false
+        selected=studySearchParams.studyIdType
+        options=studyIdTypeMapping
+        onchange=(action onChange "studyIdType")
+        matcher=entryMatcher
         disabled=isFetchingData
-        as |mode|}}
-        {{tt this (concat "modes." mode)}}
+        as |studyIdType|}}
+        {{studyIdType.name}}
       {{/power-select}}
     </div>
-    {{#if (eq studySearchParams.mode "specificStudy")}}
-      <div class="col-xs-12 col-sm-4 form-group">
-        <label class="control-label">{{tt this "studyIdType"}}</label>
-        {{#power-select
-          selected=studySearchParams.studyIdType
-          options=studyIdTypeMapping
-          onchange=(action onChange "studyIdType")
-          matcher=entryMatcher
-          disabled=isFetchingData
-          as |studyIdType|}}
-          {{studyIdType.name}}
-        {{/power-select}}
-      </div>
-      <div class="col-xs-12 col-sm-4 form-group">
-        <label class="control-label" for="study-id-input">{{tt this "studyId"}}</label>
-        <input
-          id="study-id-input"
-          class="form-control"
-          type="text"
-          value={{studySearchParams.studyId}}
-          onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "studyId") value="target.value"}}
-          disabled={{isFetchingData}}>
-      </div>
-    {{else if (eq studySearchParams.mode "studyCharact")}}
-      <div class="col-xs-12 col-sm-3 form-group">
-        <label class="control-label" for="study-title-contains-input">{{tt this "studyTitleContains"}}</label>
-        <input
-          id="study-title-contains-input"
-          class="form-control"
-          type="text"
-          value={{studySearchParams.studyTitleContains}}
-          onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "studyTitleContains") value="target.value"}}
-          disabled={{isFetchingData}}>
-      </div>
-      <div class="col-xs-12 col-sm-2 form-group">
-          <label class="control-label hidden-xs">&nbsp;</label>
-          {{#power-select
-            options=studyTitleTopicOperatorOptions
-            selected=studySearchParams.studyTitleTopicOperator
-            onchange=(action onChange "studyTitleTopicOperator")
-            searchEnabled=false
-            disabled=isFetchingData
-            as |studyTitleTopicOperator|}}
-            {{tt this (concat "studyTitleTopicOperatorOptions." studyTitleTopicOperator)}}
-          {{/power-select}}
-        </div>
-      <div class="col-xs-12 col-sm-3 form-group">
-        <label class="control-label" for="study-topics-include-input">{{tt this "studyTopicsInclude"}}</label>
-        <input
-          id="study-topics-include-input"
-          class="form-control"
-          type="text"
-          value={{studySearchParams.studyTopicsInclude}}
-          onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "studyTopicsInclude") value="target.value"}}
-          disabled={{isFetchingData}}>
-      </div>
-    {{else if (eq studySearchParams.mode "viaPubPaper")}}
-      <div class="col-xs-12 col-sm-4 form-group">
-        <label class="control-label" for="doi-input">{{tt this "doi"}}</label>
-        <input
-          id="doi-input"
-          class="form-control"
-          type="text"
-          value={{studySearchParams.doi}}
-          onkeydown={{invoke-on-enter onFind}}
-          oninput={{action (action onChange "doi") value="target.value"}}
-          disabled={{isFetchingData}}>
-      </div>
-      <div class="col-xs-12 col-sm-4 form-group">
-        <label class="control-label" for="data-object-title-input">{{tt this "dataObjectTitle"}}</label>
+    <div class="form-group study-id-group">
+      <label class="control-label" for="study-id-input">{{tt this "studyId"}}</label>
+      <input
+        id="study-id-input"
+        class="form-control"
+        type="text"
+        value={{studySearchParams.studyId}}
+        onkeydown={{invoke-on-enter onFind}}
+        oninput={{action (action onChange "studyId") value="target.value"}}
+        disabled={{isFetchingData}}>
+    </div>
+  {{else if (eq studySearchParams.mode "studyCharact")}}
+    <div class="form-group study-title-group">
+      <label class="control-label" for="study-title-contains-input">{{tt this "studyTitleContains"}}</label>
+      <input
+        id="study-title-contains-input"
+        class="form-control"
+        type="text"
+        value={{studySearchParams.studyTitleContains}}
+        onkeydown={{invoke-on-enter onFind}}
+        oninput={{action (action onChange "studyTitleContains") value="target.value"}}
+        disabled={{isFetchingData}}>
+    </div>
+    <div class="form-group study-title-topic-operator-group">
+      <label class="control-label hidden-xs">&nbsp;</label>
+      {{#power-select
+        options=studyTitleTopicOperatorOptions
+        selected=studySearchParams.studyTitleTopicOperator
+        onchange=(action onChange "studyTitleTopicOperator")
+        searchEnabled=false
+        disabled=isFetchingData
+        as |studyTitleTopicOperator|}}
+        {{tt this (concat "studyTitleTopicOperatorOptions." studyTitleTopicOperator)}}
+      {{/power-select}}
+    </div>
+    <div class="form-group study-topics-group">
+      <label class="control-label" for="study-topics-include-input">{{tt this "studyTopicsInclude"}}</label>
+      <input
+        id="study-topics-include-input"
+        class="form-control"
+        type="text"
+        value={{studySearchParams.studyTopicsInclude}}
+        onkeydown={{invoke-on-enter onFind}}
+        oninput={{action (action onChange "studyTopicsInclude") value="target.value"}}
+        disabled={{isFetchingData}}>
+    </div>
+  {{else if (eq studySearchParams.mode "viaPubPaper")}}
+   <div class="form-group paper-search-field-group">
+      <label class="control-label">{{tt this "paperSearchField"}}</label>
+      {{#power-select
+        options=(array "doi" "title")
+        selected=studySearchParams.paperSearchField
+        onchange=(action onChange "paperSearchField")
+        searchEnabled=false
+        disabled=isFetchingData
+        as |paperSearchField|}}
+        {{tt this (concat "paperSearchFieldsNames." paperSearchField)}}
+      {{/power-select}}
+    </div>
+    {{#if (eq studySearchParams.paperSearchField "title")}}
+      <div class="form-group do-title-group">
+        <label class="control-label" for="data-object-title-input">{{tt this "paperSearchFieldsNames.title"}}</label>
         <input
           id="data-object-title-input"
           class="form-control"
@@ -94,14 +95,45 @@
           oninput={{action (action onChange "dataObjectTitle") value="target.value"}}
           disabled={{isFetchingData}}>
       </div>
+    {{else}}
+      <div class="form-group doi-group">
+        <label class="control-label" for="doi-input">{{tt this "paperSearchFieldsNames.doi"}}</label>
+        <input
+          id="doi-input"
+          class="form-control"
+          type="text"
+          placeholder={{tt this "doiPlaceholder"}}
+          value={{studySearchParams.doi}}
+          onkeydown={{invoke-on-enter onFind}}
+          oninput={{action (action onChange "doi") value="target.value"}}
+          disabled={{isFetchingData}}>
+      </div>
     {{/if}}
-  </div>
+  {{/if}}
+</div>
+{{#bs-dropdown class="find-button-group" as |dd|}}
   {{#bs-button
     type="primary"
-    class="pull-right find-button"
+    class="find-button"
     onClick=onFind
     disabled=isFetchingData
   }}
     {{tt this "find"}}
   {{/bs-button}}
-</div>
+  {{#dd.button
+    type="primary"
+    disabled=isFetchingData
+  }}
+    <span class="caret"></span>
+  {{/dd.button}}
+  {{#dd.menu align="right" as |ddm|}}
+    {{#ddm.item}}
+      <a class={{if (or isStackingBlocked isFetchingData) "disabled"}} {{action onFindWithStacking}}>
+        {{tt this "findAndAdd"}}
+      </a>
+    {{/ddm.item}}
+  {{/dd.menu}}
+{{/bs-dropdown}}
+{{#one-icon class="help-trigger clickable" icon="sign-question-rounded" click=(action "goToHelp")}}
+  {{bs-tooltip title=(tt this "help")}}
+{{/one-icon}}

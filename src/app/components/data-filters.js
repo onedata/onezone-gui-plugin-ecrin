@@ -8,34 +8,17 @@
  */
 
 import Component from '@ember/component';
-import stringToRanges from 'onezone-gui-plugin-ecrin/utils/string-to-ranges';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import { inject as service } from '@ember/service';
-import { observer, get } from '@ember/object';
+import { observer } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { array, raw } from 'ember-awesome-macros';
 import _ from 'lodash';
-import { dataObjectTypeName } from 'onezone-gui-plugin-ecrin/helpers/data-object-type-name';
 import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
-
-const studyCategorizedFilters = [
-  'type',
-  'status',
-  'genderEligibility',
-  'phase',
-  'interventionModel',
-  'allocationType',
-  'primaryPurpose',
-  'masking',
-  'observationalModel',
-  'timePerspective',
-  'biospecimensRetained',
-];
-
-const dataObjectCategorizedFilters = [
-  'type',
-  'accessType',
-];
+import {
+  studyCategorizedFilters,
+  dataObjectCategorizedFilters,
+} from 'onezone-gui-plugin-ecrin/utils/data-filters-converters';
 
 const filtersFields = {};
 studyCategorizedFilters.forEach(filterName => {
@@ -48,6 +31,10 @@ dataObjectCategorizedFilters.forEach(filterName => {
   filtersFields[`dataObject${upperFirstFilterName}Filter`] =
     reads(`configuration.dataObject${upperFirstFilterName}Mapping`);
 });
+
+const helpContentComponents = {
+  dataObjectFilterType: 'filters-help/data-object-filter-type',
+};
 
 export default Component.extend(I18n, filtersFields, {
   classNames: ['data-filters', 'clearfix'],
@@ -84,18 +71,38 @@ export default Component.extend(I18n, filtersFields, {
 
   /**
    * @virtual
+   * @type {Function}
+   * @returns {any}
+   */
+  onResetStudyFilters: notImplementedIgnore,
+
+  /**
+   * @virtual
+   * @type {Function}
+   * @returns {any}
+   */
+  onResetDataObjectFilters: notImplementedIgnore,
+
+  /**
+   * @virtual
    * @type {Array<Object>}
    */
   dataObjectPublisherMapping: undefined,
 
   /**
-   * @type {Array<Object>}
-   * Previous value of dataObjectPublisherMapping
+   * @virtual
+   * @type {Object}
    */
-  prevDataObjectPublisherMapping: undefined,
+  studyFilters: undefined,
 
   /**
-   * @type {study}
+   * @virtual
+   * @type {Object}
+   */
+  dataObjectFilters: undefined,
+
+  /**
+   * @type {String}
    */
   filtersModel: 'study',
 
@@ -110,10 +117,20 @@ export default Component.extend(I18n, filtersFields, {
   dataObjectPublisherFilter: undefined,
 
   /**
+   * @type {String}
+   */
+  visibleHelp: undefined,
+
+  /**
+   * @type {String}
+   */
+  visibleHelpContentComponent: undefined,
+
+  /**
    * @type {ComputedProperty<boolean>}
    */
   hasInterventionalStudyTypeSelected: array.isAny(
-    'studyTypeFilter',
+    'studyFilters.type',
     raw('isInterventional')
   ),
 
@@ -121,97 +138,38 @@ export default Component.extend(I18n, filtersFields, {
    * @type {ComputedProperty<boolean>}
    */
   hasObservationalStudyTypeSelected: array.isAny(
-    'studyTypeFilter',
+    'studyFilters.type',
     raw('isObservational')
   ),
 
-  dataObjectPublisherMappingObserver: observer(
-    'dataObjectPublisherMapping.[]',
-    function dataObjectPublisherMappingObserver() {
-      const {
-        prevDataObjectPublisherMapping,
-        dataObjectPublisherMapping,
-        dataObjectPublisherFilter,
-      } = this.getProperties(
-        'prevDataObjectPublisherMapping',
-        'dataObjectPublisherMapping',
-        'dataObjectPublisherFilter'
-      );
+  visibleHelpObserver: observer('visibleHelp', function visibleHelpObserver() {
+    const visibleHelp = this.get('visibleHelp');
 
-      const oldPublishersIds = prevDataObjectPublisherMapping.mapBy('id');
-      const newPublishersIds = dataObjectPublisherMapping.mapBy('id');
-      const addedPublishers = _.difference(newPublishersIds, oldPublishersIds)
-        .map(id => dataObjectPublisherMapping.findBy('id', id));
-      const filterInNewMapping = dataObjectPublisherFilter
-        .map(publisher =>
-          dataObjectPublisherMapping.findBy('id', get(publisher, 'id'))
-        )
-        .compact()
-        .addObjects(addedPublishers);
-
-      this.setProperties({
-        prevDataObjectPublisherMapping: dataObjectPublisherMapping.slice(),
-        dataObjectPublisherFilter: filterInNewMapping,
-      });
+    if (visibleHelp) {
+      this.set('visibleHelpContentComponent', helpContentComponents[visibleHelp]);
     }
-  ),
-
-  init() {
-    this._super(...arguments);
-
-    const dataObjectPublisherMapping =
-      (this.get('dataObjectPublisherMapping') || []).slice();
-    this.setProperties({
-      prevDataObjectPublisherMapping: dataObjectPublisherMapping,
-      dataObjectPublisherFilter: dataObjectPublisherMapping,
-    });
-  },
-
-  dataObjectTypeMatcher(item, filter) {
-    const name = dataObjectTypeName(item);
-    return name.toLowerCase().includes(filter.trim().toLowerCase());
-  },
+  }),
 
   actions: {
-    filterStudies() {
-      const filters = {};
-      studyCategorizedFilters.forEach(filterName => {
-        const mappingSize =
-          this.get(`configuration.study${_.upperFirst(filterName)}Mapping.length`);
-        if (mappingSize) {
-          filters[filterName] = this.get(`study${_.upperFirst(filterName)}Filter`);
-        }
-      });
-
-      this.get('onFilterStudies')(filters);
-    },
-    filterDataObjects() {
+    studyFiltersChanged(filterName, value) {
       const {
+        studyFilters,
+        onFilterStudies,
+      } = this.getProperties('studyFilters', 'onFilterStudies');
+
+      onFilterStudies(Object.assign({}, studyFilters, {
+        [filterName]: value,
+      }));
+    },
+    dataObjectFiltersChanged(filterName, value) {
+      const {
+        dataObjectFilters,
         onFilterDataObjects,
-        dataObjectYearFilter,
-        dataObjectPublisherFilter,
-      } = this.getProperties(
-        'onFilterDataObjects',
-        'dataObjectYearFilter',
-        'dataObjectPublisherFilter'
-      );
+      } = this.getProperties('dataObjectFilters', 'onFilterDataObjects');
 
-      const filters = {
-        year: stringToRanges(dataObjectYearFilter),
-        publisher: dataObjectPublisherFilter,
-      };
-
-      dataObjectCategorizedFilters.forEach(filterName => {
-        const mappingSize = this.get(
-          `configuration.dataObject${_.upperFirst(filterName)}Mapping.length`
-        );
-        if (mappingSize) {
-          filters[filterName] =
-            this.get(`dataObject${_.upperFirst(filterName)}Filter`);
-        }
-      });
-
-      onFilterDataObjects(filters);
+      onFilterDataObjects(Object.assign({}, dataObjectFilters, {
+        [filterName]: value,
+      }));
     },
   },
 });

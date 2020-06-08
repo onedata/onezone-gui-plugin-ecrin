@@ -52,6 +52,13 @@ module.exports = {
         requireReturnDescription: false,
       },
     ],
+    'prefer-const': [
+      1,
+      {
+        destructuring: 'all',
+        ignoreReadBeforeAssign: true,
+      },
+    ],
 
     'promise/always-return': 'off', // default: error
     'promise/no-return-wrap': 'error',

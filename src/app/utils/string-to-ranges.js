@@ -19,7 +19,7 @@ export default function stringToRanges(rangeString) {
   }
   const parts = rangeString.split(',');
   const ranges = [];
-  for (let part of parts) {
+  for (const part of parts) {
     if (part.includes('-')) {
       const partSections = part.split('-').map((n) => parseInt(n));
       if (partSections.length !== 2 ||
@@ -29,6 +29,16 @@ export default function stringToRanges(rangeString) {
         return [];
       } else {
         ranges.push({ start: partSections[0], end: partSections[1] });
+      }
+    } else if (part.includes('<')) {
+      const compareNumber = parseInt(part.split('<')[1]);
+      if (!isNaN(compareNumber)) {
+        ranges.push({ end: compareNumber - 1 });
+      }
+    } else if (part.includes('>')) {
+      const compareNumber = parseInt(part.split('>')[1]);
+      if (!isNaN(compareNumber)) {
+        ranges.push({ start: compareNumber + 1 });
       }
     } else {
       const num = parseInt(part);

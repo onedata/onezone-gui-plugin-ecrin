@@ -1,9 +1,10 @@
 .checkbox-filter {
   .top-bar {
     display: flex;
+    justify-content: space-between;
     white-space: nowrap;
     align-items: center;
-    margin-bottom: $padding-base-vertical;
+    margin-bottom: $padding-small-vertical;
 
     .items-filter {
       flex-grow: 1;
@@ -14,9 +15,7 @@
   .items-list {
     list-style-type: none;
     padding: 0;
-    font-size: 90%;
-    max-height: 150px;
-    overflow: auto;
+    margin: 0;
   }
 
   .checkbox-item {
@@ -24,7 +23,7 @@
   }
 
   .one-checkbox {
-    margin-left: $padding-small-horizontal;
+    margin-right: $padding-xs-horizontal;
     flex-shrink: 0;
   }
 

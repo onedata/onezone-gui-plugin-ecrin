@@ -1,0 +1,32 @@
+<div class="data-object-type">
+  <div class="object-type-name">{{typeName}}</div>
+  {{#if isExpandable}}
+    <a {{action toggleExpansion}} class="show-more-link">
+      {{tt this (if isExpanded "showLess" "showMore")}}
+    </a>
+  {{/if}}
+</div>
+<div class="data-object-description">
+  <div class="data-object-overflow-container {{if (and isExpandable (not isExpanded)) "collapsed" "expanded"}}">
+    {{yield}}
+  </div>
+  {{#if (and isExpandable (not isExpanded))}}
+    <div class="content-hidden-shadow"></div>
+  {{/if}}
+</div>
+{{#if dataObject}}
+  <div class="data-object-year">{{or year "‐"}}</div>
+  <div class="data-object-status">
+    <span class="data-object-status-icon {{or accessTypeIndicator "unknown"}}">
+      {{#if accessTypeName}}
+        {{bs-tooltip title=accessTypeName}}
+      {{/if}}
+    </span>
+  </div>
+  <div class="data-object-checkbox">
+    {{one-checkbox
+      checked=isChecked
+      isReadOnly=true
+    }}
+  </div>
+{{/if}}

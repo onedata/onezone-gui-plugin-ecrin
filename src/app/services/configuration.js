@@ -7,8 +7,15 @@
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
+/**
+ * @typedef {Object} Mapping
+ * @property {number} id
+ * @property {String} name
+ */
+
 import Service, { inject as service } from '@ember/service';
 import safeExec from 'onezone-gui-plugin-ecrin/utils/safe-method-execution';
+import { computed } from '@ember/object';
 import { reads } from '@ember/object/computed';
 import { or, raw, array } from 'ember-awesome-macros';
 
@@ -16,7 +23,7 @@ const mappingFields = [
   'studyIdType',
   'studyType',
   'studyStatus',
-  'studyTopicType',
+  'studyFeatureType',
   'studyGenderEligibility',
   'studyPhase',
   'studyInterventionModel',
@@ -26,7 +33,7 @@ const mappingFields = [
   'studyObservationalModel',
   'studyTimePerspective',
   'studyBiospecimensRetained',
-  'dataObjectType',
+  'dataObjectFilterType',
   'dataObjectAccessType',
 ];
 
@@ -35,6 +42,11 @@ const serviceFields = {};
 mappingFields.forEach(mappingField => {
   serviceFields[`${mappingField}Mapping`] =
     or(`configuration.${mappingField}Mapping`, raw([]));
+
+  serviceFields[`${mappingField}Map`] = computed(`${mappingField}Mapping`, function () {
+    const list = this.get(`${mappingField}Mapping`);
+    return new Map(list.map(item => [item.id, item]));
+  });
 
   serviceFields[`${mappingField}UnknownValue`] =
     array.findBy(`${mappingField}Mapping`, raw('useForUnknown'));
