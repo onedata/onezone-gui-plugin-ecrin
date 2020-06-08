@@ -1,0 +1,100 @@
+<div
+  class="panel-heading"
+  {{action (mut study.isRecordExpanded) (not study.isRecordExpanded)}}
+>
+  {{#truncated-string}}{{or study.title (tt this "untitled")}}{{/truncated-string}}
+</div>
+<ul class="result-actions">
+  {{#if study.isRecordExpanded}}
+    <li class="result-action expand-action" {{action "toggleAllElementsExpansion"}}>
+      {{one-icon icon=(if study.hasAllElementsExpanded "arrow-up" "arrow-down")}}
+    </li>
+  {{/if}}
+  <li
+    class="result-action remove-action {{if isFetchingData "disabled"}}"
+    {{action "remove"}}
+  >
+    {{one-icon icon="x"}}
+  </li>
+</ul>
+{{!-- Animation is disabled, because it becomes really heavy for browser when there are
+100 studies visible (repainting of layout causes delays). --}}
+{{#bs-collapse
+  class="panel-body"
+  collapsed=(not study.isRecordExpanded)
+  transitionDuration=0
+}}
+  <div class="data-object-records">
+    {{#if study.description}}
+      {{#query-results/data-object-record
+        class="study-info"
+        isExpanded=study.isDescriptionExpanded
+        toggleExpansion=(action
+          (mut study.isDescriptionExpanded)
+          (not study.isDescriptionExpanded)
+        )
+        typeName=(tt this "studyDescription")
+      }}
+        {{study.description}}
+      {{/query-results/data-object-record}}
+    {{/if}}
+    {{#if study.dataSharingStatement}}
+      {{#query-results/data-object-record
+        class="study-info"
+        isExpanded=study.isDataSharingStatementExpanded
+        toggleExpansion=(action
+          (mut study.isDataSharingStatementExpanded)
+          (not study.isDataSharingStatementExpanded)
+        )
+        typeName=(tt this "studyDataSharingStatement")
+      }}
+        {{study.dataSharingStatement}}
+      {{/query-results/data-object-record}}
+    {{/if}}
+    {{#each (sort-by "year:asc" study.dataObjects) as |dataObject|}}
+      {{#query-results/data-object-record
+        isExpanded=(contains dataObject study.expandedDataObjects)
+        toggleExpansion=(action "toggleDataObjectExpansion" dataObject)
+        dataObject=dataObject
+        isChecked=(contains dataObject selectedDataObjects)
+      }}
+        {{#if dataObject.title}}
+          <p>{{dataObject.title}}</p>
+        {{/if}}
+        {{#if dataObject.accessDetails}}
+          <p>
+            <strong>{{tt this "accessDetails"}}:</strong>
+            {{dataObject.accessDetails}}
+            {{#if dataObject.accessDetailsUrl}}
+              ({{tt this "accessDetailsSeeMore"}}: 
+              {{#if dataObject.hasCorrectAccessDetailsUrl}}
+                <a href={{dataObject.accessDetailsUrl}} target="_blank">{{dataObject.accessDetailsUrl}}</a>)
+              {{else}}
+                {{dataObject.accessDetailsUrl}})
+              {{/if}}
+            {{/if}}
+          </p>
+        {{/if}}
+        {{#if dataObject.urls.length}}
+          <p>
+            {{tt this "urlAccess"}}:
+            <ul>
+              {{#each dataObject.urls as |urlContainer|}}
+                <li>
+                  {{#if (not-eq urlContainer.type "unknown")}}
+                    {{tt this (concat "urlType." urlContainer.type)}}:
+                  {{/if}}
+                  {{#if urlContainer.isUrlCorrect}}
+                    <a href={{urlContainer.url}} target="_blank">{{urlContainer.url}}</a>
+                  {{else}}
+                    {{urlContainer.url}}
+                  {{/if}}
+                </li>
+              {{/each}}
+            </ul>
+          </p>
+        {{/if}}
+      {{/query-results/data-object-record}}
+    {{/each}}
+  </div>
+{{/bs-collapse}}

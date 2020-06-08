@@ -1,0 +1,28 @@
+.filters-summary {
+  .filter-badges-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .badges-list-label {
+    display: inline-block;
+  }
+
+  .filter-badge {
+    display: inline-flex;
+    margin-bottom: $padding-small-vertical;
+    border: 1px solid $main-border-color;
+    border-radius: $border-radius-base;
+    font-size: 80%;
+  }
+
+  .model-name,
+  .filter {
+    padding: $padding-small-vertical;
+  }
+
+  .model-name {
+    background-color: $main-border-color;
+  }
+}

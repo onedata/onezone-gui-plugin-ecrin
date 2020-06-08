@@ -1,0 +1,42 @@
+{{query-parameters
+  isFetchingData=isFetchingData
+  studySearchParams=studySearchParams
+  isStackingBlocked=dataStore.isStudiesLimitReached
+  onChange=(action "parameterChanged")
+  onFind=(action "find" false)
+  onFindWithStacking=(action "find" true)
+}}
+<div class="query-content">
+  {{data-filters
+    studyFilters=dataStore.studyFilters
+    dataObjectFilters=dataStore.dataObjectFilters
+    isFetchingData=isFetchingData
+    dataObjectPublisherMapping=dataStore.dataObjectPublisherMapping
+    onFilterStudies=(action (mut dataStore.studyFilters))
+    onFilterDataObjects=(action (mut dataStore.dataObjectFilters))
+    onResetStudyFilters=(action "resetStudyFilters")
+    onResetDataObjectFilters=(action "resetDataObjectFilters")
+  }}
+  <div class="query-results-container">
+    {{filters-summary
+      activeStudyFilters=dataStore.studyFilters
+      activeDataObjectFilters=dataStore.dataObjectFilters
+      cleanStudyFilters=dataStore.cleanStudyFilters
+      cleanDataObjectFilters=dataStore.cleanDataObjectFilters}}
+    {{#query-results
+      isFetchingData=isFetchingData
+      latestSearchFittingStudiesCount=dataFetcher.latestSearchFittingStudiesCount
+      dataStore=dataStore
+      removeStudy=(action "removeStudy")
+      removeAllStudies=(action "removeAllStudies")
+      saveResults=(action "saveResults")
+      loadSavedResultsList=(action "loadSavedResultsList")
+      loadSavedResults=(action "loadSavedResults")
+      removeSavedResults=(action "removeSavedResults")
+      exportResultsToPdf=(action "exportResultsToPdf")
+    }}
+      {{promise-proxy-container proxy=dataFetcher.fetchDataPromiseObject isLoading=false}}
+    {{/query-results}}
+  </div>
+</div>
+{{yield}}

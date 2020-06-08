@@ -1,0 +1,71 @@
+.query-parameters {
+  display: flex;
+
+  .help-trigger {
+    margin-left: $padding-small-horizontal;
+    font-size: 120%;
+  }
+
+  @media (min-width: $screen-sm-min) {
+    margin-bottom: $padding-base-vertical;
+
+    .study-filters {
+      flex-grow: 1;
+      display: flex;
+      min-width: 0;
+    }
+
+    .form-group {
+      margin-bottom: $padding-base-vertical;
+      margin-right: $padding-small-horizontal;
+      flex-grow: 1;
+    }
+
+    .find-button-group {
+      flex-shrink: 0;
+      margin-top: $line-height-computed + 5px;
+    }
+
+    .help-trigger {
+      align-self: center;
+      flex-shrink: 0;
+      margin-top: ($line-height-computed + 5px) / 2;
+    }
+
+    .mode-group,
+    .study-id-type-group,
+    .study-title-topic-operator-group,
+    .paper-search-field-group {
+      flex-grow: 0;
+      flex-shrink: 0;
+    }
+
+    .mode-group {
+      flex-basis: 205px;
+    }
+
+    .study-id-type-group {
+      flex-basis: 200px;
+    }
+
+    .study-title-topic-operator-group {
+      flex-basis: 100px;
+    }
+
+    .paper-search-field-group {
+      flex-basis: 150px;
+    }
+  }
+
+  @media (max-width: $screen-xs-max) {
+    flex-wrap: wrap;
+
+    .study-filters {
+      flex-basis: 100%;
+    }
+
+    .help-trigger {
+      align-self: center;
+    }
+  }
+}

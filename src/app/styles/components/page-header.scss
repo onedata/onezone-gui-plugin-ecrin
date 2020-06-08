@@ -1,0 +1,33 @@
+.page-header {
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 0;
+  margin-bottom: $padding-large-vertical;
+  padding: 0;
+  border: 0;
+
+  .header-link {
+    margin-left: $padding-small-horizontal;
+    font-weight: bold;
+    text-decoration: none;
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+
+  h1 {
+    margin-top: 0;
+    flex-grow: 1;
+    flex-basis: 800px;
+  }
+
+  .version {
+    align-self: flex-start;
+    opacity: 0.5;
+    font-size: 90%;
+  }
+}

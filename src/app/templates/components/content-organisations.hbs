@@ -1,0 +1,60 @@
+{{!-- NOTICE: Content of this file is not handled by translations mechanism due
+  to its size. To introduce another language, use hbs if-else with checking which
+  language is active and render proper version of this page. --}}
+
+<h3>
+  Data Sources
+</h3>
+
+<p>
+  At the moment (04/2020) the MDR obtains study data from (and normally in this order)
+  <ol>
+    <li>Clinical Trials.gov (CTG) (<a href="https://clinicaltrials.gov/" target="_blank">https://clinicaltrials.gov/</a>)</li>
+    <li>The European Clinical Trials Registry (EUCTR) (<a href="https://www.clinicaltrialsregister.eu/" target="_blank">https://www.clinicaltrialsregister.eu/</a>)</li>
+    <li>ISRCTN (<a href="http://www.isrctn.com/" target="_blank">http://www.isrctn.com/</a>)</li>
+    <li>The WHO ICTRP (<a href="https://www.who.int/ictrp/en/" target="_blank">https://www.who.int/ictrp/en/</a>)</li>
+  </ol>
+</p>
+<p>
+  These sources span all the study registrations within the WHO's global network of registries. Data is downloaded directly as XML files from the CTG web site, 'scraped' from the web pages of the EUCTR and ISRCTN, and downloaded as CSV files from the WHO ICTRP. The data from the WHO is used only for those studies not in CTG, EUCTR and ISRCTN. Studies in more than one registry are only entered once in the system (using the first registry entry encountered).
+</p>
+<p>
+  Over time we hope to increase the amount of individual trial registries as sources (because the data available usually includes more detail), while retaining the CSV downloads from the WHO ICTRP for those registries not included directly.
+</p>
+<p>
+  The study data provides study entries for all studies registered globally, with the data usually 2 – 7 days behind the source registry. It provides 'data objects' in the shape of trial registry entries and results entries, and – where listed in the original registry entry – references to other documents such as protocols, information sheets, CSRs etc, and a limited number of datasets – though these are often not publicly available. It also provides links to journal articles.
+</p>
+<p>
+  The sources used chiefly for data object metadata are
+  <ol start="5">
+    <li>PubMed (<a href="https://www.ncbi.nlm.nih.gov/pubmed/" target="_blank">https://www.ncbi.nlm.nih.gov/pubmed/</a>)</li>
+    <li>BioLINCC* (<a href="https://biolincc.nhlbi.nih.gov/home/" target="_blank">https://biolincc.nhlbi.nih.gov/home/</a>)</li>
+    <li>Yoda* (<a href="https://yoda.yale.edu/" target="_blank">https://yoda.yale.edu/</a>)</li>
+  </ol>
+</p>
+<p><em>* Not at initial release</em></p>
+
+<h3>
+  Contributing Organisations and funding
+</h3>
+
+<p>
+  <strong>ECRIN</strong> (<a href="https://www.ecrin.org/" target="_blank">https://www.ecrin.org/</a>) is responsible for the collection of the data from the source sites, and its transformation into a common format (the ECRIN metadata schema) and into a single database. It then generates the json files that are transferred to OneData.
+</p>
+<p>
+  <strong>Onedata</strong> (<a href="https://onedata.org/" target="_blank">https://onedata.org/</a>) is responsible for the development of the web portal, written in EmberJS, which accesses the data via Elasticsearch queries. It also provides the file system that holds the data (as file metadata).
+</p>
+<p>
+  <strong>INFN</strong> (Istituto Nazionale di Fisica Nucleare, <a href="http://www.bo.infn.it/" target="_blank">http://www.bo.infn.it/</a>) provides the physical infrastructure of the system and also indexes the metadata of the OneCloud files using Elasticsearch.
+</p>
+<p>
+  The development of the system has been funded, up to April 2020, within
+  <ol>
+    <li>The XDC (Extreme Data Cloud) project, <a href="http://www.extreme-datacloud.eu/the-project/" target="_blank">http://www.extreme-datacloud.eu/the-project/</a>, EU grant agreement 777367.</li>
+  </ol>
+  And from April 2020 by
+  <ol start="2">
+    <li>The EOSC Hub project, <a href="https://www.eosc-hub.eu/" target="_blank">https://www.eosc-hub.eu/</a>, specifically to provide integration of the MDR portal with the services of the European Open Science Cloud, under grant agreement number 777536, and</li>
+    <li>The EOSC-Life project, <a href="https://www.eosc-life.eu/" target="_blank">https://www.eosc-life.eu/</a>, specifically to further develop the data collection and aggregation mechanisms from a wider set of sources, under grant agreement number 824087.</li>
+  </ol>
+</p>

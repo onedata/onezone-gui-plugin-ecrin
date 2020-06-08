@@ -1,57 +1,41 @@
 # onezone-gui-plugin-ecrin
 
-This README outlines the details of collaborating on this Ember application.
-A short introduction of this app could easily go here.
+## About
+
+onezone-gui-plugin-ecrin is a Onezone GUI harvester plugin, which was created by Onedata developers to meet the goals of the ECRIN usecase as a part of the XDC (Extreme Data Cloud) project. It provides mechanisms for searching, filtering, persisting results and exporting clinical studies and data objects entries.
+
+The GUI plugin has embedded default indices schemas (`study` and `data_object`), which are recommended to use while creating harvester indices. Also a default configuration for the plugin is provided. Both of them can be found in `src/app/manifest.json` file.
 
 ## Prerequisites
 
-You will need the following things properly installed on your computer.
+onezone-gui-plugin-ecrin is an Ember.js application, which means you will need the following things properly installed on your computer.
 
-* [Git](https://git-scm.com/)
 * [Node.js](https://nodejs.org/) (with npm)
+* [Bower](https://bower.io/)
 * [Ember CLI](https://ember-cli.com/)
-* [Google Chrome](https://google.com/chrome/)
 
-## Installation
+Also to run the onezone-gui-plugin-ecrin itself, a fully deployed Onedata system should be available. It will let the harvester plugin interact with a harvester connected to the Elasticsearch instance and test it's features.
 
-* `git clone <repository-url>` this repository
-* `cd onezone-gui-plugin-ecrin`
-* `npm install`
+## Building
 
-## Running / Development
+Before building make sure submodules are initialized:
+```
+make submodules
+```
 
-* `ember serve`
-* Visit your app at [http://localhost:4200](http://localhost:4200).
-* Visit your tests at [http://localhost:4200/tests](http://localhost:4200/tests).
+To build a development release of GUI plugin:
+```
+make build_plugin_dev
+```
+or a production one:
+```
+make build_plugin_prod
+```
+In both versions the result plugin will be available under `plugin.tar.gz` file, which is ready to upload in a harvester configuration in Onezone GUI.
+A production build default index schemas needs `ecrin_synonyms` elasticsearch index dependency to work. A development build can work without it. See more in files: `src/app/manifest.json` and `src/ember-cli-build.js`.
 
-### Code Generators
+## Running Tests
 
-Make use of the many generators for code, try `ember help generate` for more details
-
-### Running Tests
-
-* `ember test`
-* `ember test --server`
-
-### Linting
-
-* `npm run lint:hbs`
-* `npm run lint:js`
-* `npm run lint:js -- --fix`
-
-### Building
-
-* `ember build` (development)
-* `ember build --environment production` (production)
-
-### Deploying
-
-Specify what it takes to deploy your app.
-
-## Further Reading / Useful Links
-
-* [ember.js](https://emberjs.com/)
-* [ember-cli](https://ember-cli.com/)
-* Development Browser Extensions
-  * [ember inspector for chrome](https://chrome.google.com/webstore/detail/ember-inspector/bmdblncegkenkacieihfhpjfppoconhi)
-  * [ember inspector for firefox](https://addons.mozilla.org/en-US/firefox/addon/ember-inspector/)
+```
+make test
+```

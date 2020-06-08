@@ -1,0 +1,11 @@
+{{page-header}}
+{{#unless isOnMainPage}}
+  {{#link-to "index" class="back-to-main-page-link"}}{{tt this "backToMainPage"}}{{/link-to}}
+{{/unless}}
+
+{{yield}}
+
+{{#unless isOnMainPage}}
+  {{#link-to "index" class="back-to-main-page-link"}}{{tt this "backToMainPage"}}{{/link-to}}
+{{/unless}}
+{{page-footer}}

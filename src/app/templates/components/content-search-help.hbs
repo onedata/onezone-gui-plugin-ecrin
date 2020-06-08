@@ -1,0 +1,102 @@
+{{!-- NOTICE: Content of this file is not handled by translations mechanism due
+  to its size. To introduce another language, use hbs if-else with checking which
+  language is active and render proper version of this page. --}}
+
+<h2>
+  Searching for Studies in the MDR
+</h2>
+
+<p>
+  The document below outlines the searching options available and how to use them.
+
+  <ol>
+    <li><a {{action "goTo" "#find-via-id-desc"}}>Searching for a specific study, by Id</a></li>
+    <li><a {{action "goTo" "#find-via-charact-desc"}}>Searching for studies using terms, in titles and / or topics</a></li>
+    <li><a {{action "goTo" "#find-via-paper-desc"}}>Finding a study via a published paper</a></li>
+  </ol>
+</p>
+
+<h3 id="find-via-id-desc">Searching for a specific study, by Id</h3>
+
+<ol>
+  <li>
+    Ensure the first option is selected on the left hand mode drop down box<br/>
+    <img src="assets/images/search-help/mode-by-id.png"/>
+  </li>
+  <li>
+    Select the Study ID type in the next box. This will almost always be the top entry: Trial Registry ID, but other options, such as funder's or sponsor's id, are available.<br/>
+    <img src="assets/images/search-help/param-id-type.png"/>
+  </li>
+  <li>
+    Enter the ID in the Study ID box. Please ensure, if copying and pasting from another document, that the ID is 'trimmed', i.e. has no leading or trailing spaces.<br/>
+    <img src="assets/images/search-help/param-id.png"/>
+  </li>
+  <li>
+    Click Find. If the study with that Id exists it will appear. By default it will replace whatever has been found and listed previously in the results area.<br/><br/>
+    If you want to add the selected study that already exists, use the drop arrow next to Find to make the 'Find and add…' button appear and click that lower button instead. The study will then be added to the bottom of the existing list.<br/>
+    <img src="assets/images/search-help/find-and-add.png"/>
+  </li>
+</ol>
+
+<h3 id="find-via-charact-desc">Searching for studies using terms, in titles and / or topics</h3>
+
+<ol>
+  <li>
+    Ensure the second option is selected on the left hand mode drop down box<br/>
+    <img src="assets/images/search-help/mode-by-charact.png"/>
+  </li>
+  <li>
+   For a simple search, add a term to the 'Title contains' and / or the 'Topics include' boxes. The relationship between the terms is a logical 'OR' or a logical; 'AND' depending on the selection of the middle drop down box. The terms are <em>not</em> case sensitive.<br/>
+   <img src="assets/images/search-help/param-or.png"/><br/>
+   <img src="assets/images/search-help/param-and.png"/><br/>
+   Note that the 'Titles' here relate to all the titles of the study (there will be a public title, the one shown in the system, and usually a scientific title, and possibly an acronym). The 'Topics' relate to the 'keywords' and MESH terms that have been applied to the study – often including names for the condition under study and / or the interventions being used.
+  </li>
+  <li>
+    Terms can be combined in either or both of the textboxes, and will narrow the search, as there is an implicit 'AND' between the terms.<br/>
+    <img src="assets/images/search-help/before-two-words-and.png"/><br/><br/>
+    <img src="assets/images/search-help/after-two-words-and.png"/><br/>
+    This can be very useful in reducing a large list to a more manageable size.
+  </li>
+  <li>
+    If you wish to explicitly add an 'OR' relationship between 2 or more words, use the vertical bar or 'pipe' character:<br/>
+    <img src="assets/images/search-help/two-words-or.png"/>
+  </li>
+  <li>
+    Phrases can be searched for by enclosing within quotes, and is another way of narrowing a search. Again the search terms are not case sensitive.<br/>
+    <img src="assets/images/search-help/before-phrase.png"/><br/><br/>
+    <img src="assets/images/search-help/after-phrase.png"/>
+  </li>
+  <li>
+    As before, the default action of the Find button is to replace any previous results list with the results of the current query, but this behaviour can be changed, and the query results added to the existing list, by using the drop down arrow to the right of Find and clicking on the button that appears instead.<br/>
+    <img src="assets/images/search-help/find-and-add.png"/>
+  </li>
+</ol>
+
+<h3 id="find-via-paper-desc">Finding a study via a published paper</h3>
+
+<ol>
+  <li>
+    Ensure the third option is selected on the left hand mode drop down box<br/>
+    <img src="assets/images/search-help/mode-by-paper.png"/>
+  </li>
+  <li>
+    Select the option in the Search paper by dropdown. The 2 options are by doi or by title<br/>
+    <img src="assets/images/search-help/mode-paper-by-doi.png"/>
+  </li>
+  <li>
+    For the DOI mode, enter the DOI in the text box. As shown in the example, the DOI should be without any prefix, i.e. no 'https://' or 'doi:'. It would normally start with 10.<br/>
+    <img src="assets/images/search-help/paper-by-doi.png"/><br/><br/>
+    On clicking find the system should provide the study or studies linked to the relevant journal article.<br/>
+    <img src="assets/images/search-help/paper-by-doi-results.png"/><br/>
+  </li>
+  <li>
+    For the title mode, enter part or all of a title<br/>
+    <img src="assets/images/search-help/paper-by-title.png"/><br/>
+    On clicking find the system should provide the study or studies linked to the relevant journal article.<br/>
+    <img src="assets/images/search-help/paper-by-title-results.png"/>
+  </li>
+  <li>
+    As before, the default action of the Find button is to replace any previous results list with the results of the current query, but this behaviour can be changed, and the query results added to the existing list, by using the drop down arrow to the right of Find and clicking on the button that appears instead.<br/>
+    <img src="assets/images/search-help/find-and-add.png"/>
+  </li>
+</ol>

@@ -1,0 +1,249 @@
+.query-results {
+  .results-alert {
+    flex-basis: 100%;
+    flex-grow: 1;
+    margin-top: 0;
+  }
+
+  .studies-list-header {
+    display: flex;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: $padding-base-vertical;
+    font-family: 'Open Sans Semibold';
+  }
+
+  .results-counter {
+    flex-grow: 1;
+    margin-right: $padding-xs-horizontal;
+  }
+
+  .results-actions {
+    .btn {
+      margin-right: $padding-xs-horizontal;
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .panel {
+    margin-bottom: $padding-small-vertical;
+  }
+
+  .panel-heading {
+    padding: $padding-base-vertical 70px $padding-base-vertical $padding-base-horizontal;
+    cursor: pointer;
+    a:hover {
+      color: $main-text-color;
+    }
+  }
+
+  .panel-body {
+    padding: 0;
+
+    &.collapse:not(.in) {
+      display: block;
+      height: 0;
+      overflow: hidden;
+    }
+  }
+
+  .data-object-overflow-container.collapsed {
+    max-height: 43px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 29px;
+      height: 14px;
+      width: 100%;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.7));
+      pointer-events: none;
+    }
+  }
+
+  .panel-group .panel-heading + .panel-collapse > .panel-body {
+    border-top: 0;
+  }
+
+  .study-record {
+    position: relative;
+
+    &.is-collapsed {
+      .panel-heading {
+        border-bottom: 0;
+      }
+    }
+
+    &:nth-child(even) {
+      .panel-heading {
+        background-color: lighten($panel-default-heading-bg, 2.5%);
+      }
+    }
+  }
+
+  .data-object-records {
+    padding: $padding-base-vertical $padding-base-horizontal;
+  }
+
+  .result-actions {
+    position: absolute;
+    top: $padding-base-vertical - 3px;
+    right: $padding-base-horizontal;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+
+    .expand-action .one-icon {
+      font-weight: bold;
+    }
+
+    .remove-action:hover {
+      color: $color-one-danger;
+    }
+  }
+
+  .result-action {
+    display: inline-block;
+    color: $main-text-light-color;
+    cursor: pointer;
+    .one-icon {
+      font-size: 1.7em;
+    }
+    &:hover {
+      color: $main-text-color;
+    }
+    &.disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+  }
+
+  .data-object-record {
+    display: flex;
+
+    + .data-object-record {
+      padding-top: $padding-base-vertical;
+    }
+  }
+
+  .data-object-type,
+  .data-object-year,
+  .data-object-status {
+    flex-shrink: 0;
+  }
+
+  .data-object-type {
+    flex-basis: 10em;
+    @media (max-width: $screen-xs-max) {
+      display: flex;
+      flex-basis: initial;
+      flex-grow: 1;
+
+      .object-type-name {
+        flex-grow: 1;
+      }
+
+      .show-more-link {
+        margin-left: $padding-small-horizontal;
+      }
+    }
+  }
+
+  .show-more-link {
+    white-space: nowrap;
+  }
+
+  .data-object-description {
+    position: relative;
+    flex-grow: 1;
+    min-width: 0;
+    color: $main-text-light-color;
+    padding-left: $padding-small-horizontal;
+    padding-right: $padding-small-horizontal;
+    overflow-wrap: break-word;
+    p {
+      margin-bottom: $padding-small-vertical;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .data-object-year {
+    flex-basis: 3.5em;
+    color: $main-text-light-color;
+    text-align: right;
+  }
+
+  .data-object-status {
+    margin-left: $padding-small-horizontal;
+  }
+
+  .data-object-status-icon {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 100%;
+    vertical-align: middle;
+    &.unknown {
+      background-color: $main-text-light-color;
+    }
+    &.red {
+      background-color: $color-one-danger;
+    }
+    &.yellow {
+      background-color: $color-one-warning;
+    }
+    &.green {
+      background-color: $color-one-success;
+    }
+  }
+
+  .data-object-checkbox {
+    margin-left: $padding-small-horizontal;
+
+    .one-checkbox {
+      vertical-align: middle;
+    }
+  }
+
+  .study-info .data-object-type {
+    font-style: italic;
+  }
+
+  @media (min-width: $screen-sm-min) {
+    display: flex;
+    flex-direction: column;
+
+    .studies-list {
+      flex-grow: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+  }
+
+  @media (max-width: $screen-xs-max) {
+    .data-object-record {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .data-object-type {
+      flex-basis: 100%;
+    }
+
+    .data-object-description {
+      padding: 0;
+      order: 5;
+      flex-basis: 100%;
+    }
+  }
+}

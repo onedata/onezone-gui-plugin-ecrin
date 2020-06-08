@@ -1,0 +1,2006 @@
+{
+  "onedata": {
+    "version": "1.0.0",
+    "defaultGuiConfiguration": {
+      "contactEmail": "contact@ecrin.org",
+      "studyIdTypeMapping": [
+        {
+          "name": "Trial Registry ID",
+          "id": 11
+        },
+        {
+          "name": "Funder's ID",
+          "id": 13
+        },
+        {
+          "name": "Sponsor's ID",
+          "id": 14
+        },
+        {
+          "name": "NIH CTRP ID",
+          "id": 39
+        },
+        {
+          "name": "NHLBI ID",
+          "id": 42
+        }
+      ],
+      "studyTypeMapping": [
+        {
+          "name": "Interventional",
+          "id": 11,
+          "isInterventional": true
+        },
+        {
+          "name": "Observational",
+          "id": 12,
+          "isObservational": true
+        },
+        {
+          "name": "Observational Patient Registry",
+          "id": 13
+        },
+        {
+          "name": "Expanded access",
+          "id": 14
+        },
+        {
+          "name": "Funded programme",
+          "id": 15
+        },
+        {
+          "name": "Other",
+          "id": 16,
+          "useForUnknown": true
+        }
+      ],
+      "studyStatusMapping": [
+        {
+          "id": 11,
+          "name": "Withdrawn"
+        },
+        {
+          "id": 12,
+          "name": "Available"
+        },
+        {
+          "id": 13,
+          "name": "Withheld"
+        },
+        {
+          "id": 14,
+          "name": "Recruiting"
+        },
+        {
+          "id": 15,
+          "name": "Active, not recruiting"
+        },
+        {
+          "id": 16,
+          "name": "Not yet recruiting"
+        },
+        {
+          "id": 17,
+          "name": "No longer available"
+        },
+        {
+          "id": 18,
+          "name": "Suspended"
+        },
+        {
+          "id": 19,
+          "name": "Enrolling by invitation"
+        },
+        {
+          "id": 20,
+          "name": "Approved for marketing"
+        },
+        {
+          "id": 21,
+          "name": "Completed"
+        },
+        {
+          "id": 22,
+          "name": "Terminated"
+        },
+        {
+          "id": 24,
+          "name": "Other"
+        },
+        {
+          "id": 25,
+          "name": "Ongoing"
+        },
+        {
+          "id": 0,
+          "name": "Unknown status",
+          "useForUnknown": true
+        }
+      ],
+      "studyGenderEligibilityMapping": [
+        {
+          "id": 900,
+          "name": "All"
+        },
+        {
+          "id": 905,
+          "name": "Female"
+        },
+        {
+          "id": 910,
+          "name": "Male"
+        },
+        {
+          "id": 915,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyFeatureTypeMapping": [
+        {
+          "id": 11,
+          "name": "keywords"
+        },
+        {
+          "id": 12,
+          "name": "chemical / agent"
+        },
+        {
+          "id": 13,
+          "name": "condition"
+        },
+        {
+          "id": 14,
+          "name": "design"
+        },
+        {
+          "id": 15,
+          "name": "outcome"
+        },
+        {
+          "id": 16,
+          "name": "geographic"
+        },
+        {
+          "id": 17,
+          "name": "organism"
+        },
+        {
+          "id": 20,
+          "name": "phase",
+          "isPhaseFeatureType": true
+        },
+        {
+          "id": 21,
+          "name": "primary purpose",
+          "isPrimaryPurposeFeatureType": true
+        },
+        {
+          "id": 22,
+          "name": "allocation type",
+          "isAllocationTypeFeatureType": true
+        },
+        {
+          "id": 23,
+          "name": "intervention model",
+          "isInterventionModelFeatureType": true
+        },
+        {
+          "id": 24,
+          "name": "masking",
+          "isMaskingFeatureType": true
+        },
+        {
+          "id": 30,
+          "name": "observational model",
+          "isObservationalModelFeatureType": true
+        },
+        {
+          "id": 31,
+          "name": "time perspective",
+          "isTimePerspectiveFeatureType": true
+        },
+        {
+          "id": 32,
+          "name": "biospecimens retained",
+          "isBiospecimensRetainedFeatureType": true
+        },
+        {
+          "id": 41,
+          "name": "minimum age"
+        },
+        {
+          "id": 42,
+          "name": "maximum age"
+        },
+        {
+          "id": 43,
+          "name": "enrolment"
+        },
+        {
+          "id": 101,
+          "name": "abnormalities"
+        },
+        {
+          "id": 102,
+          "name": "administration & dosage"
+        },
+        {
+          "id": 103,
+          "name": "adverse effects"
+        },
+        {
+          "id": 104,
+          "name": "agonists"
+        },
+        {
+          "id": 105,
+          "name": "analogs & derivatives"
+        },
+        {
+          "id": 106,
+          "name": "analysis"
+        },
+        {
+          "id": 107,
+          "name": "anatomy & histology"
+        },
+        {
+          "id": 108,
+          "name": "antagonists & inhibitors"
+        },
+        {
+          "id": 109,
+          "name": "biosynthesis"
+        },
+        {
+          "id": 110,
+          "name": "blood"
+        },
+        {
+          "id": 111,
+          "name": "blood supply"
+        },
+        {
+          "id": 112,
+          "name": "cerebrospinal fluid"
+        },
+        {
+          "id": 113,
+          "name": "chemical synthesis"
+        },
+        {
+          "id": 114,
+          "name": "chemically induced"
+        },
+        {
+          "id": 115,
+          "name": "chemistry"
+        },
+        {
+          "id": 116,
+          "name": "classification"
+        },
+        {
+          "id": 117,
+          "name": "complications"
+        },
+        {
+          "id": 118,
+          "name": "congenital"
+        },
+        {
+          "id": 119,
+          "name": "cytology"
+        },
+        {
+          "id": 120,
+          "name": "deficiency"
+        },
+        {
+          "id": 121,
+          "name": "diagnosis"
+        },
+        {
+          "id": 122,
+          "name": "diagnostic imaging"
+        },
+        {
+          "id": 123,
+          "name": "diet therapy"
+        },
+        {
+          "id": 124,
+          "name": "drug effects"
+        },
+        {
+          "id": 125,
+          "name": "drug therapy"
+        },
+        {
+          "id": 126,
+          "name": "economics"
+        },
+        {
+          "id": 127,
+          "name": "education"
+        },
+        {
+          "id": 128,
+          "name": "embryology"
+        },
+        {
+          "id": 129,
+          "name": "enzymology"
+        },
+        {
+          "id": 130,
+          "name": "epidemiology"
+        },
+        {
+          "id": 131,
+          "name": "ethics"
+        },
+        {
+          "id": 132,
+          "name": "ethnology"
+        },
+        {
+          "id": 133,
+          "name": "etiology"
+        },
+        {
+          "id": 134,
+          "name": "genetics"
+        },
+        {
+          "id": 135,
+          "name": "growth & development"
+        },
+        {
+          "id": 136,
+          "name": "history"
+        },
+        {
+          "id": 137,
+          "name": "immunology"
+        },
+        {
+          "id": 138,
+          "name": "injuries"
+        },
+        {
+          "id": 139,
+          "name": "innervation"
+        },
+        {
+          "id": 140,
+          "name": "instrumentation"
+        },
+        {
+          "id": 141,
+          "name": "isolation & purification"
+        },
+        {
+          "id": 142,
+          "name": "legislation & jurisprudence"
+        },
+        {
+          "id": 143,
+          "name": "manpower"
+        },
+        {
+          "id": 144,
+          "name": "metabolism"
+        },
+        {
+          "id": 145,
+          "name": "methods"
+        },
+        {
+          "id": 146,
+          "name": "microbiology"
+        },
+        {
+          "id": 147,
+          "name": "mortality"
+        },
+        {
+          "id": 148,
+          "name": "nursing"
+        },
+        {
+          "id": 149,
+          "name": "organization & administration"
+        },
+        {
+          "id": 150,
+          "name": "parasitology"
+        },
+        {
+          "id": 151,
+          "name": "pathogenicity"
+        },
+        {
+          "id": 152,
+          "name": "pathology"
+        },
+        {
+          "id": 153,
+          "name": "pharmacokinetics"
+        },
+        {
+          "id": 154,
+          "name": "pharmacology"
+        },
+        {
+          "id": 155,
+          "name": "physiology"
+        },
+        {
+          "id": 156,
+          "name": "physiopathology"
+        },
+        {
+          "id": 157,
+          "name": "poisoning"
+        },
+        {
+          "id": 158,
+          "name": "prevention & control"
+        },
+        {
+          "id": 159,
+          "name": "psychology"
+        },
+        {
+          "id": 160,
+          "name": "radiation effects"
+        },
+        {
+          "id": 161,
+          "name": "radiotherapy"
+        },
+        {
+          "id": 162,
+          "name": "rehabilitation"
+        },
+        {
+          "id": 163,
+          "name": "secondary"
+        },
+        {
+          "id": 164,
+          "name": "secretion"
+        },
+        {
+          "id": 165,
+          "name": "standards"
+        },
+        {
+          "id": 166,
+          "name": "statistics & numerical data"
+        },
+        {
+          "id": 167,
+          "name": "supply & distribution"
+        },
+        {
+          "id": 168,
+          "name": "surgery"
+        },
+        {
+          "id": 169,
+          "name": "therapeutic use"
+        },
+        {
+          "id": 170,
+          "name": "therapy"
+        },
+        {
+          "id": 171,
+          "name": "toxicity"
+        },
+        {
+          "id": 172,
+          "name": "transmission"
+        },
+        {
+          "id": 173,
+          "name": "transplantation"
+        },
+        {
+          "id": 174,
+          "name": "trends"
+        },
+        {
+          "id": 175,
+          "name": "ultrastructure"
+        },
+        {
+          "id": 176,
+          "name": "urine"
+        },
+        {
+          "id": 177,
+          "name": "utilization"
+        },
+        {
+          "id": 178,
+          "name": "veterinary"
+        },
+        {
+          "id": 179,
+          "name": "virology"
+        },
+        {
+          "id": 0,
+          "name": "not yet known"
+        }
+      ],
+      "studyPhaseMapping": [
+        {
+          "id": 105,
+          "name": "Early Phase 1"
+        },
+        {
+          "id": 110,
+          "name": "Phase 1"
+        },
+        {
+          "id": 115,
+          "name": "Phase 1, Phase 2"
+        },
+        {
+          "id": 120,
+          "name": "Phase 2"
+        },
+        {
+          "id": 125,
+          "name": "Phase 2, Phase 3"
+        },
+        {
+          "id": 130,
+          "name": "Phase 3"
+        },
+        {
+          "id": 135,
+          "name": "Phase 4"
+        },
+        {
+          "id": 100,
+          "name": "N/A"
+        },
+        {
+          "id": 140,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyInterventionModelMapping": [
+        {
+          "id": 300,
+          "name": "Single Group"
+        },
+        {
+          "id": 305,
+          "name": "Parallel"
+        },
+        {
+          "id": 310,
+          "name": "Crossover"
+        },
+        {
+          "id": 315,
+          "name": "Factorial"
+        },
+        {
+          "id": 320,
+          "name": "Sequential"
+        },
+        {
+          "id": 325,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyAllocationTypeMapping": [
+        {
+          "id": 205,
+          "name": "Randomized"
+        },
+        {
+          "id": 210,
+          "name": "Nonrandomized"
+        },
+        {
+          "id": 200,
+          "name": "N/A"
+        },
+        {
+          "id": 215,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyPrimaryPurposeMapping": [
+        {
+          "id": 400,
+          "name": "Treatment"
+        },
+        {
+          "id": 405,
+          "name": "Prevention"
+        },
+        {
+          "id": 410,
+          "name": "Diagnostic"
+        },
+        {
+          "id": 415,
+          "name": "Supportive Care"
+        },
+        {
+          "id": 420,
+          "name": "Screening"
+        },
+        {
+          "id": 425,
+          "name": "Health Services Research"
+        },
+        {
+          "id": 430,
+          "name": "Basic Science"
+        },
+        {
+          "id": 435,
+          "name": "Device Feasibility"
+        },
+        {
+          "id": 440,
+          "name": "Other"
+        },
+        {
+          "id": 445,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyMaskingMapping": [
+        {
+          "id": 500,
+          "name": "None (Open Label)"
+        },
+        {
+          "id": 505,
+          "name": "Single"
+        },
+        {
+          "id": 510,
+          "name": "Double"
+        },
+        {
+          "id": 515,
+          "name": "Triple"
+        },
+        {
+          "id": 520,
+          "name": "Quadruple"
+        },
+        {
+          "id": 525,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyObservationalModelMapping": [
+        {
+          "id": 600,
+          "name": "Cohort"
+        },
+        {
+          "id": 605,
+          "name": "Case-Control"
+        },
+        {
+          "id": 610,
+          "name": "Case-Only"
+        },
+        {
+          "id": 615,
+          "name": "Case-Crossover"
+        },
+        {
+          "id": 620,
+          "name": "Ecologic or Community Studies"
+        },
+        {
+          "id": 625,
+          "name": "Family-Based"
+        },
+        {
+          "id": 630,
+          "name": "Other"
+        },
+        {
+          "id": 635,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyTimePerspectiveMapping": [
+        {
+          "id": 700,
+          "name": "Retrospective"
+        },
+        {
+          "id": 705,
+          "name": "Prospective"
+        },
+        {
+          "id": 710,
+          "name": "Cross-sectional"
+        },
+        {
+          "id": 715,
+          "name": "Other"
+        },
+        {
+          "id": 720,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "studyBiospecimensRetainedMapping": [
+        {
+          "id": 800,
+          "name": "None Retained"
+        },
+        {
+          "id": 805,
+          "name": "Samples With DNA"
+        },
+        {
+          "id": 810,
+          "name": "Samples Without DNA"
+        },
+        {
+          "id": 815,
+          "name": "Not provided",
+          "useForUnknown": true
+        }
+      ],
+      "dataObjectFilterTypeMapping": [
+        {
+          "id": 11,
+          "name": "Trial registry entry",
+          "objectTypeIds": [
+            13
+          ]
+        },
+        {
+          "id": 12,
+          "name": "Registry results summary",
+          "objectTypeIds": [
+            28
+          ]
+        },
+        {
+          "id": 21,
+          "name": "Journal article",
+          "isJournalArticle": true,
+          "objectTypeIds": [
+            12,
+            100,
+            117,
+            135,
+            152
+          ]
+        },
+        {
+          "id": 22,
+          "name": "Study protocol",
+          "objectTypeIds": [
+            11,
+            42,
+            74,
+            75,
+            76
+          ]
+        },
+        {
+          "id": 23,
+          "name": "Study overview",
+          "objectTypeIds": [
+            38
+          ]
+        },
+        {
+          "id": 24,
+          "name": "Patient consent / information forms",
+          "objectTypeIds": [
+            18,
+            19
+          ]
+        },
+        {
+          "id": 25,
+          "name": "Data collection forms",
+          "objectTypeIds": [
+            21,
+            30,
+            40
+          ]
+        },
+        {
+          "id": 26,
+          "name": "Manual of procedures",
+          "objectTypeIds": [
+            35,
+            36
+          ]
+        },
+        {
+          "id": 31,
+          "name": "Statistical analysis plan",
+          "objectTypeIds": [
+            22,
+            29,
+            43
+          ]
+        },
+        {
+          "id": 32,
+          "name": "Clinical study report",
+          "objectTypeIds": [
+            26,
+            27,
+            79,
+            85
+          ]
+        },
+        {
+          "id": 33,
+          "name": "Data description",
+          "objectTypeIds": [
+            20,
+            31,
+            32,
+            81,
+            82
+          ]
+        },
+        {
+          "id": 34,
+          "name": "Individual participant data",
+          "objectTypeIds": [
+            80,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            153
+          ]
+        },
+        {
+          "id": 35,
+          "name": "Aggregated data",
+          "objectTypeIds": [
+            69,
+            70,
+            71,
+            72,
+            73,
+            154
+          ]
+        },
+        {
+          "id": 36,
+          "name": "Other study resource",
+          "objectTypeIds": [
+            14,
+            15,
+            16,
+            17,
+            23,
+            24,
+            25,
+            33,
+            34,
+            39,
+            77,
+            78,
+            83,
+            84,
+            86
+          ]
+        },
+        {
+          "id": 41,
+          "name": "Conference material",
+          "objectTypeIds": [
+            106,
+            107,
+            108,
+            109
+          ]
+        },
+        {
+          "id": 42,
+          "name": "Other article",
+          "objectTypeIds": [
+            119,
+            121,
+            122
+          ]
+        },
+        {
+          "id": 43,
+          "name": "Book or chapter",
+          "objectTypeIds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            113
+          ]
+        },
+        {
+          "id": 44,
+          "name": "Other information resource",
+          "objectTypeIds": [
+            112,
+            120,
+            123,
+            126,
+            127,
+            128
+          ]
+        },
+        {
+          "id": 51,
+          "name": "Website",
+          "objectTypeIds": [
+            134
+          ]
+        },
+        {
+          "id": 52,
+          "name": "Software",
+          "objectTypeIds": [
+            166,
+            167,
+            168,
+            169,
+            170
+          ]
+        },
+        {
+          "id": 99,
+          "name": "Other",
+          "useForUnknown": true
+        }
+      ],
+      "dataObjectAccessTypeMapping": [
+        {
+          "name": "Public on-screen access",
+          "id": 12,
+          "indicator": "green"
+        },
+        {
+          "name": "Public on-screen access and download",
+          "id": 11,
+          "indicator": "green"
+        },
+        {
+          "name": "Public on-screen and API access",
+          "id": 20,
+          "indicator": "green"
+        },
+        {
+          "name": "Public download (self-attestation required)",
+          "id": 13,
+          "indicator": "green"
+        },
+        {
+          "name": "Public on-screen access (self-attestation required)",
+          "id": 14,
+          "indicator": "green"
+        },
+        {
+          "name": "Restricted download",
+          "id": 15,
+          "indicator": "yellow"
+        },
+        {
+          "name": "Restricted on-screen access",
+          "id": 16,
+          "indicator": "yellow"
+        },
+        {
+          "name": "Case by case download",
+          "id": 17,
+          "indicator": "yellow"
+        },
+        {
+          "name": "Case by case on-screen access",
+          "id": 18,
+          "indicator": "yellow"
+        },
+        {
+          "name": "Non public access - no details",
+          "id": 19,
+          "indicator": "red"
+        },
+        {
+          "name": "Other",
+          "id": 90,
+          "indicator": "yellow",
+          "useForUnknown": true
+        }
+      ]
+    },
+    "indices": [
+      {
+        "name": "study",
+        "schema": {
+          "settings": {
+            "index.mapping.ignore_malformed": true,
+            "index.number_of_shards": 1,
+            "index.auto_expand_replicas": "0-all",
+            "analysis": {
+              "analyzer": {
+                "default": {
+                  "tokenizer": "default_tokenizer",
+                  "char_filter": [
+                    "ecrin_remove_dot",
+                    "ecrin_rplc_apostrophes"
+                  ],
+                  "filter": [
+                    "lowercase",
+                    "ecrin_synonyms",
+                    "default_stop"
+                  ]
+                }
+              },
+              "filter": {
+                "ecrin_synonyms": {
+                  "type": "synonym_graph",
+                  "synonyms_path": "synonym/ecrin_synonym",
+                  "format": "solr",
+                  "expand": "true"
+                },
+                "default_stop": {
+                  "type": "stop",
+                  "stopwords": "_english_"
+                }
+              },
+              "char_filter": {
+                "ecrin_remove_dot": {
+                  "type": "pattern_replace",
+                  "pattern": "([.])",
+                  "replacement": ""
+                },
+                "ecrin_rplc_apostrophes": {
+                  "type": "pattern_replace",
+                  "pattern": "(')",
+                  "replacement": "’"
+                }
+              },
+              "tokenizer": {
+                "default_tokenizer": {
+                  "type": "standard"
+                }
+              }
+            }
+          },
+          "mappings": {
+            "dynamic": "strict",
+            "_source": {
+              "enabled": true
+            },
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "file_type": {
+                "type": "text"
+              },
+              "display_title": {
+                "properties": {
+                  "title_text": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "lang_code": {
+                    "type": "keyword",
+                    "eager_global_ordinals": true
+                  }
+                }
+              },
+              "data_sharing_statement": {
+                "type": "text",
+                "fielddata": true
+              },
+              "study_identifiers": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "identifier_value": {
+                    "type": "text",
+                    "analyzer": "keyword",
+                    "fielddata": true
+                  },
+                  "identifier_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "identifier_date": {
+                    "type": "date",
+                    "format": "yyyy MMM dd"
+                  },
+                  "identifier_link": {
+                    "type": "keyword",
+                    "eager_global_ordinals": true
+                  },
+                  "identifier_org": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  }
+                }
+              },
+              "study_features": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "feature_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "feature_value": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  }
+                }
+              },
+              "study_topics": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "topic_value": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "topic_source_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "topic_ct": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "topic_ct_code": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "study_titles": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "title_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "title_text": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "lang_code": {
+                    "type": "keyword",
+                    "eager_global_ordinals": true
+                  },
+                  "contains_html": {
+                    "type": "boolean"
+                  },
+                  "comments": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "study_type": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "study_status": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "study_gender_elig": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "study_enrolment": {
+                "type": "integer"
+              },
+              "min_age": {
+                "type": "integer"
+              },
+              "max_age": {
+                "type": "integer"
+              },
+              "min_age_units": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "max_age_units": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "brief_description": {
+                "type": "text",
+                "fielddata": true
+              },
+              "related_studies": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "relationship_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "target_id": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "linked_data_objects": {
+                "type": "integer"
+              }
+            }
+          }
+        }
+      },
+      {
+        "name": "data_object",
+        "schema": {
+          "settings": {
+            "index.mapping.ignore_malformed": true,
+            "index.number_of_shards": 1,
+            "index.auto_expand_replicas": "0-all",
+            "analysis": {
+              "analyzer": {
+                "default": {
+                  "tokenizer": "default_tokenizer",
+                  "char_filter": [
+                    "ecrin_remove_dot",
+                    "ecrin_rplc_apostrophes"
+                  ],
+                  "filter": [
+                    "lowercase",
+                    "ecrin_synonyms",
+                    "default_stop"
+                  ]
+                }
+              },
+              "filter": {
+                "ecrin_synonyms": {
+                  "type": "synonym_graph",
+                  "synonyms_path": "synonym/ecrin_synonym",
+                  "format": "solr",
+                  "expand": "true"
+                },
+                "default_stop": {
+                  "type": "stop",
+                  "stopwords": "_english_"
+                }
+              },
+              "char_filter": {
+                "ecrin_remove_dot": {
+                  "type": "pattern_replace",
+                  "pattern": "([.])",
+                  "replacement": ""
+                },
+                "ecrin_rplc_apostrophes": {
+                  "type": "pattern_replace",
+                  "pattern": "(')",
+                  "replacement": "’"
+                }
+              },
+              "tokenizer": {
+                "default_tokenizer": {
+                  "type": "standard"
+                }
+              }
+            }
+          },
+          "mappings": {
+            "dynamic": "strict",
+            "_source": {
+              "enabled": true
+            },
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "file_type": {
+                "type": "text",
+                "fielddata": true
+              },
+              "doi": {
+                "type": "keyword",
+                "eager_global_ordinals": true
+              },
+              "display_title": {
+                "type": "text",
+                "fielddata": true
+              },
+              "version": {
+                "type": "text",
+                "fielddata": true
+              },
+              "managing_organisation": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "object_class": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "object_type": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "publication_year": {
+                "type": "date",
+                "format": "YYYY"
+              },
+              "language_code": {
+                "type": "keyword",
+                "eager_global_ordinals": true
+              },
+              "identifier_org": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "access_type": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "access_details": {
+                "type": "text",
+                "fielddata": true
+              },
+              "access_details_url": {
+                "type": "text",
+                "fielddata": true
+              },
+              "url_last_checked": {
+                "type": "date",
+                "format": "YYYY MM DD"
+              },
+              "dataset_record_keys": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "details": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "dataset_identifiers": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "details": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "dataset_consents": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "details": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "object_identifiers": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "identifier_value": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "identifier_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "identifier_date": {
+                    "type": "date",
+                    "format": "YYYY MMM dd"
+                  },
+                  "identifier_org": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  }
+                }
+              },
+              "object_titles": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "title_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "title_text": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "lang_code": {
+                    "type": "keyword",
+                    "eager_global_ordinals": true
+                  },
+                  "contains_html": {
+                    "type": "boolean"
+                  },
+                  "comments": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "object_contributors": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "contribution_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "is_individual": {
+                    "type": "boolean"
+                  },
+                  "person": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "family_name": {
+                        "type": "text",
+                        "fielddata": true
+                      },
+                      "given_name": {
+                        "type": "text",
+                        "fielddata": true
+                      },
+                      "full_name": {
+                        "type": "text",
+                        "fielddata": true
+                      },
+                      "identifier": {
+                        "type": "object",
+                        "properties": {
+                          "person_id": {
+                            "type": "text",
+                            "fielddata": true
+                          },
+                          "scheme_name": {
+                            "type": "text",
+                            "fielddata": true
+                          }
+                        }
+                      },
+                      "affiliation": {
+                        "type": "object",
+                        "properties": {
+                          "affiliation": {
+                            "type": "text",
+                            "fielddata": true
+                          },
+                          "org_id": {
+                            "type": "text",
+                            "fielddata": true
+                          },
+                          "scheme_name": {
+                            "type": "text",
+                            "fielddata": true
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "organisation": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  }
+                }
+              },
+              "object_dates": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "date_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "is_date_range": {
+                    "type": "boolean"
+                  },
+                  "date_as_string": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "start_date": {
+                    "type": "object",
+                    "properties": {
+                      "start_year": {
+                        "type": "integer"
+                      },
+                      "start_month": {
+                        "type": "integer"
+                      },
+                      "start_day": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "end_date": {
+                    "type": "object",
+                    "properties": {
+                      "end_year": {
+                        "type": "integer"
+                      },
+                      "end_month": {
+                        "type": "integer"
+                      },
+                      "end_day": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "comments": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "object_descriptions": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "description_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "description_label": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "description_text": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "language_code": {
+                    "type": "keyword",
+                    "eager_global_ordinals": true
+                  },
+                  "contains_html": {
+                    "type": "boolean"
+                  }
+                }
+              },
+              "object_instances": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "repository_org": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "url": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "url_direct_access": {
+                    "type": "boolean"
+                  },
+                  "url_last_checked": {
+                    "type": "date",
+                    "format": "YYYY MMM dd"
+                  },
+                  "resource_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "file_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "resource_size": {
+                    "type": "float"
+                  },
+                  "resource_size_unit": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "object_topics": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "topic_value": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "topic_source_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "topic_ct": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "topic_ct_code": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "object_rights": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "details": {
+                    "type": "text",
+                    "fielddata": true
+                  },
+                  "rights_url": {
+                    "type": "text",
+                    "fielddata": true
+                  }
+                }
+              },
+              "related_objects": {
+                "type": "nested",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "relationship_type": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "text",
+                        "fielddata": true
+                      }
+                    }
+                  },
+                  "target_object_id": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "related_studies": {
+                "type": "keyword",
+                "eager_global_ordinals": true
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

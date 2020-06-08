@@ -1,0 +1,18 @@
+<div class="panel-body">
+  <div class="messages">
+    <div class="footer-section sources-section">
+      {{#link-to "organisations"}}{{tt this "sourcesAndOrganisations"}}{{/link-to}} |
+      {{#link-to "disclaimer"}}{{tt this "disclaimer"}}{{/link-to}}
+    </div>
+    <div class="footer-section include-metadata-section">
+      {{tt this "contactStart"}}<a href={{contactHref}} target="_blank">{{tt this "here"}}</a>{{tt this "contactEnd"}}
+    </div>
+  </div>
+  <div class="logos">
+    {{#each (array "onedata" "ecrin" "xdc" "infn") as |logoName|}}
+      <div class="logo {{logoName}}-logo">
+        {{bs-tooltip title=(tt this (concat logoName "LogoDescription"))}}
+      </div>
+    {{/each}}
+  </div>
+</div>
