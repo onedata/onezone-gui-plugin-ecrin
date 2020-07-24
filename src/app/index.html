@@ -10,6 +10,30 @@
 
   {{content-for "head"}}
 
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-173215442-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'UA-173215442-1');
+
+    window.addEventListener("hashchange", e => {
+      if (window.location.hash === '#!' || window.location.hash === '#') {
+        gtag('config', 'UA-173215442-1', {
+          page_path: location.pathname + location.search
+        });
+      } else {
+        gtag('config', 'UA-173215442-1', {
+          page_path: location.pathname + location.search + location.hash
+        });
+      };
+    });
+  </script>
+
   <script type="text/javascript">
     // Run tracking script only on production
     var environmentMeta = document.getElementsByName('onezone-gui-plugin-ecrin/config/environment')[0];
