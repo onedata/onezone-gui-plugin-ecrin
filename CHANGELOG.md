@@ -4,6 +4,11 @@
 CHANGELOG
 ---------
 
-### Latest changes
+### 1.1.0
 
-* VFS-5219 Initial version of the app
+- **VFS-6606** Added Google Analytics
+
+
+### 1.0.0
+
+- **VFS-5219** Initial version of the app
