@@ -34,7 +34,7 @@
   }
 
   .panel-heading {
-    padding: $padding-base-vertical 70px $padding-base-vertical $padding-base-horizontal;
+    padding: $padding-base-vertical 100px $padding-base-vertical $padding-base-horizontal;
     cursor: pointer;
     a:hover {
       color: $main-text-color;
@@ -100,6 +100,10 @@
     padding: 0;
     list-style-type: none;
 
+    .provenance-action:hover {
+      cursor: initial;
+    }
+
     .expand-action .one-icon {
       font-weight: bold;
     }
@@ -139,8 +143,14 @@
     flex-shrink: 0;
   }
 
+  .data-object-provenance-info {
+    font-size: 1.5em;
+    vertical-align: bottom;
+    color: $main-text-light-color;
+  }
+
   .data-object-type {
-    flex-basis: 10em;
+    flex-basis: 11em;
     @media (max-width: $screen-xs-max) {
       display: flex;
       flex-basis: initial;

@@ -6,6 +6,11 @@
 </div>
 <ul class="result-actions">
   {{#if study.isRecordExpanded}}
+    <li class="result-action provenance-action">
+      {{#one-icon icon="browser-info"}}
+        {{bs-tooltip title=(or study.provenance (tt this "noProvenanceTip"))}}
+      {{/one-icon}}
+    </li>
     <li class="result-action expand-action" {{action "toggleAllElementsExpansion"}}>
       {{one-icon icon=(if study.hasAllElementsExpanded "arrow-up" "arrow-down")}}
     </li>
