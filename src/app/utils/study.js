@@ -8,7 +8,7 @@
  */
 
 import EmberObject from '@ember/object';
-import { and, or, raw, not, equal } from 'ember-awesome-macros';
+import { and, or, raw, not, equal, isEmpty } from 'ember-awesome-macros';
 
 // Study topics which makes sense only when study is interventional
 const interventionalOnlyStudyTopicTypes = [
@@ -50,6 +50,12 @@ export default EmberObject.extend({
    * @type {boolean}
    */
   isDataSharingStatementExpanded: false,
+
+  /**
+   * @public
+   * @type {boolean}
+   */
+  areRelatedStudiesExpanded: false,
 
   /**
    * @virtual
@@ -171,6 +177,7 @@ export default EmberObject.extend({
   hasAllElementsExpanded: and(
     or(not('description'), 'isDescriptionExpanded'),
     or(not('dataSharingStatement'), 'isDataSharingStatementExpanded'),
+    or(isEmpty('relatedStudies'), 'areRelatedStudiesExpanded'),
     equal('expandedDataObjects.length', or('dataObjects.length', raw(0))),
   ),
 
@@ -183,6 +190,7 @@ export default EmberObject.extend({
     this.setProperties({
       isDescriptionExpanded: true,
       isDataSharingStatementExpanded: true,
+      areRelatedStudiesExpanded: true,
     });
     expandedDataObjects.addObjects(dataObjects || []);
   },
@@ -191,6 +199,7 @@ export default EmberObject.extend({
     this.setProperties({
       isDescriptionExpanded: false,
       isDataSharingStatementExpanded: false,
+      areRelatedStudiesExpanded: false,
     });
     this.get('expandedDataObjects').clear();
   },

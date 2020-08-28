@@ -25,6 +25,84 @@
           "id": 42
         }
       ],
+      "studyRelationshipTypeMapping": [
+        {
+          "id": 11,
+          "name": "Is a sub-study of"
+        },
+        {
+          "id": 12,
+          "name": "Includes as a sub-study"
+        },
+        {
+          "id": 13,
+          "name": "Is in the same series as"
+        },
+        {
+          "id": 14,
+          "name": "Is the first of a sequence including"
+        },
+        {
+          "id": 15,
+          "name": "Is a feasibility study for"
+        },
+        {
+          "id": 16,
+          "name": "Is preceded by the feasibility study"
+        },
+        {
+          "id": 17,
+          "name": "Is a later phase variant of"
+        },
+        {
+          "id": 18,
+          "name": "Is an earlier phase variant of"
+        },
+        {
+          "id": 19,
+          "name": "Is a continuation of"
+        },
+        {
+          "id": 20,
+          "name": "Is continued by"
+        },
+        {
+          "id": 21,
+          "name": "Is a repeat of"
+        },
+        {
+          "id": 22,
+          "name": "Is repeated by"
+        },
+        {
+          "id": 23,
+          "name": "Has an expanded access version"
+        },
+        {
+          "id": 24,
+          "name": "Is an expanded access version of"
+        },
+        {
+          "id": 25,
+          "name": "Includes target as one of a group of non-registered studies"
+        },
+        {
+          "id": 26,
+          "name": "Non registered but included within a registered study group"
+        },
+        {
+          "id": 27,
+          "name": "Has link listed in registry but nature of link unclear"
+        },
+        {
+          "id": 28,
+          "name": "Includes target as one of a group of registered studies"
+        },
+        {
+          "id": 29,
+          "name": "Registered and is included elsewhere in group"
+        }
+      ],
       "studyTypeMapping": [
         {
           "name": "Interventional",

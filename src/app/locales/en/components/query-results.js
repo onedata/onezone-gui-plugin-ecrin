@@ -13,6 +13,7 @@ export default {
     noProvenanceTip,
     studyDescription: 'Description',
     studyDataSharingStatement: 'Data sharing statement',
+    studyRelatedStudies: 'Related studies',
     accessDetails: 'Access details',
     accessDetailsSeeMore: 'see',
     urlAccess: 'Access',

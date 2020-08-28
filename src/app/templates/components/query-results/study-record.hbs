@@ -56,6 +56,33 @@
         {{study.dataSharingStatement}}
       {{/query-results/data-object-record}}
     {{/if}}
+    {{#if groupedRelatedStudies}}
+      {{#query-results/data-object-record
+        class="study-info"
+        isExpanded=study.areRelatedStudiesExpanded
+        toggleExpansion=(action
+          (mut study.areRelatedStudiesExpanded)
+          (not study.areRelatedStudiesExpanded)
+        )
+        typeName=(tt this "studyRelatedStudies")
+      }}
+        {{#each groupedRelatedStudies as |relatedStudiesGroup|}}
+          <p>
+            {{relatedStudiesGroup.value.name}}:
+            <ul>
+              {{#each relatedStudiesGroup.items as |relatedStudyEntry|}}
+                <li>
+                  {{relatedStudyEntry.target.title}}
+                  {{#each relatedStudyEntry.target.identifiers as |identifier|}}
+                    [{{identifier.identifierType.name}}: {{identifier.identifierValue}}]
+                  {{/each}}
+                </li>
+              {{/each}}
+            </ul>
+          </p>
+        {{/each}}
+      {{/query-results/data-object-record}}
+    {{/if}}
     {{#each (sort-by "year:asc" study.dataObjects) as |dataObject|}}
       {{#query-results/data-object-record
         isExpanded=(contains dataObject study.expandedDataObjects)

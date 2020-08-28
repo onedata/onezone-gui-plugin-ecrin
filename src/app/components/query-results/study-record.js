@@ -10,6 +10,7 @@
 
 import Component from '@ember/component';
 import { get } from '@ember/object';
+import { array, raw } from 'ember-awesome-macros';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 
@@ -61,6 +62,14 @@ export default Component.extend(I18n, {
    * @returns {any}
    */
   remove: notImplementedIgnore,
+
+  /**
+   * @type {ComputedProperty<Array<Object>>}
+   */
+  groupedRelatedStudies: array.sort(
+    array.groupBy('study.relatedStudies', raw('relationshipType')),
+    ['value.id']
+  ),
 
   actions: {
     toggleDataObjectExpansion(dataObject) {
