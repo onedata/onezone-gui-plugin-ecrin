@@ -143,6 +143,20 @@ export default EmberObject.extend({
   isStudiesLimitReached: gte('studies.length', 'studiesLimit'),
 
   /**
+   * @type {ComputedProperty<Set<number>>}
+   */
+  studiesIds: computed('studies.[]', function studiesIds() {
+    const idsSet = new Set();
+    const studies = this.get('studies') || [];
+
+    for (let i = 0; i < studies.length; i++) {
+      idsSet.add(get(studies[i], 'id'));
+    }
+
+    return idsSet;
+  }),
+
+  /**
    * @type {ComputedProperty<Array<DataObject>>}
    */
   filteredDataObjects: computed(

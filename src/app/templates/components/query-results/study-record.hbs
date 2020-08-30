@@ -76,6 +76,20 @@
                   {{#each relatedStudyEntry.target.identifiers as |identifier|}}
                     [{{identifier.identifierType.name}}: {{identifier.identifierValue}}]
                   {{/each}}
+                  {{#let
+                    (contains relatedStudyEntry.target notFetchedRelatedStudies)
+                    as |isNotInResults|
+                  }}
+                    <a
+                      class="{{if (or (not isNotInResults) isFetchingData) "disabled"}} add-related-to-results"
+                      {{action "addRelatedStudyToResults" relatedStudyEntry.target}}
+                    >
+                      ({{tt
+                        this
+                        (if isNotInResults "addRelatedToResults" "relatedAlreadyInResults")
+                      }})
+                    </a>
+                  {{/let}}
                 </li>
               {{/each}}
             </ul>

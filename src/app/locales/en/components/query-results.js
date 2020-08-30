@@ -14,6 +14,8 @@ export default {
     studyDescription: 'Description',
     studyDataSharingStatement: 'Data sharing statement',
     studyRelatedStudies: 'Related studies',
+    addRelatedToResults: 'add to results',
+    relatedAlreadyInResults: 'already in results',
     accessDetails: 'Access details',
     accessDetailsSeeMore: 'see',
     urlAccess: 'Access',

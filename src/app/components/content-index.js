@@ -94,10 +94,20 @@ export default Component.extend(I18n, {
     find(withStacking = false) {
       const {
         dataFetcher,
+        dataStore,
         studySearchParams,
-      } = this.getProperties('dataFetcher', 'studySearchParams');
+      } = this.getProperties('dataFetcher', 'dataStore', 'studySearchParams');
 
-      dataFetcher.searchStudies(studySearchParams, withStacking);
+      dataFetcher.searchStudies(
+        studySearchParams,
+        withStacking ? get(dataStore, 'studies.lastObject') : null
+      );
+    },
+    addRelatedStudyToResults(relationOriginStudy, relatedStudy) {
+      return this.get('dataFetcher').searchStudies(StudySearchParams.create({
+        mode: 'viaInternalId',
+        internalStudyIds: [get(relatedStudy, 'id')],
+      }), relationOriginStudy);
     },
     removeStudy(study) {
       this.get('dataStore').removeStudies([study]);

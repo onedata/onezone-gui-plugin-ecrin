@@ -48,6 +48,14 @@ export default Component.extend(I18n, {
   dataStore: undefined,
 
   /**
+   * @type {Function}
+   * @param {Utils.Study} relationOriginStudy
+   * @param {Object} relatedStudy
+   * @returns {Promise}
+   */
+  addRelatedStudyToResults: notImplementedReject,
+
+  /**
    * @virtual
    * @type {Function}
    * @returns {Promise<any>}
@@ -128,6 +136,11 @@ export default Component.extend(I18n, {
    * @type {ComputedProperty<Array<Utils.Study>>}
    */
   studies: reads('dataStore.filteredStudies'),
+
+  /**
+   * @type {ComputedProperty<Set<number>>}
+   */
+  studiesIds: reads('dataStore.studiesIds'),
 
   /**
    * @type {ComputedProperty<Array<DataObject>>}

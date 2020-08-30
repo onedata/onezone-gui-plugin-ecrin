@@ -9,10 +9,11 @@
  */
 
 import Component from '@ember/component';
-import { get } from '@ember/object';
+import { get, computed } from '@ember/object';
 import { array, raw } from 'ember-awesome-macros';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
+import notImplementedReject from 'onezone-gui-plugin-ecrin/utils/not-implemented-reject';
 
 export default Component.extend(I18n, {
   classNames: ['study-record', 'panel', 'panel-default'],
@@ -40,6 +41,12 @@ export default Component.extend(I18n, {
 
   /**
    * @virtual
+   * @type {Set<number>}
+   */
+  fetchedStudiesIds: undefined,
+
+  /**
+   * @virtual
    * @type {Object}
    */
   selectedDataObjects: undefined,
@@ -64,11 +71,39 @@ export default Component.extend(I18n, {
   remove: notImplementedIgnore,
 
   /**
+   * @virtiual
+   * @type {Function}
+   * @param {Object} relatedStudy
+   * @returns {Promise}
+   */
+  addRelatedStudyToResults: notImplementedReject,
+
+  /**
    * @type {ComputedProperty<Array<Object>>}
    */
   groupedRelatedStudies: array.sort(
     array.groupBy('study.relatedStudies', raw('relationshipType')),
     ['value.id']
+  ),
+
+  /**
+   * @type {ComputedProperty<Array<Object>>}
+   */
+  notFetchedRelatedStudies: computed(
+    'fetchedStudiesIds',
+    'study.relatedStudies',
+    function notFetchedRelatedStudies() {
+      const fetchedStudiesIds = this.get('fetchedStudiesIds');
+      const relatedStudies = this.get('study.relatedStudies') || [];
+
+      if (!fetchedStudiesIds) {
+        return relatedStudies;
+      }
+
+      return relatedStudies
+        .filter(({ targetId }) => !fetchedStudiesIds.has(targetId))
+        .mapBy('target');
+    }
   ),
 
   actions: {
@@ -91,6 +126,21 @@ export default Component.extend(I18n, {
 
       if (!isFetchingData) {
         return remove();
+      }
+    },
+    addRelatedStudyToResults(relatedStudy) {
+      const {
+        notFetchedRelatedStudies,
+        isFetchingData,
+        addRelatedStudyToResults,
+      } = this.getProperties(
+        'notFetchedRelatedStudies',
+        'isFetchingData',
+        'addRelatedStudyToResults'
+      );
+
+      if (notFetchedRelatedStudies.contains(relatedStudy) && !isFetchingData) {
+        addRelatedStudyToResults(relatedStudy);
       }
     },
   },

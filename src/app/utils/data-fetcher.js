@@ -193,10 +193,10 @@ export default EmberObject.extend({
   /**
    * Starts study query
    * @param {Utils.StudySearchParams} searchParams
-   * @param {boolean} [withStacking=false]
+   * @param {Utils.Study} [stackAfterStudy=null]
    * @returns {Promise}
    */
-  searchStudies(searchParams, withStacking = false) {
+  searchStudies(searchParams, stackAfterStudy = null) {
     const {
       hasMeaningfulParams,
       mode,
@@ -207,7 +207,7 @@ export default EmberObject.extend({
         resolve() : fetchDataPromiseObject;
       promise = promise
         .then(() => {
-          if (!withStacking) {
+          if (!stackAfterStudy) {
             this.get('dataStore').removeAllStudies();
           }
 
@@ -225,7 +225,7 @@ export default EmberObject.extend({
           }
         })
         .then(results =>
-          this.loadStudiesFromResponse(results, mode !== 'viaInternalId')
+          this.loadStudiesFromResponse(results, mode !== 'viaInternalId', stackAfterStudy)
         )
         .then(newStudies => allFulfilled([
           this.loadDataObjectsForStudies(newStudies),
@@ -496,9 +496,14 @@ export default EmberObject.extend({
   /**
    * @param {Object} results 
    * @param {boolean} [rememberFittingStudiesCount=true]
+   * @param {Utils.Study} [stackAfterStudy=null]
    * @returns {Promise<Array<Utils.Study>>}
    */
-  loadStudiesFromResponse(results, rememberFittingStudiesCount = true) {
+  loadStudiesFromResponse(
+    results,
+    rememberFittingStudiesCount = true,
+    stackAfterStudy = null
+  ) {
     if (results) {
       const {
         dataStore,
@@ -519,7 +524,17 @@ export default EmberObject.extend({
           return !isBlank(studyId) && !alreadyFetchedStudiesIds.includes(studyId);
         })
         .map(doc => this.createStudyInstance(doc, studyInstanceCreatorData));
-      set(dataStore, 'studies', alreadyFetchedStudies.concat(newStudies));
+
+      let stackAfterIndex = alreadyFetchedStudies.indexOf(stackAfterStudy);
+      if (stackAfterIndex === -1) {
+        stackAfterIndex = get(alreadyFetchedStudies, 'length') - 1;
+      }
+      set(dataStore, 'studies', [
+        ...alreadyFetchedStudies.slice(0, stackAfterIndex + 1),
+        ...newStudies,
+        ...alreadyFetchedStudies.slice(stackAfterIndex + 1),
+      ]);
+
       return newStudies;
     } else {
       return [];
