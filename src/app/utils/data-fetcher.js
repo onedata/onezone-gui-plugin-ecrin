@@ -669,6 +669,7 @@ export default EmberObject.extend({
         'linked_data_objects',
         'related_studies.relationship_type.id',
         'related_studies.target_id',
+        'provenance_data',
       ],
     };
   },
@@ -690,6 +691,7 @@ export default EmberObject.extend({
         'access_details_url',
         'object_instances',
         'related_studies',
+        'provenance_data',
       ],
     };
   },
@@ -728,7 +730,7 @@ export default EmberObject.extend({
   createStudyInstance(rawData, creatorData) {
     const studyComputedData = {
       id: rawData.id,
-      provenance: rawData.provenance,
+      provenance: rawData.provenance_data,
       title: get(rawData, 'display_title.title_text'),
       description: rawData.brief_description,
       dataSharingStatement: rawData.data_sharing_statement,
@@ -774,7 +776,7 @@ export default EmberObject.extend({
   createDataObjectInstance(rawData, creatorData) {
     const dataObjectComputedData = {
       id: rawData.id,
-      provenance: rawData.provenance,
+      provenance: rawData.provenance_data,
       title: rawData.display_title,
       type: rawData.object_type,
       year: rawData.publication_year,
