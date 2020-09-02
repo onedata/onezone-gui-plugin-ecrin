@@ -26,6 +26,8 @@ export default {
     studyTimePerspective: 'Time perspective',
     studyBiospecimensRetained: 'Biospecimens retained',
     studyDataSharingStatement: 'Data sharing statement',
+    ageRange: 'Age range',
+    ageNotSpecified: 'not specified',
     studyRelatedStudies: 'Related studies',
     addRelatedToResults: 'add to results',
     relatedAlreadyInResults: 'already in results',

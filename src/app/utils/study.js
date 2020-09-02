@@ -95,6 +95,30 @@ export default EmberObject.extend({
 
   /**
    * @virtual
+   * @type {number}
+   */
+  minAge: undefined,
+
+  /**
+   * @virtual
+   * @type {String}
+   */
+  minAgeUnits: undefined,
+
+  /**
+   * @virtual
+   * @type {number}
+   */
+  maxAge: undefined,
+
+  /**
+   * @virtual
+   * @type {String}
+   */
+  maxAgeUnits: undefined,
+
+  /**
+   * @virtual
    * @type {Array<number>}
    */
   dataObjectsIds: undefined,

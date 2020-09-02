@@ -60,13 +60,18 @@
         </p>
       {{/if}}
       {{#if studyFeatureDetails}}
-        {{tt this "studyFeatures"}}:
-        <ul>
-          {{#each studyFeatureDetails as |detail|}}
-            <li><strong>{{detail.label}}:</strong> {{detail.value}}</li>
-          {{/each}}
-        </ul>
+        <p>
+          {{tt this "studyFeatures"}}:
+          <ul>
+            {{#each studyFeatureDetails as |detail|}}
+              <li><strong>{{detail.label}}:</strong> {{detail.value}}</li>
+            {{/each}}
+          </ul>
+        </p>
       {{/if}}
+      <p>
+        <strong>{{tt this "ageRange"}}:</strong> {{ageRange}}
+      </p>
     {{/query-results/data-object-record}}
     {{#if study.dataSharingStatement}}
       {{#query-results/data-object-record

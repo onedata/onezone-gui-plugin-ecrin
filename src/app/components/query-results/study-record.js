@@ -9,7 +9,7 @@
  */
 
 import Component from '@ember/component';
-import { get, computed } from '@ember/object';
+import { get, computed, getProperties } from '@ember/object';
 import { array, raw } from 'ember-awesome-macros';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
@@ -125,6 +125,37 @@ export default Component.extend(I18n, {
   ),
 
   /**
+   * @type {ComputedProperty<String>}
+   */
+  ageRange: computed(
+    'study.{minAge,minAgeUnits,maxAge,maxAgeUnits}',
+    function ageRange() {
+      const {
+        minAge,
+        minAgeUnits,
+        maxAge,
+        maxAgeUnits,
+      } = getProperties(
+        this.get('study'),
+        'minAge',
+        'minAgeUnits',
+        'maxAge',
+        'maxAgeUnits'
+      );
+
+      const minAgeDescription = this.generateAgeDescription(minAge, minAgeUnits);
+      const maxAgeDescription = this.generateAgeDescription(maxAge, maxAgeUnits);
+      const ageNotSpecifiedDescription = this.t('ageNotSpecified');
+
+      if (!minAgeDescription && !maxAgeDescription) {
+        return ageNotSpecifiedDescription;
+      }
+
+      return `${minAgeDescription || ageNotSpecifiedDescription} - ${maxAgeDescription || ageNotSpecifiedDescription}`;
+    }
+  ),
+
+  /**
    * @type {ComputedProperty<Array<Object>>}
    */
   groupedRelatedStudies: array.sort(
@@ -160,6 +191,14 @@ export default Component.extend(I18n, {
         value: detail.name,
       };
     }
+  },
+
+  generateAgeDescription(age, ageUnit) {
+    if (typeof age !== 'number') {
+      return undefined;
+    }
+
+    return `${age}${ageUnit ? ' ' + ageUnit : ''}`;
   },
 
   actions: {
