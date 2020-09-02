@@ -14,6 +14,7 @@ import { array, raw } from 'ember-awesome-macros';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 import notImplementedReject from 'onezone-gui-plugin-ecrin/utils/not-implemented-reject';
+import _ from 'lodash';
 
 export default Component.extend(I18n, {
   classNames: ['study-record', 'panel', 'panel-default'],
@@ -71,12 +72,57 @@ export default Component.extend(I18n, {
   remove: notImplementedIgnore,
 
   /**
-   * @virtiual
+   * @virtual
    * @type {Function}
    * @param {Object} relatedStudy
    * @returns {Promise}
    */
   addRelatedStudyToResults: notImplementedReject,
+
+  /**
+   * @type {ComputedProperty<Array<Object>>}
+   */
+  studyBasicDetails: computed(
+    'study.{type,status,genderEligibility}',
+    function studyBasicDetails() {
+      const details = ['type', 'status', 'genderEligibility']
+        .map(detailName => this.generateStudyDetailEntry(detailName))
+        .compact();
+
+      details.slice(0, -1).setEach('separator', '|');
+
+      return details;
+    }
+  ),
+
+  /**
+   * @type {ComputedProperty<Array<Object>>}
+   */
+  studyFeatureDetails: computed(
+    'study.{isInterventional,isObservational,phase,interventionModel,allocationType,primaryPurpose,masking,observationalModel,timePerspective,biospecimensRetained}',
+    function studyFeatureDetails() {
+      const detailNames = [];
+      if (this.get('study.isInterventional')) {
+        detailNames.push(
+          'phase',
+          'interventionModel',
+          'allocationType',
+          'primaryPurpose',
+          'masking'
+        );
+      } else if (this.get('study.isObservational')) {
+        detailNames.push(
+          'observationalModel',
+          'timePerspective',
+          'biospecimensRetained'
+        );
+      }
+
+      return detailNames
+        .map(detailName => this.generateStudyDetailEntry(detailName))
+        .compact();
+    }
+  ),
 
   /**
    * @type {ComputedProperty<Array<Object>>}
@@ -105,6 +151,16 @@ export default Component.extend(I18n, {
         .mapBy('target');
     }
   ),
+
+  generateStudyDetailEntry(detailName) {
+    const detail = this.get(`study.${detailName}`);
+    if (detail) {
+      return {
+        label: this.t(`study${_.upperFirst(detailName)}`),
+        value: detail.name,
+      };
+    }
+  },
 
   actions: {
     toggleDataObjectExpansion(dataObject) {

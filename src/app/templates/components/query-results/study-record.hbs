@@ -43,6 +43,31 @@
         {{study.description}}
       {{/query-results/data-object-record}}
     {{/if}}
+    {{#query-results/data-object-record
+      class="study-info"
+      isExpanded=study.areDetailsExpanded
+      toggleExpansion=(action
+        (mut study.areDetailsExpanded)
+        (not study.areDetailsExpanded)
+      )
+      typeName=(tt this "studyDetails")
+    }}
+      {{#if studyBasicDetails}}
+        <p>
+          {{#each studyBasicDetails as |detail|}}
+            <strong>{{detail.label}}:</strong> {{detail.value}} {{detail.separator}}
+          {{/each}}
+        </p>
+      {{/if}}
+      {{#if studyFeatureDetails}}
+        {{tt this "studyFeatures"}}:
+        <ul>
+          {{#each studyFeatureDetails as |detail|}}
+            <li><strong>{{detail.label}}:</strong> {{detail.value}}</li>
+          {{/each}}
+        </ul>
+      {{/if}}
+    {{/query-results/data-object-record}}
     {{#if study.dataSharingStatement}}
       {{#query-results/data-object-record
         class="study-info"

@@ -49,6 +49,12 @@ export default EmberObject.extend({
    * @public
    * @type {boolean}
    */
+  areDetailsExpanded: false,
+
+  /**
+   * @public
+   * @type {boolean}
+   */
   isDataSharingStatementExpanded: false,
 
   /**
@@ -176,6 +182,7 @@ export default EmberObject.extend({
    */
   hasAllElementsExpanded: and(
     or(not('description'), 'isDescriptionExpanded'),
+    'areDetailsExpanded',
     or(not('dataSharingStatement'), 'isDataSharingStatementExpanded'),
     or(isEmpty('relatedStudies'), 'areRelatedStudiesExpanded'),
     equal('expandedDataObjects.length', or('dataObjects.length', raw(0))),
@@ -189,6 +196,7 @@ export default EmberObject.extend({
 
     this.setProperties({
       isDescriptionExpanded: true,
+      areDetailsExpanded: true,
       isDataSharingStatementExpanded: true,
       areRelatedStudiesExpanded: true,
     });
@@ -198,6 +206,7 @@ export default EmberObject.extend({
   collapseAll() {
     this.setProperties({
       isDescriptionExpanded: false,
+      areDetailsExpanded: false,
       isDataSharingStatementExpanded: false,
       areRelatedStudiesExpanded: false,
     });
