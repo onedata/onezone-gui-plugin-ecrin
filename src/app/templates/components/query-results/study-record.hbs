@@ -163,7 +163,7 @@
         {{/if}}
         {{#if dataObject.urls.length}}
           <p>
-            {{tt this "urlAccess"}}:
+            <strong>{{tt this "urlAccess"}}:</strong>
             <ul>
               {{#each dataObject.urls as |urlContainer|}}
                 <li>
@@ -178,6 +178,12 @@
                 </li>
               {{/each}}
             </ul>
+          </p>
+        {{/if}}
+        {{#if dataObject.managingOrganisation}}
+          <p>
+            <strong>{{tt this "publisher"}}:</strong>
+            {{dataObject.managingOrganisation.name}}
           </p>
         {{/if}}
       {{/query-results/data-object-record}}

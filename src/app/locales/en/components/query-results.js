@@ -39,6 +39,7 @@ export default {
       journalAbstract: 'Abstract',
       journalArticle: 'Article',
     },
+    publisher: 'Publisher / provider',
     untitled: 'Untitled',
     loading: 'Loading...',
   },
