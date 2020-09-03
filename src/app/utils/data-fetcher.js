@@ -680,6 +680,7 @@ export default EmberObject.extend({
         'min_age_units',
         'max_age',
         'max_age_units',
+        'study_enrolment',
       ],
     };
   },
@@ -748,6 +749,8 @@ export default EmberObject.extend({
       minAgeUnits: get(rawData, 'min_age_units.name'),
       maxAge: rawData.max_age,
       maxAgeUnits: get(rawData, 'max_age_units.name'),
+      enrolment: typeof rawData.study_enrolment === 'number' ?
+        rawData.study_enrolment : null,
       dataObjectsIds: rawData.linked_data_objects || [],
       dataObjects: [],
       expandedDataObjects: [],

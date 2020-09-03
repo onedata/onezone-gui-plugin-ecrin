@@ -17,7 +17,7 @@ import {
   formatRelatedStudies,
   formatBasicDetails,
   formatFeatureDetails,
-  formatAgeRange,
+  formatEnrolmentData,
   formatTopics,
 } from 'onezone-gui-plugin-ecrin/utils/study-formatters';
 
@@ -298,12 +298,12 @@ export default Service.extend(I18n, {
         });
       }
 
-      const formattedAgeRange = formatAgeRange(i18n, study);
-      const ageRangeSection = [{
-        text: [{
-          text: this.pdfT('studyAgeRangeLabel'),
+      const formattedStudyEnrolmentData = formatEnrolmentData(i18n, study);
+      const studyEnrolmentDataSection = [{
+        text: _.flatten(formattedStudyEnrolmentData.map(({ name, value, separator }) => [{
+          text: `${name}: `,
           bold: true,
-        }, String(formattedAgeRange)],
+        }, `${value} `, separator ? `${separator} ` : ''])),
       }];
 
       const formattedTopics = formatTopics(study);
@@ -321,7 +321,7 @@ export default Service.extend(I18n, {
         stack: [
           ...basicDetailsSection,
           ...featureDetailsSection,
-          ...ageRangeSection,
+          ...studyEnrolmentDataSection,
         ],
         colSpan: 2,
       }, {}, {

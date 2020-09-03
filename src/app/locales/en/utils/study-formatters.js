@@ -1,8 +1,7 @@
 export default {
-  studyDetails: {
+  studyFields: {
     type: 'Type',
     status: 'Status',
-    genderEligibility: 'Gender eligibility',
     phase: 'Phase',
     interventionModel: 'Intervention model',
     allocationType: 'Allocation type',
@@ -11,6 +10,9 @@ export default {
     observationalModel: 'Observational model',
     timePerspective: 'Time perspective',
     biospecimensRetained: 'Biospecimens retained',
+    genderEligibility: 'Gender eligibility',
+    ageRange: 'Age range',
+    numberOfParticipants: 'Number of participants',
   },
-  ageNotSpecified: 'not specified',
+  notSpecified: 'not specified',
 };

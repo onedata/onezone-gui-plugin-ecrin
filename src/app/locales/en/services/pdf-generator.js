@@ -5,7 +5,6 @@ export default {
     studyDescriptionLabel: 'Description: ',
     studyDataSharingStatementLabel: 'Data sharing statement: ',
     studyFeaturesLabel: 'Features: ',
-    studyAgeRangeLabel: 'Age range: ',
     studyTopicsLabel: 'Associated topics: ',
     studyRelatedStudiesLabel: 'Related studies: ',
     dataObjectUrlAccessLabel: 'Access: ',

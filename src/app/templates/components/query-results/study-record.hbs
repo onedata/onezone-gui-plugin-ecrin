@@ -69,9 +69,13 @@
           </ul>
         </p>
       {{/if}}
-      <p>
-        <strong>{{tt this "ageRange"}}:</strong> {{formattedStudyAgeRange}}
-      </p>
+      {{#if formattedStudyEnrolmentData}}
+        <p>
+          {{#each formattedStudyEnrolmentData as |data|}}
+            <strong>{{data.name}}:</strong> {{data.value}} {{data.separator}}
+          {{/each}}
+        </p>
+      {{/if}}
       {{#if formattedStudyTopics}}
         <p>
           <strong>{{tt this "studyTopics"}}:</strong>

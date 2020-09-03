@@ -15,7 +15,7 @@ const i18nPrefix = 'utils.studyFormatters';
  * ```
  */
 export function formatBasicDetails(i18n, study) {
-  const details = ['type', 'status', 'genderEligibility']
+  const details = ['type', 'status']
     .map(detailName => generateDetailEntry(i18n, study, detailName))
     .compact();
 
@@ -68,29 +68,47 @@ export function formatFeatureDetails(i18n, study) {
  * @param {Utils.Study} study 
  * @returns {String} string representation of study age range (ready to render)
  */
-export function formatAgeRange(i18n, study) {
+export function formatEnrolmentData(i18n, study) {
   const {
     minAge,
     minAgeUnits,
     maxAge,
     maxAgeUnits,
+    enrolment,
   } = getProperties(
     study,
     'minAge',
     'minAgeUnits',
     'maxAge',
-    'maxAgeUnits'
+    'maxAgeUnits',
+    'enrolment',
   );
 
   const minAgeDescription = generateAgeDescription(minAge, minAgeUnits);
   const maxAgeDescription = generateAgeDescription(maxAge, maxAgeUnits);
-  const ageNotSpecifiedDescription = i18n.t(`${i18nPrefix}.ageNotSpecified`);
+  const notSpecifiedDescription = i18n.t(`${i18nPrefix}.notSpecified`);
 
+  let ageDescription;
   if (!minAgeDescription && !maxAgeDescription) {
-    return ageNotSpecifiedDescription;
+    ageDescription = notSpecifiedDescription;
+  } else {
+    ageDescription =
+      `${minAgeDescription || notSpecifiedDescription} - ${maxAgeDescription || notSpecifiedDescription}`;
   }
 
-  return `${minAgeDescription || ageNotSpecifiedDescription} - ${maxAgeDescription || ageNotSpecifiedDescription}`;
+  const dataElements = [
+    generateDetailEntry(i18n, study, 'genderEligibility'), {
+      name: i18n.t(`${i18nPrefix}.studyFields.ageRange`),
+      value: ageDescription,
+    }, {
+      name: i18n.t(`${i18nPrefix}.studyFields.numberOfParticipants`),
+      value: enrolment !== null ? String(enrolment) : notSpecifiedDescription,
+    },
+  ];
+
+  dataElements.slice(0, -1).setEach('separator', '|');
+
+  return dataElements;
 }
 
 /**
@@ -172,7 +190,7 @@ function generateDetailEntry(i18n, study, detailName) {
   const detail = get(study, detailName);
   if (detail) {
     return {
-      name: i18n.t(`${i18nPrefix}.studyDetails.${detailName}`),
+      name: i18n.t(`${i18nPrefix}.studyFields.${detailName}`),
       value: detail.name,
     };
   }

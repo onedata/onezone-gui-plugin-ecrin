@@ -15,7 +15,6 @@ export default {
     studyDetails: 'Details',
     studyFeatures: 'Features',
     studyDataSharingStatement: 'Data sharing statement',
-    ageRange: 'Age range',
     studyTopics: 'Associated topics',
     studyRelatedStudies: 'Related studies',
     addRelatedToResults: 'add to results',

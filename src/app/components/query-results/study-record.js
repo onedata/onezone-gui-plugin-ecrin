@@ -16,7 +16,7 @@ import notImplementedReject from 'onezone-gui-plugin-ecrin/utils/not-implemented
 import {
   formatBasicDetails,
   formatFeatureDetails,
-  formatAgeRange,
+  formatEnrolmentData,
   formatTopics,
   formatRelatedStudies,
 } from 'onezone-gui-plugin-ecrin/utils/study-formatters';
@@ -88,7 +88,7 @@ export default Component.extend(I18n, {
    * @type {ComputedProperty<Array<Object>>}
    */
   formattedStudyBasicDetails: computed(
-    'study.{type,status,genderEligibility}',
+    'study.{type,status}',
     function formattedStudyBasicDetails() {
       const {
         i18n,
@@ -115,17 +115,17 @@ export default Component.extend(I18n, {
   ),
 
   /**
-   * @type {ComputedProperty<String>}
+   * @type {ComputedProperty<Array<Object>>}
    */
-  formattedStudyAgeRange: computed(
-    'study.{minAge,minAgeUnits,maxAge,maxAgeUnits}',
-    function formattedStudyAgeRange() {
+  formattedStudyEnrolmentData: computed(
+    'study.{minAge,minAgeUnits,maxAge,maxAgeUnits,enrolment,genderEligibility}',
+    function formattedStudyEnrolmentData() {
       const {
         i18n,
         study,
       } = this.getProperties('i18n', 'study');
 
-      return formatAgeRange(i18n, study);
+      return formatEnrolmentData(i18n, study);
     }
   ),
 

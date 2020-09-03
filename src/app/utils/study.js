@@ -197,6 +197,12 @@ export default EmberObject.extend({
 
   /**
    * @virtual
+   * @type {number|null}
+   */
+  enrolment: undefined,
+
+  /**
+   * @virtual
    * @type {Array<Object>}
    */
   relatedStudies: undefined,
