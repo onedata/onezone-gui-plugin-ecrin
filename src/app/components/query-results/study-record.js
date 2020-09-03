@@ -156,6 +156,45 @@ export default Component.extend(I18n, {
   ),
 
   /**
+   * @type {ComputedProperty<Array<String>>}
+   */
+  studyTopics: computed('study.topics.[]', function studyTopics() {
+    return (this.get('study.topics') || [])
+      .map(({ value, sourceType, controlledTerminology, controlledTerminologyCode }) => {
+        let topicDescription = value;
+
+        let additionalInfo = '';
+        if (sourceType) {
+          additionalInfo += sourceType;
+        }
+
+        let controlledTerminologyDescription = '';
+        if (controlledTerminology) {
+          controlledTerminologyDescription += controlledTerminology;
+        }
+        if (controlledTerminologyCode) {
+          if (controlledTerminologyDescription) {
+            controlledTerminologyDescription += ': ';
+          }
+          controlledTerminologyDescription += controlledTerminologyCode;
+        }
+
+        if (controlledTerminologyDescription) {
+          if (additionalInfo) {
+            additionalInfo += '; ';
+          }
+          additionalInfo += controlledTerminologyDescription;
+        }
+
+        if (additionalInfo) {
+          topicDescription += ` [${additionalInfo}]`;
+
+          return topicDescription;
+        }
+      });
+  }),
+
+  /**
    * @type {ComputedProperty<Array<Object>>}
    */
   groupedRelatedStudies: array.sort(

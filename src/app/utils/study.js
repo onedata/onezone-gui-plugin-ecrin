@@ -191,6 +191,18 @@ export default EmberObject.extend({
 
   /**
    * @virtual
+   * @type {Array<Object>}
+   */
+  topics: undefined,
+
+  /**
+   * @virtual
+   * @type {Array<Object>}
+   */
+  relatedStudies: undefined,
+
+  /**
+   * @virtual
    * @type {boolean}
    */
   isInterventional: undefined,

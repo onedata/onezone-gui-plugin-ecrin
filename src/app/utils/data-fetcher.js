@@ -666,6 +666,10 @@ export default EmberObject.extend({
         'study_gender_elig.id',
         'study_features.feature_value.id',
         'study_features.feature_type.id',
+        'study_topics.topic_value',
+        'study_topics.topic_source_type.name',
+        'study_topics.topic_ct.name',
+        'study_topics.topic_ct_code',
         'linked_data_objects',
         'related_studies.relationship_type.id',
         'related_studies.target_id',
@@ -746,6 +750,15 @@ export default EmberObject.extend({
       dataObjects: [],
       expandedDataObjects: [],
     };
+
+    studyComputedData.topics = (rawData.study_topics || [])
+      .filterBy('topic_value')
+      .map(topic => ({
+        value: topic.topic_value,
+        sourceType: get(topic, 'topic_source_type.name'),
+        controlledTerminology: get(topic, 'topic_ct.name'),
+        controlledTerminologyCode: topic.topic_ct_code,
+      }));
 
     studyComputedData.relatedStudies = (rawData.related_studies || [])
       .map(({ target_id, relationship_type }) => ({

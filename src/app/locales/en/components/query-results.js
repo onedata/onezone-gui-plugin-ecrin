@@ -28,6 +28,7 @@ export default {
     studyDataSharingStatement: 'Data sharing statement',
     ageRange: 'Age range',
     ageNotSpecified: 'not specified',
+    studyTopics: 'Associated topics',
     studyRelatedStudies: 'Related studies',
     addRelatedToResults: 'add to results',
     relatedAlreadyInResults: 'already in results',
