@@ -52,31 +52,31 @@
       )
       typeName=(tt this "studyDetails")
     }}
-      {{#if studyBasicDetails}}
+      {{#if formattedStudyBasicDetails}}
         <p>
-          {{#each studyBasicDetails as |detail|}}
-            <strong>{{detail.label}}:</strong> {{detail.value}} {{detail.separator}}
+          {{#each formattedStudyBasicDetails as |detail|}}
+            <strong>{{detail.name}}:</strong> {{detail.value}} {{detail.separator}}
           {{/each}}
         </p>
       {{/if}}
-      {{#if studyFeatureDetails}}
+      {{#if formattedStudyFeatureDetails}}
         <p>
           <strong>{{tt this "studyFeatures"}}:</strong>
           <ul>
-            {{#each studyFeatureDetails as |detail|}}
-              <li><strong>{{detail.label}}:</strong> {{detail.value}}</li>
+            {{#each formattedStudyFeatureDetails as |detail|}}
+              <li><strong>{{detail.name}}:</strong> {{detail.value}}</li>
             {{/each}}
           </ul>
         </p>
       {{/if}}
       <p>
-        <strong>{{tt this "ageRange"}}:</strong> {{ageRange}}
+        <strong>{{tt this "ageRange"}}:</strong> {{formattedStudyAgeRange}}
       </p>
-      {{#if studyTopics}}
+      {{#if formattedStudyTopics}}
         <p>
           <strong>{{tt this "studyTopics"}}:</strong>
           <ul>
-            {{#each studyTopics as |topic|}}
+            {{#each formattedStudyTopics as |topic|}}
               <li>{{topic}}</li>
             {{/each}}
           </ul>
@@ -96,7 +96,7 @@
         {{study.dataSharingStatement}}
       {{/query-results/data-object-record}}
     {{/if}}
-    {{#if groupedRelatedStudies}}
+    {{#if formattedRelatedStudies}}
       {{#query-results/data-object-record
         class="study-info"
         isExpanded=study.areRelatedStudiesExpanded
@@ -106,23 +106,20 @@
         )
         typeName=(tt this "studyRelatedStudies")
       }}
-        {{#each groupedRelatedStudies as |relatedStudiesGroup|}}
+        {{#each formattedRelatedStudies as |relatedStudiesGroup|}}
           <p>
-            {{relatedStudiesGroup.value.name}}:
+            {{relatedStudiesGroup.relation}}:
             <ul>
-              {{#each relatedStudiesGroup.items as |relatedStudyEntry|}}
+              {{#each relatedStudiesGroup.studies as |relatedStudyEntry|}}
                 <li>
-                  {{relatedStudyEntry.target.title}}
-                  {{#each relatedStudyEntry.target.identifiers as |identifier|}}
-                    [{{identifier.identifierType.name}}: {{identifier.identifierValue}}]
-                  {{/each}}
+                  {{relatedStudyEntry.description}}
                   {{#let
-                    (contains relatedStudyEntry.target notFetchedRelatedStudies)
+                    (contains relatedStudyEntry.raw notFetchedRelatedStudies)
                     as |isNotInResults|
                   }}
                     <a
                       class="{{if (or (not isNotInResults) isFetchingData) "disabled"}} add-related-to-results"
-                      {{action "addRelatedStudyToResults" relatedStudyEntry.target}}
+                      {{action "addRelatedStudyToResults" relatedStudyEntry.raw}}
                     >
                       ({{tt
                         this

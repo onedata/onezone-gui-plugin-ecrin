@@ -1,0 +1,187 @@
+import _ from 'lodash';
+import { get, getProperties } from '@ember/object';
+
+const i18nPrefix = 'utils.studyFormatters';
+
+/**
+ * @param {Ember.Service} i18n
+ * @param {Utils.Study} study 
+ * @returns {Array<Object>} array of objects, where each represents a single study detail:
+ * ```
+ * {
+ *   name: String // detail name (ready to render)
+ *   value: String // detail value (ready to render)
+ * }
+ * ```
+ */
+export function formatBasicDetails(i18n, study) {
+  const details = ['type', 'status', 'genderEligibility']
+    .map(detailName => generateDetailEntry(i18n, study, detailName))
+    .compact();
+
+  details.slice(0, -1).setEach('separator', '|');
+
+  return details;
+}
+
+/**
+ * @param {Ember.Service} i18n
+ * @param {Utils.Study} study 
+ * @returns {Array<Object>} array of objects, where each represents a single study feature:
+ * ```
+ * {
+ *   name: String // feature name (ready to render)
+ *   value: String // feature value (ready to render)
+ * }
+ * ```
+ */
+export function formatFeatureDetails(i18n, study) {
+  const {
+    isInterventional,
+    isObservational,
+  } = getProperties(study, 'isInterventional', 'isObservational');
+
+  const detailNames = [];
+  if (isInterventional) {
+    detailNames.push(
+      'phase',
+      'interventionModel',
+      'allocationType',
+      'primaryPurpose',
+      'masking'
+    );
+  } else if (isObservational) {
+    detailNames.push(
+      'observationalModel',
+      'timePerspective',
+      'biospecimensRetained'
+    );
+  }
+
+  return detailNames
+    .map(detailName => generateDetailEntry(i18n, study, detailName))
+    .compact();
+}
+
+/**
+ * @param {Ember.Service} i18n
+ * @param {Utils.Study} study 
+ * @returns {String} string representation of study age range (ready to render)
+ */
+export function formatAgeRange(i18n, study) {
+  const {
+    minAge,
+    minAgeUnits,
+    maxAge,
+    maxAgeUnits,
+  } = getProperties(
+    study,
+    'minAge',
+    'minAgeUnits',
+    'maxAge',
+    'maxAgeUnits'
+  );
+
+  const minAgeDescription = generateAgeDescription(minAge, minAgeUnits);
+  const maxAgeDescription = generateAgeDescription(maxAge, maxAgeUnits);
+  const ageNotSpecifiedDescription = i18n.t(`${i18nPrefix}.ageNotSpecified`);
+
+  if (!minAgeDescription && !maxAgeDescription) {
+    return ageNotSpecifiedDescription;
+  }
+
+  return `${minAgeDescription || ageNotSpecifiedDescription} - ${maxAgeDescription || ageNotSpecifiedDescription}`;
+}
+
+/**
+ * @param {Utils.Study} study 
+ * @returns {Array<String>} string representation of study topics (ready to render)
+ */
+export function formatTopics(study) {
+  return (get(study, 'topics') || [])
+    .map(({ value, sourceType, controlledTerminology, controlledTerminologyCode }) => {
+      let topicDescription = value;
+
+      let additionalInfo = '';
+      if (sourceType) {
+        additionalInfo += sourceType;
+      }
+
+      let controlledTerminologyDescription = '';
+      if (controlledTerminology) {
+        controlledTerminologyDescription += controlledTerminology;
+      }
+      if (controlledTerminologyCode) {
+        if (controlledTerminologyDescription) {
+          controlledTerminologyDescription += ': ';
+        }
+        controlledTerminologyDescription += controlledTerminologyCode;
+      }
+
+      if (controlledTerminologyDescription) {
+        if (additionalInfo) {
+          additionalInfo += '; ';
+        }
+        additionalInfo += controlledTerminologyDescription;
+      }
+
+      if (additionalInfo) {
+        topicDescription += ` [${additionalInfo}]`;
+
+        return topicDescription;
+      }
+    });
+}
+
+/**
+ * @param {Utils.Study} study 
+ * @returns {Array<Object>} array of objects, where each represents a single type of relation
+ * with all studies with that relation. It has format:
+ * ```
+ * {
+ *   relation: String // Relation name (ready to render)
+ *   studies: Array<{ description: String, raw: Object }> // Has stringified representation
+ *     // of related studies in `description` (ready to render) and related study object in `raw`
+ * }
+ * ```
+ */
+export function formatRelatedStudies(study) {
+  const relatedStudies = get(study, 'relatedStudies') || [];
+  const groupedRelatedStudies = _.sortBy(
+    _.toPairs(_.groupBy(relatedStudies, v => v.relationshipType.id)),
+    v => v[0]
+  ).map(([, items]) => items);
+
+  return groupedRelatedStudies.map(studiesGroup => ({
+    relation: `${studiesGroup[0].relationshipType.name}`,
+    studies: studiesGroup.map(({ target: study }) => {
+      let description = study.title + ' ';
+      study.identifiers.forEach(identifier =>
+        description +=
+        `[${identifier.identifierType.name}: ${identifier.identifierValue}]`
+      );
+      return {
+        description,
+        raw: study,
+      };
+    }),
+  }));
+}
+
+function generateDetailEntry(i18n, study, detailName) {
+  const detail = get(study, detailName);
+  if (detail) {
+    return {
+      name: i18n.t(`${i18nPrefix}.studyDetails.${detailName}`),
+      value: detail.name,
+    };
+  }
+}
+
+function generateAgeDescription(age, ageUnit) {
+  if (typeof age !== 'number') {
+    return undefined;
+  }
+
+  return `${age}${ageUnit ? ' ' + ageUnit : ''}`;
+}

@@ -4,6 +4,10 @@ export default {
     title: 'MDR search results',
     studyDescriptionLabel: 'Description: ',
     studyDataSharingStatementLabel: 'Data sharing statement: ',
+    studyFeaturesLabel: 'Features: ',
+    studyAgeRangeLabel: 'Age range: ',
+    studyTopicsLabel: 'Associated topics: ',
+    studyRelatedStudiesLabel: 'Related studies: ',
     dataObjectUrlAccessLabel: 'Access: ',
     dataObjectUrlType: {
       journalAbstract: 'Abstract',
@@ -11,5 +15,6 @@ export default {
     },
     dataObjectAccessDetailsLabel: 'Access details: ',
     dataObjectAccessDetailsUrlLabel: 'see: ',
+    dataObjectPublisherLabel: 'Publisher / provider: ',
   },
 };

@@ -631,7 +631,7 @@ export default EmberObject.extend({
       },
     };
 
-    elasticsearch.post('study', '_search', queryBody)
+    return elasticsearch.post('study', '_search', queryBody)
       .then(results => {
         const relatedStudies = (get(results || {}, 'hits.hits') || [])
           .mapBy('_source')
@@ -646,6 +646,8 @@ export default EmberObject.extend({
           for (const relatedStudyEntry of study.relatedStudies) {
             relatedStudyEntry.target = relatedStudiesMap.get(relatedStudyEntry.targetId);
           }
+          // remove related study entries without existing study
+          study.relatedStudies = study.relatedStudies.filterBy('target');
         }
       });
   },

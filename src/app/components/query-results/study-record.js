@@ -4,17 +4,22 @@
  * 
  * @module components/query-results/study-record
  * @author Michał Borzęcki
- * @copyright (C) 2019 ACK CYFRONET AGH
+ * @copyright (C) 2019-2020 ACK CYFRONET AGH
  * @license This software is released under the MIT license cited in 'LICENSE.txt'.
  */
 
 import Component from '@ember/component';
-import { get, computed, getProperties } from '@ember/object';
-import { array, raw } from 'ember-awesome-macros';
+import { get, computed } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import notImplementedIgnore from 'onezone-gui-plugin-ecrin/utils/not-implemented-ignore';
 import notImplementedReject from 'onezone-gui-plugin-ecrin/utils/not-implemented-reject';
-import _ from 'lodash';
+import {
+  formatBasicDetails,
+  formatFeatureDetails,
+  formatAgeRange,
+  formatTopics,
+  formatRelatedStudies,
+} from 'onezone-gui-plugin-ecrin/utils/study-formatters';
 
 export default Component.extend(I18n, {
   classNames: ['study-record', 'panel', 'panel-default'],
@@ -82,125 +87,61 @@ export default Component.extend(I18n, {
   /**
    * @type {ComputedProperty<Array<Object>>}
    */
-  studyBasicDetails: computed(
+  formattedStudyBasicDetails: computed(
     'study.{type,status,genderEligibility}',
-    function studyBasicDetails() {
-      const details = ['type', 'status', 'genderEligibility']
-        .map(detailName => this.generateStudyDetailEntry(detailName))
-        .compact();
+    function formattedStudyBasicDetails() {
+      const {
+        i18n,
+        study,
+      } = this.getProperties('i18n', 'study');
 
-      details.slice(0, -1).setEach('separator', '|');
-
-      return details;
+      return formatBasicDetails(i18n, study);
     }
   ),
 
   /**
    * @type {ComputedProperty<Array<Object>>}
    */
-  studyFeatureDetails: computed(
+  formattedStudyFeatureDetails: computed(
     'study.{isInterventional,isObservational,phase,interventionModel,allocationType,primaryPurpose,masking,observationalModel,timePerspective,biospecimensRetained}',
-    function studyFeatureDetails() {
-      const detailNames = [];
-      if (this.get('study.isInterventional')) {
-        detailNames.push(
-          'phase',
-          'interventionModel',
-          'allocationType',
-          'primaryPurpose',
-          'masking'
-        );
-      } else if (this.get('study.isObservational')) {
-        detailNames.push(
-          'observationalModel',
-          'timePerspective',
-          'biospecimensRetained'
-        );
-      }
+    function formattedStudyFeatureDetails() {
+      const {
+        i18n,
+        study,
+      } = this.getProperties('i18n', 'study');
 
-      return detailNames
-        .map(detailName => this.generateStudyDetailEntry(detailName))
-        .compact();
+      return formatFeatureDetails(i18n, study);
     }
   ),
 
   /**
    * @type {ComputedProperty<String>}
    */
-  ageRange: computed(
+  formattedStudyAgeRange: computed(
     'study.{minAge,minAgeUnits,maxAge,maxAgeUnits}',
-    function ageRange() {
+    function formattedStudyAgeRange() {
       const {
-        minAge,
-        minAgeUnits,
-        maxAge,
-        maxAgeUnits,
-      } = getProperties(
-        this.get('study'),
-        'minAge',
-        'minAgeUnits',
-        'maxAge',
-        'maxAgeUnits'
-      );
+        i18n,
+        study,
+      } = this.getProperties('i18n', 'study');
 
-      const minAgeDescription = this.generateAgeDescription(minAge, minAgeUnits);
-      const maxAgeDescription = this.generateAgeDescription(maxAge, maxAgeUnits);
-      const ageNotSpecifiedDescription = this.t('ageNotSpecified');
-
-      if (!minAgeDescription && !maxAgeDescription) {
-        return ageNotSpecifiedDescription;
-      }
-
-      return `${minAgeDescription || ageNotSpecifiedDescription} - ${maxAgeDescription || ageNotSpecifiedDescription}`;
+      return formatAgeRange(i18n, study);
     }
   ),
 
   /**
    * @type {ComputedProperty<Array<String>>}
    */
-  studyTopics: computed('study.topics.[]', function studyTopics() {
-    return (this.get('study.topics') || [])
-      .map(({ value, sourceType, controlledTerminology, controlledTerminologyCode }) => {
-        let topicDescription = value;
-
-        let additionalInfo = '';
-        if (sourceType) {
-          additionalInfo += sourceType;
-        }
-
-        let controlledTerminologyDescription = '';
-        if (controlledTerminology) {
-          controlledTerminologyDescription += controlledTerminology;
-        }
-        if (controlledTerminologyCode) {
-          if (controlledTerminologyDescription) {
-            controlledTerminologyDescription += ': ';
-          }
-          controlledTerminologyDescription += controlledTerminologyCode;
-        }
-
-        if (controlledTerminologyDescription) {
-          if (additionalInfo) {
-            additionalInfo += '; ';
-          }
-          additionalInfo += controlledTerminologyDescription;
-        }
-
-        if (additionalInfo) {
-          topicDescription += ` [${additionalInfo}]`;
-
-          return topicDescription;
-        }
-      });
+  formattedStudyTopics: computed('study.topics.[]', function formattedStudyTopics() {
+    return formatTopics(this.get('study'));
   }),
 
   /**
    * @type {ComputedProperty<Array<Object>>}
    */
-  groupedRelatedStudies: array.sort(
-    array.groupBy('study.relatedStudies', raw('relationshipType')),
-    ['value.id']
-  ),
+  formattedRelatedStudies: computed('study', function formattedRelatedStudies() {
+    return formatRelatedStudies(this.get('study'));
+  }),
 
   /**
    * @type {ComputedProperty<Array<Object>>}
@@ -221,24 +162,6 @@ export default Component.extend(I18n, {
         .mapBy('target');
     }
   ),
-
-  generateStudyDetailEntry(detailName) {
-    const detail = this.get(`study.${detailName}`);
-    if (detail) {
-      return {
-        label: this.t(`study${_.upperFirst(detailName)}`),
-        value: detail.name,
-      };
-    }
-  },
-
-  generateAgeDescription(age, ageUnit) {
-    if (typeof age !== 'number') {
-      return undefined;
-    }
-
-    return `${age}${ageUnit ? ' ' + ageUnit : ''}`;
-  },
 
   actions: {
     toggleDataObjectExpansion(dataObject) {
@@ -273,7 +196,7 @@ export default Component.extend(I18n, {
         'addRelatedStudyToResults'
       );
 
-      if (notFetchedRelatedStudies.contains(relatedStudy) && !isFetchingData) {
+      if (notFetchedRelatedStudies.includes(relatedStudy) && !isFetchingData) {
         addRelatedStudyToResults(relatedStudy);
       }
     },

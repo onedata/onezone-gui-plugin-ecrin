@@ -13,6 +13,13 @@ import { getProperties, get } from '@ember/object';
 import I18n from 'onezone-gui-plugin-ecrin/mixins/i18n';
 import _ from 'lodash';
 import moment from 'moment';
+import {
+  formatRelatedStudies,
+  formatBasicDetails,
+  formatFeatureDetails,
+  formatAgeRange,
+  formatTopics,
+} from 'onezone-gui-plugin-ecrin/utils/study-formatters';
 
 const scriptsToLoad = [
   'assets/pdfmake/pdfmake.min.js',
@@ -154,6 +161,7 @@ export default Service.extend(I18n, {
         accessDetails,
         accessDetailsUrl,
         urls,
+        managingOrganisation,
       } = getProperties(
         dataObject,
         'id',
@@ -163,7 +171,8 @@ export default Service.extend(I18n, {
         'accessType',
         'accessDetails',
         'accessDetailsUrl',
-        'urls'
+        'urls',
+        'managingOrganisation'
       );
 
       const accessSection = [];
@@ -192,6 +201,15 @@ export default Service.extend(I18n, {
           );
         }
       }
+      const publisherSection = [];
+      if (managingOrganisation) {
+        publisherSection.push({
+          text: [{
+            text: `\n${this.pdfT('dataObjectPublisherLabel')}`,
+            bold: true,
+          }, managingOrganisation.name],
+        });
+      }
 
       if (!representationsMap.has(id)) {
         representationsMap.set(id, [{
@@ -202,8 +220,10 @@ export default Service.extend(I18n, {
             title,
             { stack: accessSection },
             { text: accessDetailsSection },
+            ...publisherSection,
           ],
-        }, {
+          colSpan: 2,
+        }, {}, {
           text: year || '‐',
         }, {
           text: get(accessType, 'name') || '‐',
@@ -221,20 +241,23 @@ export default Service.extend(I18n, {
    * @returns {Array<Object>}
    */
   generateStudiesPdfRepresentation(studies, dataObjectsRepresentation) {
+    const i18n = this.get('i18n');
     return studies.map(study => {
       const {
         title,
         description,
         dataSharingStatement,
+        relatedStudies,
         dataObjects,
       } = getProperties(
         study,
         'title',
         'description',
         'dataSharingStatement',
-        'dataObjects',
+        'relatedStudies',
+        'dataObjects'
       );
-      const tableColsCount = 4;
+      const tableColsCount = 5;
       const tableBody = [
         [{
           text: title,
@@ -253,6 +276,59 @@ export default Service.extend(I18n, {
           colSpan: tableColsCount,
         }, ..._.times(tableColsCount - 1, _.constant({}))]);
       }
+
+      const formattedBasicDetails = formatBasicDetails(i18n, study);
+      const basicDetailsSection = [{
+        text: _.flatten(formattedBasicDetails.map(({ name, value, separator }) => [{
+          text: `${name}: `,
+          bold: true,
+        }, `${value} `, separator ? `${separator} ` : ''])),
+      }];
+
+      const formattedFeatureDetails = formatFeatureDetails(i18n, study);
+      const featureDetailsSection = [];
+      if (formattedFeatureDetails.length) {
+        featureDetailsSection.push({
+          text: String(this.pdfT('studyFeaturesLabel')),
+          bold: true,
+        }, {
+          ul: formattedFeatureDetails.map(({ name, value }) => ({
+            text: [{ text: `${name}: `, bold: true }, value],
+          })),
+        });
+      }
+
+      const formattedAgeRange = formatAgeRange(i18n, study);
+      const ageRangeSection = [{
+        text: [{
+          text: this.pdfT('studyAgeRangeLabel'),
+          bold: true,
+        }, String(formattedAgeRange)],
+      }];
+
+      const formattedTopics = formatTopics(study);
+      const topicsSection = [];
+      if (formattedTopics.length) {
+        topicsSection.push({
+          text: String(this.pdfT('studyTopicsLabel')),
+          bold: true,
+        }, {
+          ul: formattedTopics,
+        });
+      }
+
+      tableBody.push([{
+        stack: [
+          ...basicDetailsSection,
+          ...featureDetailsSection,
+          ...ageRangeSection,
+        ],
+        colSpan: 2,
+      }, {}, {
+        stack: topicsSection,
+        colSpan: 3,
+      }, {}, {}]);
+
       if (dataSharingStatement) {
         tableBody.push([{
           text: [{
@@ -261,6 +337,23 @@ export default Service.extend(I18n, {
             },
             dataSharingStatement,
           ],
+          colSpan: tableColsCount,
+        }, ..._.times(tableColsCount - 1, _.constant({}))]);
+      }
+      if ((relatedStudies || []).length > 0) {
+        const formattedRelatedStudies = formatRelatedStudies(study);
+        tableBody.push([{
+          stack: [{
+            text: String(this.pdfT('studyRelatedStudiesLabel')),
+            bold: true,
+          }, {
+            ul: formattedRelatedStudies.map((studiesGroup) => [
+              `${studiesGroup.relation}:`, {
+                type: 'circle',
+                ul: studiesGroup.studies.mapBy('description'),
+              },
+            ]),
+          }],
           colSpan: tableColsCount,
         }, ..._.times(tableColsCount - 1, _.constant({}))]);
       }
@@ -281,7 +374,7 @@ export default Service.extend(I18n, {
         table: {
           headerRows: 1,
           keepWithHeaderRows: true,
-          widths: [100, '*', 40, 80],
+          widths: [100, '*', '*', 40, 80],
           body: tableBody,
         },
       };
