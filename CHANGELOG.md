@@ -4,6 +4,10 @@
 CHANGELOG
 ---------
 
+### 2.0.0
+
+- **VFS-6740** Improved GUI assets caching
+
 ### 1.1.0
 
 - **VFS-6606** Added Google Analytics
