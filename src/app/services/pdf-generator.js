@@ -145,7 +145,7 @@ export default Service.extend(I18n, {
 
   /**
    * Generates map dataObject.id -> dataObject pdf representation object
-   * @param {Array<DataObject>} dataObjects 
+   * @param {Array<DataObject>} dataObjects
    * @returns {Map<number,Object>}
    */
   generateDataObjectsPdfRepresentation(dataObjects) {
@@ -237,7 +237,7 @@ export default Service.extend(I18n, {
   /**
    * Generates array of studies pdf representations
    * @param {Array<Utils.Study>} studies
-   * @param {Map<number,Object>} dataObjectsRepresentation 
+   * @param {Map<number,Object>} dataObjectsRepresentation
    * @returns {Array<Object>}
    */
   generateStudiesPdfRepresentation(studies, dataObjectsRepresentation) {
@@ -306,6 +306,19 @@ export default Service.extend(I18n, {
         }, `${value} `, separator ? `${separator} ` : ''])),
       }];
 
+      const studyIdentifiers = [...get(study, 'identifiers') || []].sortBy('identifierTypeId');
+      const identifiersDetailsSection = [];
+      if (studyIdentifiers.length) {
+        identifiersDetailsSection.push({
+          text: String(this.pdfT('studyIdentifiersLabel')),
+          bold: true,
+        }, {
+          ul: studyIdentifiers.map(({ identifierTypeName, identifierValue }) => ({
+            text: [{ text: `${identifierTypeName}: `, bold: true }, identifierValue],
+          })),
+        });
+      }
+
       const formattedTopics = formatTopics(study);
       const topicsSection = [];
       if (formattedTopics.length) {
@@ -322,6 +335,7 @@ export default Service.extend(I18n, {
           ...basicDetailsSection,
           ...featureDetailsSection,
           ...studyEnrolmentDataSection,
+          ...identifiersDetailsSection,
         ],
         colSpan: 2,
       }, {}, {

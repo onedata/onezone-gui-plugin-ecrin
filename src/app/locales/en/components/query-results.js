@@ -15,6 +15,7 @@ export default {
     studyDetails: 'Details',
     studyFeatures: 'Features',
     studyDataSharingStatement: 'Data sharing statement',
+    studyIdentifiers: 'Identifiers',
     studyTopics: 'Associated topics',
     studyRelatedStudies: 'Related studies',
     addRelatedToResults: 'add to results',

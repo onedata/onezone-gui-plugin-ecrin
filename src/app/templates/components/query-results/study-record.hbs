@@ -76,6 +76,19 @@
           {{/each}}
         </p>
       {{/if}}
+      {{#if studyIdentifiers}}
+        <p>
+          <strong>{{tt this "studyIdentifiers"}}:</strong>
+          <ul>
+            {{#each studyIdentifiers as |identifier|}}
+              <li>
+                <strong>{{identifier.identifierTypeName}}:</strong>
+                {{identifier.identifierValue}}
+              </li>
+            {{/each}}
+          </ul>
+        </p>
+      {{/if}}
       {{#if formattedStudyTopics}}
         <p>
           <strong>{{tt this "studyTopics"}}:</strong>
@@ -153,7 +166,7 @@
             <strong>{{tt this "accessDetails"}}:</strong>
             {{dataObject.accessDetails}}
             {{#if dataObject.accessDetailsUrl}}
-              ({{tt this "accessDetailsSeeMore"}}: 
+              ({{tt this "accessDetailsSeeMore"}}:
               {{#if dataObject.hasCorrectAccessDetailsUrl}}
                 <a href={{dataObject.accessDetailsUrl}} target="_blank">{{dataObject.accessDetailsUrl}}</a>)
               {{else}}

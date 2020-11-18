@@ -101,6 +101,11 @@
         {
           "id": 29,
           "name": "Registered and is included elsewhere in group"
+        },
+        {
+          "id": 9999,
+          "name": "Is related to",
+          "useForUnknown": true
         }
       ],
       "studyTypeMapping": [

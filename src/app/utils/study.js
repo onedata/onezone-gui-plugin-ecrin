@@ -220,6 +220,11 @@ export default EmberObject.extend({
   isObservational: undefined,
 
   /**
+   * @type {Array<{ identifierValue: any, identifierTypeId: String, identifierTypeName: String }>}
+   */
+  identifiers: undefined,
+
+  /**
    * @type {ComputedProperty<boolean>}
    */
   hasAllElementsExpanded: and(

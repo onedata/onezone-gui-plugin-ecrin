@@ -494,7 +494,7 @@ export default EmberObject.extend({
   },
 
   /**
-   * @param {Object} results 
+   * @param {Object} results
    * @param {boolean} [rememberFittingStudiesCount=true]
    * @param {Utils.Study} [stackAfterStudy=null]
    * @returns {Promise<Array<Utils.Study>>}
@@ -681,6 +681,9 @@ export default EmberObject.extend({
         'max_age',
         'max_age_units',
         'study_enrolment',
+        'study_identifiers.identifier_type.id',
+        'study_identifiers.identifier_type.name',
+        'study_identifiers.identifier_value',
       ],
     };
   },
@@ -795,6 +798,19 @@ export default EmberObject.extend({
         creatorData[featureName].unknownValue
       )
     );
+
+    studyComputedData.identifiers = (rawData.study_identifiers || [])
+      .filter(identifier =>
+        identifier &&
+        !isBlank(get(identifier, 'identifier_value')) &&
+        !isBlank(get(identifier, 'identifier_type.id')) &&
+        !isBlank(get(identifier, 'identifier_type.name'))
+      )
+      .map(({ identifier_value, identifier_type: { name, id } }) => ({
+        identifierValue: identifier_value,
+        identifierTypeId: id,
+        identifierTypeName: name,
+      }));
 
     return Study.create(studyComputedData);
   },

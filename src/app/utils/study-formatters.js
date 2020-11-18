@@ -5,7 +5,7 @@ const i18nPrefix = 'utils.studyFormatters';
 
 /**
  * @param {Ember.Service} i18n
- * @param {Utils.Study} study 
+ * @param {Utils.Study} study
  * @returns {Array<Object>} array of objects, where each represents a single study detail:
  * ```
  * {
@@ -26,7 +26,7 @@ export function formatBasicDetails(i18n, study) {
 
 /**
  * @param {Ember.Service} i18n
- * @param {Utils.Study} study 
+ * @param {Utils.Study} study
  * @returns {Array<Object>} array of objects, where each represents a single study feature:
  * ```
  * {
@@ -65,7 +65,7 @@ export function formatFeatureDetails(i18n, study) {
 
 /**
  * @param {Ember.Service} i18n
- * @param {Utils.Study} study 
+ * @param {Utils.Study} study
  * @returns {String} string representation of study age range (ready to render)
  */
 export function formatEnrolmentData(i18n, study) {
@@ -112,7 +112,7 @@ export function formatEnrolmentData(i18n, study) {
 }
 
 /**
- * @param {Utils.Study} study 
+ * @param {Utils.Study} study
  * @returns {Array<String>} string representation of study topics (ready to render)
  */
 export function formatTopics(study) {
@@ -152,7 +152,7 @@ export function formatTopics(study) {
 }
 
 /**
- * @param {Utils.Study} study 
+ * @param {Utils.Study} study
  * @returns {Array<Object>} array of objects, where each represents a single type of relation
  * with all studies with that relation. It has format:
  * ```

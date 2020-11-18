@@ -1,7 +1,7 @@
 /**
  * A component used internally by query-result component, that shows
  * one record of query results (one study).
- * 
+ *
  * @module components/query-results/study-record
  * @author Michał Borzęcki
  * @copyright (C) 2019-2020 ACK CYFRONET AGH
@@ -141,6 +141,13 @@ export default Component.extend(I18n, {
    */
   formattedRelatedStudies: computed('study', function formattedRelatedStudies() {
     return formatRelatedStudies(this.get('study'));
+  }),
+
+  /**
+   * @type {ComputedProperty<String>}
+   */
+  studyIdentifiers: computed('study', function studyIdentifiers() {
+    return [...(this.get('study.identifiers') || [])].sortBy('identifierTypeId');
   }),
 
   /**
