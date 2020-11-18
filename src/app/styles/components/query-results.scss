@@ -168,7 +168,7 @@
     padding-left: $padding-small-horizontal;
     padding-right: $padding-small-horizontal;
     overflow-wrap: break-word;
-    p {
+    p, ul {
       margin-bottom: $padding-small-vertical;
 
       &:last-child {
