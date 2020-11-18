@@ -3,6 +3,7 @@ export default {
   pdfElements: {
     title: 'MDR search results',
     studyDescriptionLabel: 'Description: ',
+    studyProvenanceLabel: 'Provenance: ',
     studyDataSharingStatementLabel: 'Data sharing statement: ',
     studyFeaturesLabel: 'Features: ',
     studyIdentifiersLabel: 'Identifiers: ',
@@ -15,6 +16,8 @@ export default {
     },
     dataObjectAccessDetailsLabel: 'Access details: ',
     dataObjectAccessDetailsUrlLabel: 'see: ',
+
+    dataObjectProvenanceLabel: 'Provenance: ',
     dataObjectPublisherLabel: 'Publisher / provider: ',
   },
 };

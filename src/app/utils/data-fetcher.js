@@ -309,7 +309,7 @@ export default EmberObject.extend({
           should: [{
             simple_query_string: {
               query: studyTitleContains,
-              fields: ['display_title.title_text'],
+              fields: ['display_title'],
               default_operator: 'and',
             },
           }, {
@@ -394,7 +394,7 @@ export default EmberObject.extend({
     const filters = [];
     const dataObjectBody = {
       size: 10000,
-      _source: ['related_studies'],
+      _source: ['linked_studies'],
       query: {
         bool: {
           must: filters,
@@ -450,7 +450,7 @@ export default EmberObject.extend({
         const hits = (results && results.hits && results.hits.hits) || [];
         return _.uniq(_.flatten(
           hits.map(dataObject =>
-            (get(dataObject, '_source.related_studies') || [])
+            (get(dataObject, '_source.linked_studies') || [])
           )
         ));
       });
@@ -661,9 +661,9 @@ export default EmberObject.extend({
       _source: [
         'id',
         'study_type',
-        'brief_description',
-        'data_sharing_statement',
-        'display_title.title_text',
+        'brief_description.text',
+        'data_sharing_statement.text',
+        'display_title',
         'study_status.id',
         'study_gender_elig.id',
         'study_features.feature_value.id',
@@ -673,13 +673,13 @@ export default EmberObject.extend({
         'study_topics.topic_ct.name',
         'study_topics.topic_ct_code',
         'linked_data_objects',
-        'related_studies.relationship_type.id',
-        'related_studies.target_id',
+        'study_relationships.relationship_type.id',
+        'study_relationships.target_study_id',
         'provenance_string',
-        'min_age',
-        'min_age_units',
-        'max_age',
-        'max_age_units',
+        'min_age.value',
+        'min_age.unit_name',
+        'max_age.value',
+        'max_age.unit_name',
         'study_enrolment',
         'study_identifiers.identifier_type.id',
         'study_identifiers.identifier_type.name',
@@ -701,10 +701,11 @@ export default EmberObject.extend({
         'object_type',
         'publication_year',
         'access_type',
-        'access_details',
-        'access_details_url',
-        'object_instances',
-        'related_studies',
+        'access_details.description',
+        'access_details.url',
+        'object_instances.access_details.url',
+        'object_instances.resource_details.type_id',
+        'linked_studies',
         'provenance_string',
       ],
     };
@@ -745,12 +746,11 @@ export default EmberObject.extend({
     const studyComputedData = {
       id: rawData.id,
       provenance: rawData.provenance_string,
-      title: get(rawData, 'display_title.title_text'),
-      description: rawData.brief_description,
-      dataSharingStatement: rawData.data_sharing_statement,
-      minAge: rawData.min_age,
-      minAgeUnits: get(rawData, 'min_age_units.name'),
-      maxAge: rawData.max_age,
+      title: rawData.display_title,
+      description: get(rawData, 'brief_description.text'),
+      dataSharingStatement: get(rawData, 'data_sharing_statement.text'),
+      minAge: typeof get(rawData, 'min_age.value') === 'number' ? rawData.min_age : null,
+      maxAge: typeof get(rawData, 'max_age.value') === 'number' ? rawData.max_age : null,
       maxAgeUnits: get(rawData, 'max_age_units.name'),
       enrolment: typeof rawData.study_enrolment === 'number' ?
         rawData.study_enrolment : null,
@@ -768,9 +768,9 @@ export default EmberObject.extend({
         controlledTerminologyCode: topic.topic_ct_code,
       }));
 
-    studyComputedData.relatedStudies = (rawData.related_studies || [])
-      .map(({ target_id, relationship_type }) => ({
-        targetId: target_id,
+    studyComputedData.relatedStudies = (rawData.study_relationships || [])
+      .map(({ target_study_id, relationship_type }) => ({
+        targetId: target_study_id,
         relationshipType: this.categorizeValue(
           relationship_type,
           creatorData.relationshipType.valuesMap,
@@ -816,15 +816,16 @@ export default EmberObject.extend({
   },
 
   createDataObjectInstance(rawData, creatorData) {
+    const accessDetailsUrl = get(rawData, 'access_details.url');
     const dataObjectComputedData = {
       id: rawData.id,
       provenance: rawData.provenance_string,
       title: rawData.display_title,
       type: rawData.object_type,
       year: rawData.publication_year,
-      accessDetails: rawData.access_details,
-      accessDetailsUrl: rawData.access_details_url,
-      hasCorrectAccessDetailsUrl: isUrl(rawData.access_details_url),
+      accessDetailsDescription: get(rawData, 'access_details.description'),
+      accessDetailsUrl,
+      hasCorrectAccessDetailsUrl: isUrl(accessDetailsUrl),
       managingOrganisation: rawData.managing_organisation,
     };
     dataObjectCategorizedFields.forEach(({ fieldName, rawFieldName }) =>
@@ -894,7 +895,9 @@ export default EmberObject.extend({
   },
 
   generateUrlsForDataObject(objectInstances, isJournalArticle) {
-    objectInstances = objectInstances.uniqBy('url').filterBy('url');
+    objectInstances = objectInstances
+      .filterBy('access_details.url')
+      .uniqBy('access_details.url');
     const urlsCollection = [];
 
     if (isJournalArticle) {
@@ -907,25 +910,27 @@ export default EmberObject.extend({
       }].forEach(({ type, id }) => {
         let instance;
         do {
-          instance = objectInstances.findBy('resource_type.id', id);
+          instance = objectInstances.findBy('resource_details.type_id', id);
           if (instance) {
+            const url = instance.access_details.url;
             urlsCollection.push({
               type,
-              url: instance.url,
-              isUrlCorrect: isUrl(instance.url),
+              url,
+              isUrlCorrect: isUrl(url),
             });
             objectInstances = objectInstances.without(instance);
           }
         } while (instance);
       });
     }
-    objectInstances.forEach(instance =>
+    objectInstances.forEach(instance => {
+      const url = instance.access_details.url;
       urlsCollection.push({
         type: 'unknown',
-        url: instance.url,
-        isUrlCorrect: isUrl(instance.url),
-      })
-    );
+        url,
+        isUrlCorrect: isUrl(url),
+      });
+    });
 
     return urlsCollection;
   },

@@ -158,9 +158,10 @@ export default Service.extend(I18n, {
         title,
         year,
         accessType,
-        accessDetails,
+        accessDetailsDescription,
         accessDetailsUrl,
         urls,
+        provenance,
         managingOrganisation,
       } = getProperties(
         dataObject,
@@ -169,9 +170,10 @@ export default Service.extend(I18n, {
         'title',
         'year',
         'accessType',
-        'accessDetails',
+        'accessDetailsDescription',
         'accessDetailsUrl',
         'urls',
+        'provenance',
         'managingOrganisation'
       );
 
@@ -190,16 +192,25 @@ export default Service.extend(I18n, {
       }
 
       const accessDetailsSection = [];
-      if (accessDetails) {
+      if (accessDetailsDescription) {
         accessDetailsSection.push({
           text: '\n' + this.pdfT('dataObjectAccessDetailsLabel'),
           bold: true,
-        }, accessDetails);
+        }, accessDetailsDescription);
         if (accessDetailsUrl) {
           accessDetailsSection.push(
             ` (${this.pdfT('dataObjectAccessDetailsUrlLabel')}${accessDetailsUrl})`
           );
         }
+      }
+      const provenanceSection = [];
+      if (provenance) {
+        provenanceSection.push({
+          text: [{
+            text: `\n${this.pdfT('dataObjectProvenanceLabel')}`,
+            bold: true,
+          }, provenance],
+        });
       }
       const publisherSection = [];
       if (managingOrganisation) {
@@ -220,6 +231,7 @@ export default Service.extend(I18n, {
             title,
             { stack: accessSection },
             { text: accessDetailsSection },
+            ...provenanceSection,
             ...publisherSection,
           ],
           colSpan: 2,
@@ -246,6 +258,7 @@ export default Service.extend(I18n, {
       const {
         title,
         description,
+        provenance,
         dataSharingStatement,
         relatedStudies,
         dataObjects,
@@ -253,6 +266,7 @@ export default Service.extend(I18n, {
         study,
         'title',
         'description',
+        'provenance',
         'dataSharingStatement',
         'relatedStudies',
         'dataObjects'
@@ -272,6 +286,17 @@ export default Service.extend(I18n, {
               bold: true,
             },
             description,
+          ],
+          colSpan: tableColsCount,
+        }, ..._.times(tableColsCount - 1, _.constant({}))]);
+      }
+      if (provenance) {
+        tableBody.push([{
+          text: [{
+              text: this.pdfT('studyProvenanceLabel'),
+              bold: true,
+            },
+            provenance,
           ],
           colSpan: tableColsCount,
         }, ..._.times(tableColsCount - 1, _.constant({}))]);

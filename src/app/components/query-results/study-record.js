@@ -118,7 +118,7 @@ export default Component.extend(I18n, {
    * @type {ComputedProperty<Array<Object>>}
    */
   formattedStudyEnrolmentData: computed(
-    'study.{minAge,minAgeUnits,maxAge,maxAgeUnits,enrolment,genderEligibility}',
+    'study.{minAge,maxAge,enrolment,genderEligibility}',
     function formattedStudyEnrolmentData() {
       const {
         i18n,

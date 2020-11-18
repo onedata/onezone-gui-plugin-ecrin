@@ -101,19 +101,13 @@ export default EmberObject.extend({
 
   /**
    * @virtual
-   * @type {number}
+   * @type {{ value: number, unit_name: string }}
    */
   minAge: undefined,
 
   /**
    * @virtual
-   * @type {String}
-   */
-  minAgeUnits: undefined,
-
-  /**
-   * @virtual
-   * @type {number}
+   * @type {{ value: number, unit_name: string }}
    */
   maxAge: undefined,
 

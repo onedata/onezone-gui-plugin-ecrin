@@ -71,21 +71,17 @@ export function formatFeatureDetails(i18n, study) {
 export function formatEnrolmentData(i18n, study) {
   const {
     minAge,
-    minAgeUnits,
     maxAge,
-    maxAgeUnits,
     enrolment,
   } = getProperties(
     study,
     'minAge',
-    'minAgeUnits',
     'maxAge',
-    'maxAgeUnits',
     'enrolment',
   );
 
-  const minAgeDescription = generateAgeDescription(minAge, minAgeUnits);
-  const maxAgeDescription = generateAgeDescription(maxAge, maxAgeUnits);
+  const minAgeDescription = generateAgeDescription(minAge);
+  const maxAgeDescription = generateAgeDescription(maxAge);
   const notSpecifiedDescription = i18n.t(`${i18nPrefix}.notSpecified`);
 
   let ageDescription;
@@ -196,10 +192,14 @@ function generateDetailEntry(i18n, study, detailName) {
   }
 }
 
-function generateAgeDescription(age, ageUnit) {
-  if (typeof age !== 'number') {
+function generateAgeDescription(age) {
+  const {
+    value,
+    unit_name,
+  } = (age || {});
+  if (typeof value !== 'number') {
     return undefined;
   }
 
-  return `${age}${ageUnit ? ' ' + ageUnit : ''}`;
+  return `${value}${unit_name ? ' ' + unit_name : ''}`;
 }
