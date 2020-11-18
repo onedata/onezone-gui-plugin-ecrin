@@ -6,11 +6,6 @@
 </div>
 <ul class="result-actions">
   {{#if study.isRecordExpanded}}
-    <li class="result-action provenance-action">
-      {{#one-icon icon="browser-info"}}
-        {{bs-tooltip title=(or study.provenance (tt this "noProvenanceTip"))}}
-      {{/one-icon}}
-    </li>
     <li class="result-action expand-action" {{action "toggleAllElementsExpansion"}}>
       {{one-icon icon=(if study.hasAllElementsExpanded "arrow-up" "arrow-down")}}
     </li>
@@ -41,6 +36,19 @@
         typeName=(tt this "studyDescription")
       }}
         {{study.description}}
+      {{/query-results/data-object-record}}
+    {{/if}}
+    {{#if study.provenance}}
+      {{#query-results/data-object-record
+        class="study-info"
+        isExpanded=study.isProvenanceExpanded
+        toggleExpansion=(action
+          (mut study.isProvenanceExpanded)
+          (not study.isProvenanceExpanded)
+        )
+        typeName=(tt this "studyProvenance")
+      }}
+        {{study.provenance}}
       {{/query-results/data-object-record}}
     {{/if}}
     {{#query-results/data-object-record
@@ -192,6 +200,11 @@
                 </li>
               {{/each}}
             </ul>
+          </p>
+        {{/if}}
+        {{#if dataObject.provenance}}
+          <p>
+            <strong>{{tt this "provenance"}}:</strong> {{dataObject.provenance}}
           </p>
         {{/if}}
         {{#if dataObject.managingOrganisation}}

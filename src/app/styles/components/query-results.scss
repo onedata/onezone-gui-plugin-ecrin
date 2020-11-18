@@ -100,10 +100,6 @@
     padding: 0;
     list-style-type: none;
 
-    .provenance-action:hover {
-      cursor: initial;
-    }
-
     .expand-action .one-icon {
       font-weight: bold;
     }
@@ -141,12 +137,6 @@
   .data-object-year,
   .data-object-status {
     flex-shrink: 0;
-  }
-
-  .data-object-provenance-info {
-    font-size: 1.5em;
-    vertical-align: bottom;
-    color: $main-text-light-color;
   }
 
   .data-object-type {

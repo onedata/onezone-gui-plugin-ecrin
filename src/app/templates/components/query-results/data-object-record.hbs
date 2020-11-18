@@ -1,11 +1,6 @@
 <div class="data-object-type">
   <div class="object-type-name">
     {{typeName}}
-    {{#if dataObject}}
-      {{#one-icon icon="browser-info" class="data-object-provenance-info"}}
-        {{bs-tooltip title=(or dataObject.provenance (tt this "noProvenanceTip"))}}
-      {{/one-icon}}
-    {{/if}}
   </div>
   {{#if isExpandable}}
     <a {{action toggleExpansion}} class="show-more-link">
