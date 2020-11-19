@@ -121,7 +121,7 @@
           "isObservational": true
         },
         {
-          "name": "Observational Patient Registry",
+          "name": "Observational patient registry",
           "id": 13
         },
         {
@@ -722,7 +722,7 @@
         },
         {
           "id": 415,
-          "name": "Supportive Care"
+          "name": "Supportive care"
         },
         {
           "id": 420,
@@ -730,7 +730,7 @@
         },
         {
           "id": 425,
-          "name": "Health Services Research"
+          "name": "Health services research"
         },
         {
           "id": 430,
@@ -738,7 +738,11 @@
         },
         {
           "id": 435,
-          "name": "Device Feasibility"
+          "name": "Device feasibility"
+        },
+        {
+          "id": 450,
+          "name": "Educational / counselling / training"
         },
         {
           "id": 440,
@@ -792,23 +796,31 @@
         },
         {
           "id": 605,
-          "name": "Case-Control"
+          "name": "Case-control"
         },
         {
           "id": 610,
-          "name": "Case-Only"
+          "name": "Case-only"
         },
         {
           "id": 615,
-          "name": "Case-Crossover"
+          "name": "Case-crossover"
         },
         {
           "id": 620,
-          "name": "Ecologic or Community Studies"
+          "name": "Ecologic or community study"
         },
         {
           "id": 625,
-          "name": "Family-Based"
+          "name": "Family-based"
+        },
+        {
+          "id": 640,
+          "name": "Defined population"
+        },
+        {
+          "id": 645,
+          "name": "Natural history"
         },
         {
           "id": 630,
@@ -832,6 +844,14 @@
         {
           "id": 710,
           "name": "Cross-sectional"
+        },
+        {
+          "id": 725,
+          "name": "Retrospective / prospective"
+        },
+        {
+          "id": 730,
+          "name": "Longitudinal"
         },
         {
           "id": 715,
