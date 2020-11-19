@@ -35,7 +35,7 @@ const studyFiltersOrder = [
 ];
 
 const dataObjectFiltersOrder = [
-  'filterType',
+  'type',
   'accessType',
   'year',
   'publisher',
@@ -118,7 +118,7 @@ export default Component.extend(I18n, {
   badges: union('studyBadges', 'dataObjectBadges'),
 
   /**
-   * @param {String} modelName 
+   * @param {String} modelName
    * @param {String} filterName
    * @returns {FilterStateBadge|null}
    */

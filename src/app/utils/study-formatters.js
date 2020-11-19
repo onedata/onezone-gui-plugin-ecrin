@@ -1,3 +1,14 @@
+/**
+ * A set of formatter functions used to present study data in a user-friendly form.
+ * Can be used to transform study object to a simplified data representation, which is
+ * ready to render.
+ *
+ * @module utils/study-formatters
+ * @author Michał Borzęcki
+ * @copyright (C) 2020 ACK CYFRONET AGH
+ * @license This software is released under the MIT license cited in 'LICENSE.txt'.
+ */
+
 import _ from 'lodash';
 import { get, getProperties } from '@ember/object';
 
@@ -11,6 +22,7 @@ const i18nPrefix = 'utils.studyFormatters';
  * {
  *   name: String // detail name (ready to render)
  *   value: String // detail value (ready to render)
+ *   separator: String|undefined // '|' or undefined
  * }
  * ```
  */
@@ -66,7 +78,14 @@ export function formatFeatureDetails(i18n, study) {
 /**
  * @param {Ember.Service} i18n
  * @param {Utils.Study} study
- * @returns {String} string representation of study age range (ready to render)
+ * @returns {String} array of objects, where each represents a single study enrolment detail
+ * ```
+ * {
+ *   name: String // detail name (ready to render)
+ *   value: String // detail value (ready to render)
+ *   separator: String|undefined // '|' or undefined
+ * }
+ * ```
  */
 export function formatEnrolmentData(i18n, study) {
   const {
@@ -161,7 +180,7 @@ export function formatRelatedStudies(study) {
       let description = study.title + ' ';
       study.identifiers.forEach(identifier =>
         description +=
-        `[${identifier.identifierType.name}: ${identifier.identifierValue}]`
+        `[${identifier.type.name}: ${identifier.value}]`
       );
       return {
         description,

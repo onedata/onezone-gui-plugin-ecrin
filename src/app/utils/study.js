@@ -113,12 +113,6 @@ export default EmberObject.extend({
 
   /**
    * @virtual
-   * @type {String}
-   */
-  maxAgeUnits: undefined,
-
-  /**
-   * @virtual
    * @type {Array<number>}
    */
   dataObjectsIds: undefined,
@@ -203,7 +197,7 @@ export default EmberObject.extend({
 
   /**
    * @virtual
-   * @type {Array<Object>}
+   * @type {Array<{ targetId: String, target: Object, relationshipType: Object }>}
    */
   relatedStudies: undefined,
 
@@ -220,7 +214,7 @@ export default EmberObject.extend({
   isObservational: undefined,
 
   /**
-   * @type {Array<{ identifierValue: any, identifierTypeId: String, identifierTypeName: String }>}
+   * @type {Array<{ value: any, typeId: String, typeName: String }>}
    */
   identifiers: undefined,
 

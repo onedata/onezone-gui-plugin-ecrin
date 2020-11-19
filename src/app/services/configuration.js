@@ -34,7 +34,7 @@ const mappingFields = [
   'studyObservationalModel',
   'studyTimePerspective',
   'studyBiospecimensRetained',
-  'dataObjectFilterType',
+  'dataObjectType',
   'dataObjectAccessType',
 ];
 

@@ -146,14 +146,8 @@ export default EmberObject.extend({
    * @type {ComputedProperty<Set<number>>}
    */
   studiesIds: computed('studies.[]', function studiesIds() {
-    const idsSet = new Set();
-    const studies = this.get('studies') || [];
-
-    for (let i = 0; i < studies.length; i++) {
-      idsSet.add(get(studies[i], 'id'));
-    }
-
-    return idsSet;
+    const ids = (this.get('studies') || []).mapBy('id');
+    return new Set(ids);
   }),
 
   /**
@@ -183,7 +177,7 @@ export default EmberObject.extend({
 
       let filteredDataObjects = dataObjects.slice();
       [
-        'filterType',
+        'type',
         'accessType',
       ].forEach(fieldName => {
         filteredDataObjects = filterByCategorizedValue(

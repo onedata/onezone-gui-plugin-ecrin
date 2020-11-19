@@ -16,7 +16,6 @@ export default {
     },
     dataObjectAccessDetailsLabel: 'Access details: ',
     dataObjectAccessDetailsUrlLabel: 'see: ',
-
     dataObjectProvenanceLabel: 'Provenance: ',
     dataObjectPublisherLabel: 'Publisher / provider: ',
   },

@@ -306,12 +306,15 @@ export default Service.extend(I18n, {
       }
 
       const formattedBasicDetails = formatBasicDetails(i18n, study);
-      const basicDetailsSection = [{
-        text: _.flatten(formattedBasicDetails.map(({ name, value, separator }) => [{
-          text: `${name}: `,
-          bold: true,
-        }, `${value} `, separator ? `${separator} ` : ''])),
-      }];
+      const basicDetailsSection = [];
+      if (formattedBasicDetails.length) {
+        basicDetailsSection.push({
+          text: _.flatten(formattedBasicDetails.map(({ name, value, separator }) => [{
+            text: `${name}: `,
+            bold: true,
+          }, `${value} `, separator ? `${separator} ` : ''])),
+        });
+      }
 
       const formattedFeatureDetails = formatFeatureDetails(i18n, study);
       const featureDetailsSection = [];
@@ -327,22 +330,25 @@ export default Service.extend(I18n, {
       }
 
       const formattedStudyEnrolmentData = formatEnrolmentData(i18n, study);
-      const studyEnrolmentDataSection = [{
-        text: _.flatten(formattedStudyEnrolmentData.map(({ name, value, separator }) => [{
-          text: `${name}: `,
-          bold: true,
-        }, `${value} `, separator ? `${separator} ` : ''])),
-      }];
+      const studyEnrolmentDataSection = [];
+      if (formattedStudyEnrolmentData.length) {
+        studyEnrolmentDataSection.push({
+          text: _.flatten(formattedStudyEnrolmentData.map(({ name, value, separator }) => [{
+            text: `${name}: `,
+            bold: true,
+          }, `${value} `, separator ? `${separator} ` : ''])),
+        });
+      }
 
-      const studyIdentifiers = [...get(study, 'identifiers') || []].sortBy('identifierTypeId');
+      const studyIdentifiers = [...get(study, 'identifiers') || []].sortBy('typeId');
       const identifiersDetailsSection = [];
       if (studyIdentifiers.length) {
         identifiersDetailsSection.push({
           text: String(this.pdfT('studyIdentifiersLabel')),
           bold: true,
         }, {
-          ul: studyIdentifiers.map(({ identifierTypeName, identifierValue }) => ({
-            text: [{ text: `${identifierTypeName}: `, bold: true }, identifierValue],
+          ul: studyIdentifiers.map(({ typeName, value }) => ({
+            text: [{ text: `${typeName}: `, bold: true }, value],
           })),
         });
       }
@@ -389,7 +395,7 @@ export default Service.extend(I18n, {
             text: String(this.pdfT('studyRelatedStudiesLabel')),
             bold: true,
           }, {
-            ul: formattedRelatedStudies.map((studiesGroup) => [
+            ul: formattedRelatedStudies.map(studiesGroup => [
               `${studiesGroup.relation}:`, {
                 type: 'circle',
                 ul: studiesGroup.studies.mapBy('description'),

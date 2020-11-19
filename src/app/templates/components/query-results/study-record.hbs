@@ -90,8 +90,8 @@
           <ul>
             {{#each studyIdentifiers as |identifier|}}
               <li>
-                <strong>{{identifier.identifierTypeName}}:</strong>
-                {{identifier.identifierValue}}
+                <strong>{{identifier.typeName}}:</strong>
+                {{identifier.value}}
               </li>
             {{/each}}
           </ul>
@@ -146,8 +146,7 @@
                       class="{{if (or (not isNotInResults) isFetchingData) "disabled"}} add-related-to-results"
                       {{action "addRelatedStudyToResults" relatedStudyEntry.raw}}
                     >
-                      ({{tt
-                        this
+                      ({{tt this
                         (if isNotInResults "addRelatedToResults" "relatedAlreadyInResults")
                       }})
                     </a>

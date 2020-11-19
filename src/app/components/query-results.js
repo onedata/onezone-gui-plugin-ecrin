@@ -1,6 +1,6 @@
 /**
  * Renders a list of results (studies) obtained from elasticsearch
- * 
+ *
  * @module components/query-result
  * @author Michał Borzęcki
  * @copyright (C) 2019 ACK CYFRONET AGH
@@ -140,7 +140,7 @@ export default Component.extend(I18n, {
   /**
    * @type {ComputedProperty<Set<number>>}
    */
-  studiesIds: reads('dataStore.studiesIds'),
+  fetchedStudiesIds: reads('dataStore.studiesIds'),
 
   /**
    * @type {ComputedProperty<Array<DataObject>>}

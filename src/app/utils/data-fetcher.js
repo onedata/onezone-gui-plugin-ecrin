@@ -89,7 +89,7 @@ export default EmberObject.extend({
       const creatorData = {};
       [
         ...studyCategorizedFields,
-        ...studyFeatureTypeNames.concat(['relationshipType'])
+        ...[...studyFeatureTypeNames, 'relationshipType']
         .map(name => ({ fieldName: name })),
       ].forEach(({ fieldName }) => {
         creatorData[fieldName] = {
@@ -119,7 +119,7 @@ export default EmberObject.extend({
   /**
    * Additional data needed to construct data object from query result. Calculated once
    * for performance reasons. Contains fields:
-   * [accessType|filterType|...]: {
+   * [accessType|type|...]: {
    *   valuesMap: Map<number,Mapping>, // Map id -> corresponding value mapping
    *   unknownValue: Mapping, // mapping used for values without known categorization
    * }
@@ -128,12 +128,12 @@ export default EmberObject.extend({
   dataObjectInstanceCreatorData: computed(
     function dataObjectInstanceCreatorData() {
       const {
-        dataObjectFilterTypeMapping,
-        dataObjectFilterTypeUnknownValue,
+        dataObjectTypeMapping,
+        dataObjectTypeUnknownValue,
       } = getProperties(
         this.get('configuration'),
-        'dataObjectFilterTypeMapping',
-        'dataObjectFilterTypeUnknownValue'
+        'dataObjectTypeMapping',
+        'dataObjectTypeUnknownValue'
       );
       const creatorData = {};
       dataObjectCategorizedFields.forEach(({ fieldName }) => {
@@ -146,14 +146,14 @@ export default EmberObject.extend({
           ),
         };
       });
-      const typeIdToFilterTypeIdMapDef = dataObjectFilterTypeMapping
-        .reduce((mapDef, filterType) => {
-          const objectTypeIds = filterType.objectTypeIds || [];
-          return mapDef.concat(objectTypeIds.map(typeId => [typeId, filterType]));
+      const typeIdToTypeIdMapDef = dataObjectTypeMapping
+        .reduce((mapDef, type) => {
+          const objectTypeIds = type.objectTypeIds || [];
+          return mapDef.concat(objectTypeIds.map(typeId => [typeId, type]));
         }, []);
-      creatorData.filterType = {
-        valuesMap: new Map(typeIdToFilterTypeIdMapDef),
-        unknownValue: dataObjectFilterTypeUnknownValue,
+      creatorData.type = {
+        valuesMap: new Map(typeIdToTypeIdMapDef),
+        unknownValue: dataObjectTypeUnknownValue,
       };
 
       return creatorData;
@@ -643,17 +643,18 @@ export default EmberObject.extend({
           [get(relatedStudy, 'id'), relatedStudy]
         )));
         for (const study of studies) {
-          for (const relatedStudyEntry of study.relatedStudies) {
+          const relatedStudyEntries = get(study, 'relatedStudies');
+          for (const relatedStudyEntry of relatedStudyEntries) {
             relatedStudyEntry.target = relatedStudiesMap.get(relatedStudyEntry.targetId);
           }
           // remove related study entries without existing study
-          study.relatedStudies = study.relatedStudies.filterBy('target');
+          set(study, 'relatedStudies', relatedStudyEntries.filterBy('target'));
         }
       });
   },
 
   /**
-   * Generates body base object for Elastisearch study query
+   * Generates body base object for Elasticsearch study query
    * @returns {Object}
    */
   constructStudyQueryBodyBase() {
@@ -688,7 +689,7 @@ export default EmberObject.extend({
   },
 
   /**
-   * Generates body base object for Elastisearch data object query
+   * Generates body base object for Elasticsearch data object query
    * @returns {Object}
    */
   constructDataObjectQueryBodyBase() {
@@ -711,7 +712,7 @@ export default EmberObject.extend({
   },
 
   /**
-   * Generates body base object for Elastisearch study query (narrowed data for related
+   * Generates body base object for Elasticsearch study query (narrowed data for related
    * studies only).
    * @returns {Object}
    */
@@ -719,7 +720,7 @@ export default EmberObject.extend({
     return {
       _source: [
         'id',
-        'display_title.title_text',
+        'display_title',
         'study_identifiers.identifier_type.id',
         'study_identifiers.identifier_value',
       ],
@@ -750,7 +751,6 @@ export default EmberObject.extend({
       dataSharingStatement: get(rawData, 'data_sharing_statement.text'),
       minAge: typeof get(rawData, 'min_age.value') === 'number' ? rawData.min_age : null,
       maxAge: typeof get(rawData, 'max_age.value') === 'number' ? rawData.max_age : null,
-      maxAgeUnits: get(rawData, 'max_age_units.name'),
       enrolment: typeof rawData.study_enrolment === 'number' ?
         rawData.study_enrolment : null,
       dataObjectsIds: rawData.linked_data_objects || [],
@@ -805,9 +805,9 @@ export default EmberObject.extend({
         !isBlank(get(identifier, 'identifier_type.name'))
       )
       .map(({ identifier_value, identifier_type: { name, id } }) => ({
-        identifierValue: identifier_value,
-        identifierTypeId: id,
-        identifierTypeName: name,
+        value: identifier_value,
+        typeId: id,
+        typeName: name,
       }));
 
     return Study.create(studyComputedData);
@@ -833,13 +833,13 @@ export default EmberObject.extend({
         creatorData[fieldName].unknownValue
       )
     );
-    dataObjectComputedData.filterType = this.categorizeValue(
+    dataObjectComputedData.type = this.categorizeValue(
       rawData.object_type,
-      creatorData.filterType.valuesMap,
-      creatorData.filterType.unknownValue
+      creatorData.type.valuesMap,
+      creatorData.type.unknownValue
     );
     dataObjectComputedData.isJournalArticle =
-      Boolean(dataObjectComputedData.filterType.isJournalArticle);
+      Boolean(dataObjectComputedData.type.isJournalArticle);
     dataObjectComputedData.urls = this.generateUrlsForDataObject(
       rawData.object_instances || [],
       dataObjectComputedData.isJournalArticle
@@ -851,7 +851,7 @@ export default EmberObject.extend({
   createRelatedStudyInstance(rawData, creatorData) {
     const relatedStudyComputedData = {
       id: rawData.id,
-      title: get(rawData, 'display_title.title_text'),
+      title: rawData.display_title,
     };
 
     relatedStudyComputedData.identifiers = (rawData.study_identifiers || [])
@@ -859,17 +859,17 @@ export default EmberObject.extend({
         identifier &&
         !isBlank(get(identifier, 'identifier_value')) &&
         // only #11 (trial registry ID) and #42 (NHLBI ID) identifier types are needed for GUI
-        [11, 42].indexOf(get(identifier, 'identifier_type.id')) > -1
+        [11, 42].includes(get(identifier, 'identifier_type.id'))
       )
       .map(({ identifier_value, identifier_type }) => ({
-        identifierValue: identifier_value,
-        identifierType: this.categorizeValue(
+        value: identifier_value,
+        type: this.categorizeValue(
           identifier_type,
           creatorData.identifierType.valuesMap,
           creatorData.identifierType.unknownValue
         ),
       }))
-      .filterBy('identifierType');
+      .filterBy('type');
 
     return relatedStudyComputedData;
   },

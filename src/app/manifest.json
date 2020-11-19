@@ -1,5 +1,6 @@
 {
   "onedata": {
+    "name": "ECRIN MDR",
     "version": "2.0.0",
     "defaultGuiConfiguration": {
       "contactEmail": "contact@ecrin.org",
@@ -861,7 +862,7 @@
           "useForUnknown": true
         }
       ],
-      "dataObjectFilterTypeMapping": [
+      "dataObjectTypeMapping": [
         {
           "id": 11,
           "name": "Trial registry entry",

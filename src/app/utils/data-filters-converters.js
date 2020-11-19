@@ -2,7 +2,7 @@ import { get } from '@ember/object';
 import _ from 'lodash';
 
 export const dataObjectCategorizedFilters = [
-  'filterType',
+  'type',
   'accessType',
 ];
 
@@ -50,8 +50,7 @@ export function dataObjectFiltersFromSaved(filters, configuration, publisherMapp
   const savedFilters = {
     year: filters.year,
     publisher: publisherValue ?
-      publisherValue.map(id => publisherMapping.findBy('id', id)).compact() :
-      publisherMapping.slice(),
+      publisherValue.map(id => publisherMapping.findBy('id', id)).compact() : publisherMapping.slice(),
   };
 
   dataObjectCategorizedFilters.forEach(filterName => {

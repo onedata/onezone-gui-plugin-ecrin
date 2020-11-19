@@ -144,10 +144,10 @@ export default Component.extend(I18n, {
   }),
 
   /**
-   * @type {ComputedProperty<String>}
+   * @type {ComputedProperty<Array<Object>>}
    */
   studyIdentifiers: computed('study', function studyIdentifiers() {
-    return [...(this.get('study.identifiers') || [])].sortBy('identifierTypeId');
+    return [...(this.get('study.identifiers') || [])].sortBy('typeId');
   }),
 
   /**
