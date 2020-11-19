@@ -192,14 +192,17 @@ export default Service.extend(I18n, {
       }
 
       const accessDetailsSection = [];
-      if (accessDetailsDescription) {
+      if (accessDetailsDescription || accessDetailsUrl) {
         accessDetailsSection.push({
           text: '\n' + this.pdfT('dataObjectAccessDetailsLabel'),
           bold: true,
-        }, accessDetailsDescription);
+        });
+        if (accessDetailsDescription) {
+          accessDetailsSection.push(`${accessDetailsDescription} `);
+        }
         if (accessDetailsUrl) {
           accessDetailsSection.push(
-            ` (${this.pdfT('dataObjectAccessDetailsUrlLabel')}${accessDetailsUrl})`
+            `(${this.pdfT('dataObjectAccessDetailsUrlLabel')}${accessDetailsUrl})`
           );
         }
       }

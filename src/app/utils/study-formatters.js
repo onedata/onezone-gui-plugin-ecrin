@@ -113,30 +113,19 @@ export function formatEnrolmentData(i18n, study) {
  */
 export function formatTopics(study) {
   return (get(study, 'topics') || [])
-    .map(({ value, sourceType, controlledTerminology, controlledTerminologyCode }) => {
+    .map(({ value, code, typeName }) => {
       let topicDescription = value;
 
       let additionalInfo = '';
-      if (sourceType) {
-        additionalInfo += sourceType;
+      if (typeName) {
+        additionalInfo += typeName;
       }
 
-      let controlledTerminologyDescription = '';
-      if (controlledTerminology) {
-        controlledTerminologyDescription += controlledTerminology;
-      }
-      if (controlledTerminologyCode) {
-        if (controlledTerminologyDescription) {
-          controlledTerminologyDescription += ': ';
-        }
-        controlledTerminologyDescription += controlledTerminologyCode;
-      }
-
-      if (controlledTerminologyDescription) {
+      if (code) {
         if (additionalInfo) {
           additionalInfo += '; ';
         }
-        additionalInfo += controlledTerminologyDescription;
+        additionalInfo += `MESH: ${code}`;
       }
 
       if (additionalInfo) {

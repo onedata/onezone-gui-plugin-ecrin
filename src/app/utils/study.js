@@ -191,7 +191,7 @@ export default EmberObject.extend({
 
   /**
    * @virtual
-   * @type {Array<Object>}
+   * @type {Array<{ value: String, code: String, typeName: String }>}
    */
   topics: undefined,
 

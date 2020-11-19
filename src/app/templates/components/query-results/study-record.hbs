@@ -169,7 +169,7 @@
         {{#if dataObject.title}}
           <p>{{dataObject.title}}</p>
         {{/if}}
-        {{#if dataObject.accessDetailsDescription}}
+        {{#if (or dataObject.accessDetailsDescription dataObject.accessDetailsUrl)}}
           <p>
             <strong>{{tt this "accessDetails"}}:</strong>
             {{dataObject.accessDetailsDescription}}
