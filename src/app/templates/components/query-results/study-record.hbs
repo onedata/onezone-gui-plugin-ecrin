@@ -27,7 +27,7 @@
   <div class="data-object-records">
     {{#if study.description}}
       {{#query-results/data-object-record
-        class="study-info"
+        class="study-info study-description"
         isExpanded=study.isDescriptionExpanded
         toggleExpansion=(action
           (mut study.isDescriptionExpanded)
@@ -40,7 +40,7 @@
     {{/if}}
     {{#if study.provenance}}
       {{#query-results/data-object-record
-        class="study-info"
+        class="study-info  study-provenance"
         isExpanded=study.isProvenanceExpanded
         toggleExpansion=(action
           (mut study.isProvenanceExpanded)
@@ -52,7 +52,7 @@
       {{/query-results/data-object-record}}
     {{/if}}
     {{#query-results/data-object-record
-      class="study-info"
+      class="study-info study-details"
       isExpanded=study.areDetailsExpanded
       toggleExpansion=(action
         (mut study.areDetailsExpanded)
@@ -110,7 +110,7 @@
     {{/query-results/data-object-record}}
     {{#if study.dataSharingStatement}}
       {{#query-results/data-object-record
-        class="study-info"
+        class="study-info  study-sharing-statement"
         isExpanded=study.isDataSharingStatementExpanded
         toggleExpansion=(action
           (mut study.isDataSharingStatementExpanded)
@@ -123,7 +123,7 @@
     {{/if}}
     {{#if formattedRelatedStudies}}
       {{#query-results/data-object-record
-        class="study-info"
+        class="study-info study-related-studies"
         isExpanded=study.areRelatedStudiesExpanded
         toggleExpansion=(action
           (mut study.areRelatedStudiesExpanded)

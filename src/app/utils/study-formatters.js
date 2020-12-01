@@ -149,9 +149,9 @@ export function formatTopics(study) {
 
       if (additionalInfo) {
         topicDescription += ` [${additionalInfo}]`;
-
-        return topicDescription;
       }
+
+      return topicDescription;
     });
 }
 

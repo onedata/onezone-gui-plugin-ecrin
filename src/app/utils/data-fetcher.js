@@ -193,10 +193,10 @@ export default EmberObject.extend({
   /**
    * Starts study query
    * @param {Utils.StudySearchParams} searchParams
-   * @param {Utils.Study} [stackAfterStudy=null]
+   * @param {Utils.Study} [insertResultsAfterStudy=null]
    * @returns {Promise}
    */
-  searchStudies(searchParams, stackAfterStudy = null) {
+  searchStudies(searchParams, insertResultsAfterStudy = null) {
     const {
       hasMeaningfulParams,
       mode,
@@ -207,7 +207,7 @@ export default EmberObject.extend({
         resolve() : fetchDataPromiseObject;
       promise = promise
         .then(() => {
-          if (!stackAfterStudy) {
+          if (!insertResultsAfterStudy) {
             this.get('dataStore').removeAllStudies();
           }
 
@@ -225,7 +225,11 @@ export default EmberObject.extend({
           }
         })
         .then(results =>
-          this.loadStudiesFromResponse(results, mode !== 'viaInternalId', stackAfterStudy)
+          this.loadStudiesFromResponse(
+            results,
+            mode !== 'viaInternalId',
+            insertResultsAfterStudy
+          )
         )
         .then(newStudies => allFulfilled([
           this.loadDataObjectsForStudies(newStudies),
@@ -496,13 +500,13 @@ export default EmberObject.extend({
   /**
    * @param {Object} results
    * @param {boolean} [rememberFittingStudiesCount=true]
-   * @param {Utils.Study} [stackAfterStudy=null]
+   * @param {Utils.Study} [insertResultsAfterStudy=null]
    * @returns {Promise<Array<Utils.Study>>}
    */
   loadStudiesFromResponse(
     results,
     rememberFittingStudiesCount = true,
-    stackAfterStudy = null
+    insertResultsAfterStudy = null
   ) {
     if (results) {
       const {
@@ -525,14 +529,14 @@ export default EmberObject.extend({
         })
         .map(doc => this.createStudyInstance(doc, studyInstanceCreatorData));
 
-      let stackAfterIndex = alreadyFetchedStudies.indexOf(stackAfterStudy);
-      if (stackAfterIndex === -1) {
-        stackAfterIndex = get(alreadyFetchedStudies, 'length') - 1;
+      let insertAfterIndex = alreadyFetchedStudies.indexOf(insertResultsAfterStudy);
+      if (insertAfterIndex === -1) {
+        insertAfterIndex = get(alreadyFetchedStudies, 'length') - 1;
       }
       set(dataStore, 'studies', [
-        ...alreadyFetchedStudies.slice(0, stackAfterIndex + 1),
+        ...alreadyFetchedStudies.slice(0, insertAfterIndex + 1),
         ...newStudies,
-        ...alreadyFetchedStudies.slice(stackAfterIndex + 1),
+        ...alreadyFetchedStudies.slice(insertAfterIndex + 1),
       ]);
 
       return newStudies;
@@ -855,12 +859,16 @@ export default EmberObject.extend({
     };
 
     relatedStudyComputedData.identifiers = (rawData.study_identifiers || [])
-      .filter(identifier =>
-        identifier &&
-        !isBlank(get(identifier, 'identifier_value')) &&
-        // only #11 (trial registry ID) and #42 (NHLBI ID) identifier types are needed for GUI
-        [11, 42].includes(get(identifier, 'identifier_type.id'))
-      )
+      .filter(identifier => {
+        if (identifier) {
+          const identifierTypeId = get(identifier, 'identifier_type.id');
+          return !isBlank(get(identifier, 'identifier_value')) &&
+            // only #11 (trial registry ID) and #42 (NHLBI ID) identifier types are needed for GUI
+            (identifierTypeId === 11 || identifierTypeId === 42);
+        } else {
+          return false;
+        }
+      })
       .map(({ identifier_value, identifier_type }) => ({
         value: identifier_value,
         type: this.categorizeValue(
@@ -893,7 +901,7 @@ export default EmberObject.extend({
   },
 
   generateUrlsForDataObject(objectInstances, isJournalArticle) {
-    objectInstances = objectInstances
+    let filteredObjectInstances = objectInstances
       .filterBy('access_details.url')
       .uniqBy('access_details.url');
     const urlsCollection = [];
@@ -908,7 +916,7 @@ export default EmberObject.extend({
       }].forEach(({ type, id }) => {
         let instance;
         do {
-          instance = objectInstances.findBy('resource_details.type_id', id);
+          instance = filteredObjectInstances.findBy('resource_details.type_id', id);
           if (instance) {
             const url = instance.access_details.url;
             urlsCollection.push({
@@ -916,12 +924,12 @@ export default EmberObject.extend({
               url,
               isUrlCorrect: isUrl(url),
             });
-            objectInstances = objectInstances.without(instance);
+            filteredObjectInstances = filteredObjectInstances.without(instance);
           }
         } while (instance);
       });
     }
-    objectInstances.forEach(instance => {
+    filteredObjectInstances.forEach(instance => {
       const url = instance.access_details.url;
       urlsCollection.push({
         type: 'unknown',

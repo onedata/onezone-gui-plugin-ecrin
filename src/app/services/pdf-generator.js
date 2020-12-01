@@ -124,7 +124,7 @@ export default Service.extend(I18n, {
             }];
           },
           content: [{
-              text: this.pdfT('title').string,
+              text: this.pdfT('title'),
               fontSize: 25,
             },
             ...studiesRepresentation,
@@ -180,12 +180,12 @@ export default Service.extend(I18n, {
       const accessSection = [];
       if (urls.length) {
         accessSection.push({
-          text: '\n' + this.pdfT('dataObjectUrlAccessLabel'),
+          text: `\n${this.pdfT('dataObjectUrlAccessLabel')}: `,
           bold: true,
         }, {
           ul: urls.map(({ type, url }) => {
             const label = type !== 'unknown' ?
-              this.pdfT(`dataObjectUrlType.${type}`) + ': ' : '';
+              `${this.pdfT(`dataObjectUrlType.${type}`)}: ` : '';
             return label + url;
           }),
         });
@@ -194,7 +194,7 @@ export default Service.extend(I18n, {
       const accessDetailsSection = [];
       if (accessDetailsDescription || accessDetailsUrl) {
         accessDetailsSection.push({
-          text: '\n' + this.pdfT('dataObjectAccessDetailsLabel'),
+          text: `\n${this.pdfT('dataObjectAccessDetailsLabel')}: `,
           bold: true,
         });
         if (accessDetailsDescription) {
@@ -202,7 +202,7 @@ export default Service.extend(I18n, {
         }
         if (accessDetailsUrl) {
           accessDetailsSection.push(
-            `(${this.pdfT('dataObjectAccessDetailsUrlLabel')}${accessDetailsUrl})`
+            `(${this.pdfT('dataObjectAccessDetailsUrlLabel')}: ${accessDetailsUrl})`
           );
         }
       }
@@ -210,7 +210,7 @@ export default Service.extend(I18n, {
       if (provenance) {
         provenanceSection.push({
           text: [{
-            text: `\n${this.pdfT('dataObjectProvenanceLabel')}`,
+            text: `\n${this.pdfT('dataObjectProvenanceLabel')}: `,
             bold: true,
           }, provenance],
         });
@@ -219,7 +219,7 @@ export default Service.extend(I18n, {
       if (managingOrganisation) {
         publisherSection.push({
           text: [{
-            text: `\n${this.pdfT('dataObjectPublisherLabel')}`,
+            text: `\n${this.pdfT('dataObjectPublisherLabel')}: `,
             bold: true,
           }, managingOrganisation.name],
         });
@@ -285,7 +285,7 @@ export default Service.extend(I18n, {
       if (description) {
         tableBody.push([{
           text: [{
-              text: this.pdfT('studyDescriptionLabel'),
+              text: `${this.pdfT('studyDescriptionLabel')}: `,
               bold: true,
             },
             description,
@@ -296,7 +296,7 @@ export default Service.extend(I18n, {
       if (provenance) {
         tableBody.push([{
           text: [{
-              text: this.pdfT('studyProvenanceLabel'),
+              text: `${this.pdfT('studyProvenanceLabel')}: `,
               bold: true,
             },
             provenance,
@@ -320,7 +320,7 @@ export default Service.extend(I18n, {
       const featureDetailsSection = [];
       if (formattedFeatureDetails.length) {
         featureDetailsSection.push({
-          text: String(this.pdfT('studyFeaturesLabel')),
+          text: `${this.pdfT('studyFeaturesLabel')}: `,
           bold: true,
         }, {
           ul: formattedFeatureDetails.map(({ name, value }) => ({
@@ -332,19 +332,19 @@ export default Service.extend(I18n, {
       const formattedStudyEnrolmentData = formatEnrolmentData(i18n, study);
       const studyEnrolmentDataSection = [];
       if (formattedStudyEnrolmentData.length) {
-        studyEnrolmentDataSection.push({
-          text: _.flatten(formattedStudyEnrolmentData.map(({ name, value, separator }) => [{
+        const enrolmentDataPdfElements = formattedStudyEnrolmentData
+          .map(({ name, value, separator }) => [{
             text: `${name}: `,
             bold: true,
-          }, `${value} `, separator ? `${separator} ` : ''])),
-        });
+          }, `${value} `, separator ? `${separator} ` : '']);
+        studyEnrolmentDataSection.push({ text: _.flatten(enrolmentDataPdfElements) });
       }
 
       const studyIdentifiers = [...get(study, 'identifiers') || []].sortBy('typeId');
       const identifiersDetailsSection = [];
       if (studyIdentifiers.length) {
         identifiersDetailsSection.push({
-          text: String(this.pdfT('studyIdentifiersLabel')),
+          text: `${this.pdfT('studyIdentifiersLabel')}: `,
           bold: true,
         }, {
           ul: studyIdentifiers.map(({ typeName, value }) => ({
@@ -357,7 +357,7 @@ export default Service.extend(I18n, {
       const topicsSection = [];
       if (formattedTopics.length) {
         topicsSection.push({
-          text: String(this.pdfT('studyTopicsLabel')),
+          text: `${this.pdfT('studyTopicsLabel')}: `,
           bold: true,
         }, {
           ul: formattedTopics,
@@ -380,7 +380,7 @@ export default Service.extend(I18n, {
       if (dataSharingStatement) {
         tableBody.push([{
           text: [{
-              text: this.pdfT('studyDataSharingStatementLabel'),
+              text: `${this.pdfT('studyDataSharingStatementLabel')}: `,
               bold: true,
             },
             dataSharingStatement,
@@ -392,7 +392,7 @@ export default Service.extend(I18n, {
         const formattedRelatedStudies = formatRelatedStudies(study);
         tableBody.push([{
           stack: [{
-            text: String(this.pdfT('studyRelatedStudiesLabel')),
+            text: `${this.pdfT('studyRelatedStudiesLabel')}: `,
             bold: true,
           }, {
             ul: formattedRelatedStudies.map(studiesGroup => [
@@ -430,6 +430,6 @@ export default Service.extend(I18n, {
   },
 
   pdfT(path, ...args) {
-    return this.t(`pdfElements.${path}`, ...args);
+    return String(this.t(`pdfElements.${path}`, ...args));
   },
 });
