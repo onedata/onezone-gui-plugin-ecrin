@@ -4,6 +4,19 @@
 CHANGELOG
 ---------
 
+### 2.0.0
+
+- **VFS-6740** Improved GUI assets caching
+- **VFS-6641**
+  - fixed compatibility with Onezone 20.02.*;
+  - showing related studies;
+  - related studies can be added to the existing results list;
+  - showing information about data provenance for studies and data objects;
+  - showing more information about studies: type, status, gender eligibility, age range, features, associated topics, identifiers;
+  - showing information about publisher for data objects;
+  - added new "Masking", "Primary purpose", "Observational model" and "Time perspective" possible values.
+
+
 ### 1.1.0
 
 - **VFS-6606** Added Google Analytics

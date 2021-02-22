@@ -8,7 +8,7 @@
  */
 
 import EmberObject from '@ember/object';
-import { and, or, raw, not, equal } from 'ember-awesome-macros';
+import { and, or, raw, not, equal, isEmpty } from 'ember-awesome-macros';
 
 // Study topics which makes sense only when study is interventional
 const interventionalOnlyStudyTopicTypes = [
@@ -49,7 +49,25 @@ export default EmberObject.extend({
    * @public
    * @type {boolean}
    */
+  isProvenanceExpanded: false,
+
+  /**
+   * @public
+   * @type {boolean}
+   */
+  areDetailsExpanded: false,
+
+  /**
+   * @public
+   * @type {boolean}
+   */
   isDataSharingStatementExpanded: false,
+
+  /**
+   * @public
+   * @type {boolean}
+   */
+  areRelatedStudiesExpanded: false,
 
   /**
    * @virtual
@@ -80,6 +98,18 @@ export default EmberObject.extend({
    * @type {String}
    */
   dataSharingStatement: undefined,
+
+  /**
+   * @virtual
+   * @type {{ value: number, unit_name: string }}
+   */
+  minAge: undefined,
+
+  /**
+   * @virtual
+   * @type {{ value: number, unit_name: string }}
+   */
+  maxAge: undefined,
 
   /**
    * @virtual
@@ -155,6 +185,24 @@ export default EmberObject.extend({
 
   /**
    * @virtual
+   * @type {Array<{ value: String, code: String, typeName: String }>}
+   */
+  topics: undefined,
+
+  /**
+   * @virtual
+   * @type {number|null}
+   */
+  enrolment: undefined,
+
+  /**
+   * @virtual
+   * @type {Array<{ targetId: String, target: Object, relationshipType: Object }>}
+   */
+  relatedStudies: undefined,
+
+  /**
+   * @virtual
    * @type {boolean}
    */
   isInterventional: undefined,
@@ -166,11 +214,19 @@ export default EmberObject.extend({
   isObservational: undefined,
 
   /**
+   * @type {Array<{ value: any, typeId: String, typeName: String }>}
+   */
+  identifiers: undefined,
+
+  /**
    * @type {ComputedProperty<boolean>}
    */
   hasAllElementsExpanded: and(
     or(not('description'), 'isDescriptionExpanded'),
+    or(not('provenance'), 'isProvenanceExpanded'),
+    'areDetailsExpanded',
     or(not('dataSharingStatement'), 'isDataSharingStatementExpanded'),
+    or(isEmpty('relatedStudies'), 'areRelatedStudiesExpanded'),
     equal('expandedDataObjects.length', or('dataObjects.length', raw(0))),
   ),
 
@@ -182,7 +238,10 @@ export default EmberObject.extend({
 
     this.setProperties({
       isDescriptionExpanded: true,
+      isProvenanceExpanded: true,
+      areDetailsExpanded: true,
       isDataSharingStatementExpanded: true,
+      areRelatedStudiesExpanded: true,
     });
     expandedDataObjects.addObjects(dataObjects || []);
   },
@@ -190,7 +249,10 @@ export default EmberObject.extend({
   collapseAll() {
     this.setProperties({
       isDescriptionExpanded: false,
+      isProvenanceExpanded: false,
+      areDetailsExpanded: false,
       isDataSharingStatementExpanded: false,
+      areRelatedStudiesExpanded: false,
     });
     this.get('expandedDataObjects').clear();
   },

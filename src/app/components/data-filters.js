@@ -33,7 +33,7 @@ dataObjectCategorizedFilters.forEach(filterName => {
 });
 
 const helpContentComponents = {
-  dataObjectFilterType: 'filters-help/data-object-filter-type',
+  dataObjectType: 'filters-help/data-object-type',
 };
 
 export default Component.extend(I18n, filtersFields, {

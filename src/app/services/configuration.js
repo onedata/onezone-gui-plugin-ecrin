@@ -21,6 +21,7 @@ import { or, raw, array } from 'ember-awesome-macros';
 
 const mappingFields = [
   'studyIdType',
+  'studyRelationshipType',
   'studyType',
   'studyStatus',
   'studyFeatureType',
@@ -33,7 +34,7 @@ const mappingFields = [
   'studyObservationalModel',
   'studyTimePerspective',
   'studyBiospecimensRetained',
-  'dataObjectFilterType',
+  'dataObjectType',
   'dataObjectAccessType',
 ];
 

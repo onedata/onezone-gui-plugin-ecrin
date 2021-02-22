@@ -1,6 +1,6 @@
 /**
  * Renders a list of results (studies) obtained from elasticsearch
- * 
+ *
  * @module components/query-result
  * @author Michał Borzęcki
  * @copyright (C) 2019 ACK CYFRONET AGH
@@ -46,6 +46,14 @@ export default Component.extend(I18n, {
    * @type {Utils.DataStore}
    */
   dataStore: undefined,
+
+  /**
+   * @type {Function}
+   * @param {Utils.Study} relationOriginStudy
+   * @param {Object} relatedStudy
+   * @returns {Promise}
+   */
+  addRelatedStudyToResults: notImplementedReject,
 
   /**
    * @virtual
@@ -128,6 +136,11 @@ export default Component.extend(I18n, {
    * @type {ComputedProperty<Array<Utils.Study>>}
    */
   studies: reads('dataStore.filteredStudies'),
+
+  /**
+   * @type {ComputedProperty<Set<number>>}
+   */
+  fetchedStudiesIds: reads('dataStore.studiesIds'),
 
   /**
    * @type {ComputedProperty<Array<DataObject>>}

@@ -140,7 +140,7 @@
   }
 
   .data-object-type {
-    flex-basis: 10em;
+    flex-basis: 11em;
     @media (max-width: $screen-xs-max) {
       display: flex;
       flex-basis: initial;
@@ -168,7 +168,7 @@
     padding-left: $padding-small-horizontal;
     padding-right: $padding-small-horizontal;
     overflow-wrap: break-word;
-    p {
+    p, ul {
       margin-bottom: $padding-small-vertical;
 
       &:last-child {
@@ -215,7 +215,8 @@
     }
   }
 
-  .study-info .data-object-type {
+  .study-info .data-object-type,
+  .add-related-to-results {
     font-style: italic;
   }
 
