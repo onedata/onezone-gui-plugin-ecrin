@@ -19,7 +19,7 @@
   "devDependencies": {
     "@ember/jquery": "0.5.2",
     "@ember/optional-features": "0.6.4",
-    "bootstrap-sass": "3.4.0",
+    "bootstrap-sass": "3.4.1",
     "broccoli-asset-rev": "2.7.0",
     "chai-as-promised": "7.1.1",
     "chai-jquery": "2.1.0",
