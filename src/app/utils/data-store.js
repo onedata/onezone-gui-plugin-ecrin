@@ -143,6 +143,14 @@ export default EmberObject.extend({
   isStudiesLimitReached: gte('studies.length', 'studiesLimit'),
 
   /**
+   * @type {ComputedProperty<Set<number>>}
+   */
+  studiesIds: computed('studies.[]', function studiesIds() {
+    const ids = (this.get('studies') || []).mapBy('id');
+    return new Set(ids);
+  }),
+
+  /**
    * @type {ComputedProperty<Array<DataObject>>}
    */
   filteredDataObjects: computed(
@@ -169,7 +177,7 @@ export default EmberObject.extend({
 
       let filteredDataObjects = dataObjects.slice();
       [
-        'filterType',
+        'type',
         'accessType',
       ].forEach(fieldName => {
         filteredDataObjects = filterByCategorizedValue(

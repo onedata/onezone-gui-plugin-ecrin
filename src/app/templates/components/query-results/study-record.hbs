@@ -27,7 +27,7 @@
   <div class="data-object-records">
     {{#if study.description}}
       {{#query-results/data-object-record
-        class="study-info"
+        class="study-info study-description"
         isExpanded=study.isDescriptionExpanded
         toggleExpansion=(action
           (mut study.isDescriptionExpanded)
@@ -38,9 +38,79 @@
         {{study.description}}
       {{/query-results/data-object-record}}
     {{/if}}
+    {{#if study.provenance}}
+      {{#query-results/data-object-record
+        class="study-info  study-provenance"
+        isExpanded=study.isProvenanceExpanded
+        toggleExpansion=(action
+          (mut study.isProvenanceExpanded)
+          (not study.isProvenanceExpanded)
+        )
+        typeName=(tt this "studyProvenance")
+      }}
+        {{study.provenance}}
+      {{/query-results/data-object-record}}
+    {{/if}}
+    {{#query-results/data-object-record
+      class="study-info study-details"
+      isExpanded=study.areDetailsExpanded
+      toggleExpansion=(action
+        (mut study.areDetailsExpanded)
+        (not study.areDetailsExpanded)
+      )
+      typeName=(tt this "studyDetails")
+    }}
+      {{#if formattedStudyBasicDetails}}
+        <p>
+          {{#each formattedStudyBasicDetails as |detail|}}
+            <strong>{{detail.name}}:</strong> {{detail.value}} {{detail.separator}}
+          {{/each}}
+        </p>
+      {{/if}}
+      {{#if formattedStudyFeatureDetails}}
+        <p>
+          <strong>{{tt this "studyFeatures"}}:</strong>
+          <ul>
+            {{#each formattedStudyFeatureDetails as |detail|}}
+              <li><strong>{{detail.name}}:</strong> {{detail.value}}</li>
+            {{/each}}
+          </ul>
+        </p>
+      {{/if}}
+      {{#if formattedStudyEnrolmentData}}
+        <p>
+          {{#each formattedStudyEnrolmentData as |data|}}
+            <strong>{{data.name}}:</strong> {{data.value}} {{data.separator}}
+          {{/each}}
+        </p>
+      {{/if}}
+      {{#if studyIdentifiers}}
+        <p>
+          <strong>{{tt this "studyIdentifiers"}}:</strong>
+          <ul>
+            {{#each studyIdentifiers as |identifier|}}
+              <li>
+                <strong>{{identifier.typeName}}:</strong>
+                {{identifier.value}}
+              </li>
+            {{/each}}
+          </ul>
+        </p>
+      {{/if}}
+      {{#if formattedStudyTopics}}
+        <p>
+          <strong>{{tt this "studyTopics"}}:</strong>
+          <ul>
+            {{#each formattedStudyTopics as |topic|}}
+              <li>{{topic}}</li>
+            {{/each}}
+          </ul>
+        </p>
+      {{/if}}
+    {{/query-results/data-object-record}}
     {{#if study.dataSharingStatement}}
       {{#query-results/data-object-record
-        class="study-info"
+        class="study-info  study-sharing-statement"
         isExpanded=study.isDataSharingStatementExpanded
         toggleExpansion=(action
           (mut study.isDataSharingStatementExpanded)
@@ -49,6 +119,43 @@
         typeName=(tt this "studyDataSharingStatement")
       }}
         {{study.dataSharingStatement}}
+      {{/query-results/data-object-record}}
+    {{/if}}
+    {{#if formattedRelatedStudies}}
+      {{#query-results/data-object-record
+        class="study-info study-related-studies"
+        isExpanded=study.areRelatedStudiesExpanded
+        toggleExpansion=(action
+          (mut study.areRelatedStudiesExpanded)
+          (not study.areRelatedStudiesExpanded)
+        )
+        typeName=(tt this "studyRelatedStudies")
+      }}
+        {{#each formattedRelatedStudies as |relatedStudiesGroup|}}
+          <p>
+            {{relatedStudiesGroup.relation}}:
+            <ul>
+              {{#each relatedStudiesGroup.studies as |relatedStudyEntry|}}
+                <li>
+                  {{relatedStudyEntry.description}}
+                  {{#let
+                    (contains relatedStudyEntry.raw notFetchedRelatedStudies)
+                    as |isNotInResults|
+                  }}
+                    <a
+                      class="{{if (or (not isNotInResults) isFetchingData) "disabled"}} add-related-to-results"
+                      {{action "addRelatedStudyToResults" relatedStudyEntry.raw}}
+                    >
+                      ({{tt this
+                        (if isNotInResults "addRelatedToResults" "relatedAlreadyInResults")
+                      }})
+                    </a>
+                  {{/let}}
+                </li>
+              {{/each}}
+            </ul>
+          </p>
+        {{/each}}
       {{/query-results/data-object-record}}
     {{/if}}
     {{#each (sort-by "year:asc" study.dataObjects) as |dataObject|}}
@@ -61,12 +168,12 @@
         {{#if dataObject.title}}
           <p>{{dataObject.title}}</p>
         {{/if}}
-        {{#if dataObject.accessDetails}}
+        {{#if (or dataObject.accessDetailsDescription dataObject.accessDetailsUrl)}}
           <p>
             <strong>{{tt this "accessDetails"}}:</strong>
-            {{dataObject.accessDetails}}
+            {{dataObject.accessDetailsDescription}}
             {{#if dataObject.accessDetailsUrl}}
-              ({{tt this "accessDetailsSeeMore"}}: 
+              ({{tt this "accessDetailsSeeMore"}}:
               {{#if dataObject.hasCorrectAccessDetailsUrl}}
                 <a href={{dataObject.accessDetailsUrl}} target="_blank">{{dataObject.accessDetailsUrl}}</a>)
               {{else}}
@@ -77,7 +184,7 @@
         {{/if}}
         {{#if dataObject.urls.length}}
           <p>
-            {{tt this "urlAccess"}}:
+            <strong>{{tt this "urlAccess"}}:</strong>
             <ul>
               {{#each dataObject.urls as |urlContainer|}}
                 <li>
@@ -92,6 +199,17 @@
                 </li>
               {{/each}}
             </ul>
+          </p>
+        {{/if}}
+        {{#if dataObject.provenance}}
+          <p>
+            <strong>{{tt this "provenance"}}:</strong> {{dataObject.provenance}}
+          </p>
+        {{/if}}
+        {{#if dataObject.managingOrganisation}}
+          <p>
+            <strong>{{tt this "publisher"}}:</strong>
+            {{dataObject.managingOrganisation.name}}
           </p>
         {{/if}}
       {{/query-results/data-object-record}}

@@ -15,6 +15,8 @@ import saveDialog from './components/save-dialog';
 import indexeddbStorage from './services/indexeddb-storage';
 import pdfGenerator from './services/pdf-generator';
 
+import studyFormatters from './utils/study-formatters';
+
 export default {
   components: {
     applicationContainer,
@@ -34,5 +36,8 @@ export default {
   services: {
     indexeddbStorage,
     pdfGenerator,
+  },
+  utils: {
+    studyFormatters,
   },
 };

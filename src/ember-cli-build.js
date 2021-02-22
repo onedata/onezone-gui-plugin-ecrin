@@ -9,6 +9,22 @@ const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function (defaults) {
   const app = new EmberApp(defaults, {
+    'fingerprint': {
+      extensions: [
+        'js',
+        'css',
+        'map',
+        'svg',
+        'png',
+        'jpg',
+        'gif',
+        'ttf',
+        'woff',
+        'svg',
+        'eot',
+      ],
+      replaceExtensions: ['html', 'css', 'js'],
+    },
     'eslint': {
       testGenerator: 'mocha',
     },

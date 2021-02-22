@@ -55,9 +55,11 @@
     {{pagination-selector pagedContent=pagedStudies}}
     {{#each pagedStudies as |study|}}
       {{query-results/study-record
+        fetchedStudiesIds=fetchedStudiesIds
         study=study
         selectedDataObjects=selectedDataObjects
         remove=(action removeStudy study)
+        addRelatedStudyToResults=(action addRelatedStudyToResults study)
         isFetchingData=isFetchingData
       }}
     {{/each}}

@@ -2,7 +2,7 @@ import { get } from '@ember/object';
 import _ from 'lodash';
 
 export const dataObjectCategorizedFilters = [
-  'filterType',
+  'type',
   'accessType',
 ];
 
@@ -29,34 +29,36 @@ export function getCleanStudyFilters(configuration) {
 }
 
 export function dataObjectFiltersToSave(filters) {
-  filters = filters || {};
+  const normalizedFilters = filters || {};
 
   const filtersToSave = {
-    year: filters.year,
-    publisher: getIdsFromCategorizedFilter(filters.publisher),
+    year: normalizedFilters.year,
+    publisher: getIdsFromCategorizedFilter(normalizedFilters.publisher),
   };
 
   dataObjectCategorizedFilters.forEach(filterName => {
-    filtersToSave[filterName] = getIdsFromCategorizedFilter(filters[filterName]);
+    filtersToSave[filterName] =
+      getIdsFromCategorizedFilter(normalizedFilters[filterName]);
   });
 
   return filtersToSave;
 }
 
 export function dataObjectFiltersFromSaved(filters, configuration, publisherMapping) {
-  filters = filters || {};
+  const normalizedFilters = filters || {};
 
-  const publisherValue = filters.publisher;
+  const publisherValue = normalizedFilters.publisher;
+  const publisher = publisherValue ?
+    publisherValue.map(id => publisherMapping.findBy('id', id)).compact() :
+    publisherMapping.slice();
   const savedFilters = {
-    year: filters.year,
-    publisher: publisherValue ?
-      publisherValue.map(id => publisherMapping.findBy('id', id)).compact() :
-      publisherMapping.slice(),
+    year: normalizedFilters.year,
+    publisher,
   };
 
   dataObjectCategorizedFilters.forEach(filterName => {
     const mapping = get(configuration, `dataObject${_.upperFirst(filterName)}Mapping`);
-    const filterValue = filters[filterName];
+    const filterValue = normalizedFilters[filterName];
 
     if (get(mapping, 'length')) {
       if (filterValue) {
@@ -72,25 +74,26 @@ export function dataObjectFiltersFromSaved(filters, configuration, publisherMapp
 }
 
 export function studyFiltersToSave(filters) {
-  filters = filters || {};
+  const normalizedFilters = filters || {};
 
   const filtersToSave = {};
 
   studyCategorizedFilters.forEach(filterName => {
-    filtersToSave[filterName] = getIdsFromCategorizedFilter(filters[filterName]);
+    filtersToSave[filterName] =
+      getIdsFromCategorizedFilter(normalizedFilters[filterName]);
   });
 
   return filtersToSave;
 }
 
 export function studyFiltersFromSaved(filters, configuration) {
-  filters = filters || {};
+  const normalizedFilters = filters || {};
 
   const savedFilters = {};
 
   studyCategorizedFilters.forEach(filterName => {
     const mapping = get(configuration, `study${_.upperFirst(filterName)}Mapping`);
-    const filterValue = filters[filterName];
+    const filterValue = normalizedFilters[filterName];
 
     if (get(mapping, 'length')) {
       if (filterValue) {

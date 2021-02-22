@@ -59,6 +59,7 @@ module.exports = {
         ignoreReadBeforeAssign: true,
       },
     ],
+    'no-param-reassign': 'error',
 
     'promise/always-return': 'off', // default: error
     'promise/no-return-wrap': 'error',

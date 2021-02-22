@@ -16,7 +16,7 @@ export default {
     biospecimensRetained: 'Biospecimens retained',
   },
   dataObjectFilters: {
-    filterType: 'Type',
+    type: 'Type',
     accessType: 'Access type',
     year: 'Year',
     publisher: 'Publisher / provider',
@@ -28,7 +28,7 @@ export default {
   clearDataObjectFilters: 'Reset data object filters',
   help: {
     header: {
-      dataObjectFilterType: 'Object types and filters',
+      dataObjectType: 'Object types',
     },
   },
   closeHelpModal: 'Close',
